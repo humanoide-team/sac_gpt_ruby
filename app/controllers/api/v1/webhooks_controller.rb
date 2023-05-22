@@ -37,14 +37,14 @@ class Api::V1::WebhooksController < ApiController
 
     gravar_conversa_em_arquivo(numero_telefone, pergunta_usuario, "user")
 
-    unless historico_por_telefone.include?(numero_telefone)
+    unless @historico_por_telefone.include?(numero_telefone)
       @historico_por_telefone[numero_telefone] = historico_conversa.dup
     end
 
-    historico_atual = historico_por_telefone[numero_telefone]
+    historico_atual = @historico_por_telefone[numero_telefone]
     historico_atual << { "role" => "user", "content" => pergunta_usuario }
 
-    tempos_recebimento_mensagens[numero_telefone] = DateTime.now
+    @tempos_recebimento_mensagens[numero_telefone] = DateTime.now
     Thread.new { aguardar_e_enviar_resposta(numero_telefone) }
 
     render json: { status: "OK", current_date: DateTime.now.to_s, params: params }
@@ -82,7 +82,7 @@ class Api::V1::WebhooksController < ApiController
     File.open(nome_arquivo, "a") do |file|
       if role == "user"
         file.write("Usuário: #{mensagem}\n")
-        ultima_mensagem_por_telefone[numero_telefone] = DateTime.now
+        @ultima_mensagem_por_telefone[numero_telefone] = DateTime.now
       elsif role == "assistant"
         file.write("Assistente: #{mensagem}\n")
       end
@@ -93,12 +93,12 @@ class Api::V1::WebhooksController < ApiController
     zenvia_sandbox_api_url = "https://api.zenvia.com/v2/channels/whatsapp/messages"
 
     sleep(tempo_espera)
-    if tempos_recebimento_mensagens.include?(numero_telefone)
-      ultimo_tempo = tempos_recebimento_mensagens[numero_telefone]
+    if @tempos_recebimento_mensagens.include?(numero_telefone)
+      ultimo_tempo = @tempos_recebimento_mensagens[numero_telefone]
       tempo_atual = DateTime.now
 
       if tempo_atual - ultimo_tempo >= Rational(tempo_espera, 86400)
-        historico_atual = historico_por_telefone[numero_telefone]
+        historico_atual = @historico_por_telefone[numero_telefone]
         pergunta_usuario = historico_atual[-1]["content"]
         resposta = gerar_resposta(pergunta_usuario, historico_atual)
         resposta = pos_processamento(resposta)
@@ -136,7 +136,7 @@ class Api::V1::WebhooksController < ApiController
     File.open(nome_arquivo, "a") do |file|
       if role == "user"
         file.write("Usuário: #{mensagem}\n")
-        ultima_mensagem_por_telefone[numero_telefone] = DateTime.now
+        @ultima_mensagem_por_telefone[numero_telefone] = DateTime.now
       elsif role == "assistant"
         file.write("Assistente: #{mensagem}\n")
       end
