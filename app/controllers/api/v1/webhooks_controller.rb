@@ -68,7 +68,7 @@ class Api::V1::WebhooksController < ApiController
       }
     )
 
-    resposta = response.choices[0].message["content"].strip
+    resposta = response["choices"][0]["message"]["content"].strip
     return resposta
   end
 
