@@ -29,7 +29,7 @@ class Api::V1::WebhooksController < ApiController
 
     pergunta_usuario = params["message"]["contents"][0]["text"]
 
-    if mensagem_ja_processada(pergunta_usuario):
+    if mensagem_ja_processada(pergunta_usuario)
       render json: { status: "OK", current_date: DateTime.now.to_s, params: params }
     end
 
