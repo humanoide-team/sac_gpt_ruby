@@ -147,7 +147,7 @@ class Api::V1::WebhooksController < ApiController
     if @mensagens_processadas.include?(conteudo_mensagem)
       return true
     else
-      @mensagens_processadas.add(conteudo_mensagem)
+      @mensagens_processadas << conteudo_mensagem
       return false
     end
   end
