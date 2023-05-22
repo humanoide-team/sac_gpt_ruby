@@ -1,6 +1,8 @@
 require "openai"
 
 class Api::V1::WebhooksController < ApiController
+  include HTTParty
+
   def whatsapp
     @historico_por_telefone = {}
     @ultima_mensagem_por_telefone = {}
