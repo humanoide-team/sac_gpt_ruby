@@ -5,6 +5,7 @@ class Api::V1::WebhooksController < ApiController
     @historico_por_telefone = {}
     @ultima_mensagem_por_telefone = {}
     @tempos_recebimento_mensagens = {}
+    @mensagens_processadas = []
 
     nome_atendente = ENV['NOME_ATENDENTE']
     nome_empresa = ENV['NOME_EMPRESA']
@@ -143,10 +144,10 @@ class Api::V1::WebhooksController < ApiController
   end
 
   def mensagem_ja_processada(conteudo_mensagem)
-    if mensagens_processadas.include?(conteudo_mensagem)
+    if @mensagens_processadas.include?(conteudo_mensagem)
       return true
     else
-      mensagens_processadas.add(conteudo_mensagem)
+      @mensagens_processadas.add(conteudo_mensagem)
       return false
     end
   end
