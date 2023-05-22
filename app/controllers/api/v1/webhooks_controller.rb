@@ -47,7 +47,6 @@ class Api::V1::WebhooksController < ApiController
     tempos_recebimento_mensagens[numero_telefone] = DateTime.now
     Thread.new { aguardar_e_enviar_resposta(numero_telefone) }
 
-
     render json: { status: "OK", current_date: DateTime.now.to_s, params: params }
   end
 
@@ -60,7 +59,7 @@ class Api::V1::WebhooksController < ApiController
 
     response = client.chat(
       parameters: {
-        model: "gpt-4"
+        model: "gpt-4",
         messages: historico_conversa + [{ "role" => "user", "content" => pergunta }],
         max_tokens: 1500,
         n: 1,
