@@ -9,4 +9,10 @@ class Admin < ApplicationRecord
 
   validates :name, presence: true
   validates :password_confirmation, presence: true, on: :create
+
+  def name_slug
+    return unless name.present?
+
+    ["#{name.parameterize}"]
+  end
 end
