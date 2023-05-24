@@ -1,0 +1,2 @@
+class PartnerClient < ApplicationRecord
+end

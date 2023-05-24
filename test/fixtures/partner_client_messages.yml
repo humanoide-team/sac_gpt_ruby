@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  partner: one
+  partner_client: one
+  message: MyText
+  automatic_response: MyText
+
+two:
+  partner: two
+  partner_client: two
+  message: MyText
+  automatic_response: MyText

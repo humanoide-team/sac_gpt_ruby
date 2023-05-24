@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  partner: one
+  first_digits: MyString
+  last_digits: MyString
+  brand: MyString
+  holder_name: MyString
+  pagarme_card_id: MyString
+  pagarme_subscription_id: MyString
+
+two:
+  partner: two
+  first_digits: MyString
+  last_digits: MyString
+  brand: MyString
+  holder_name: MyString
+  pagarme_card_id: MyString
+  pagarme_subscription_id: MyString

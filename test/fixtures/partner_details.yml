@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  partner: one
+  about: MyString
+  company: MyString
+  service: MyString
+  service_list: MyString
+  product_list: MyString
+  persona: MyString
+
+two:
+  partner: two
+  about: MyString
+  company: MyString
+  service: MyString
+  service_list: MyString
+  product_list: MyString
+  persona: MyString

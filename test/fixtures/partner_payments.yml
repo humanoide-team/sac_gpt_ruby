@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  partner: one
+  credit_card: one
+  status: MyString
+  pagarme_transaction: MyString
+  amount: MyString
+
+two:
+  partner: two
+  credit_card: two
+  status: MyString
+  pagarme_transaction: MyString
+  amount: MyString

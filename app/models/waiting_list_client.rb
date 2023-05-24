@@ -1,0 +1,2 @@
+class WaitingListClient < ApplicationRecord
+end
