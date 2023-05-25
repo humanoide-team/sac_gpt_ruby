@@ -11,6 +11,11 @@ Rails.application.routes.draw do
 
       namespace :partners do
         post 'authenticate', to: 'authentication#authenticate'
+
+        resources :partners, only: %i[create destroy update]
+
+        resources :partner_details, only: %i[create destroy update]
+
       end
     end
   end

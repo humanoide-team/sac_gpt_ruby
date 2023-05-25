@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_24_234159) do
+ActiveRecord::Schema.define(version: 2023_05_25_154020) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,6 +89,14 @@ ActiveRecord::Schema.define(version: 2023_05_24_234159) do
     t.string "persona"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "name_attendant"
+    t.string "company_name"
+    t.string "company_niche"
+    t.string "served_region"
+    t.string "company_services"
+    t.string "company_products"
+    t.string "company_contact"
+    t.string "company_objective"
     t.index ["partner_id"], name: "index_partner_details_on_partner_id"
   end
 

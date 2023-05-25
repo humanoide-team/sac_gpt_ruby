@@ -7,7 +7,7 @@ class Partner < ApplicationRecord
   extend FriendlyId
   friendly_id :name_slug, use: :slugged
 
-  has_one :partner_detail, dependent: :delete
+  has_one :partner_detail, dependent: :destroy
 
   validates :name, :phone, presence: true
   validates :password_confirmation, presence: true, on: :create
