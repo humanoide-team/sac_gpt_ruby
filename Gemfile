@@ -69,4 +69,5 @@ gem 'paranoia', '~> 2.2'
 gem 'ruby-openai'
 gem 'simple_command'
 gem 'active_model_serializers'
+gem 'rack-cors'
 
