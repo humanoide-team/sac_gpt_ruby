@@ -10,7 +10,7 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
     @partner = Partner.new(partner_params)
 
     if @partner.save
-      render json: PartnerAdminSerializer.new(@partner).serialized_json, status: :created
+      render json: PartnerSerializer.new(@partner).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
     end
@@ -18,7 +18,7 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
 
   def destroy
     if @partner.destroy
-      render json: PartnerAdminSerializer.new(@partner).serialized_json, status: :created
+      render json: PartnerSerializer.new(@partner).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
     end
@@ -26,7 +26,7 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
 
   def update
     if @partner.update(partner_params)
-      render json: PartnerAdminSerializer.new(@partner).serialized_json, status: :ok
+      render json: PartnerSerializer.new(@partner).serialized_json, status: :ok
     else
       render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
     end

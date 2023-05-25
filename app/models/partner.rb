@@ -8,6 +8,8 @@ class Partner < ApplicationRecord
   friendly_id :name_slug, use: :slugged
 
   has_one :partner_detail, dependent: :destroy
+  has_many :partner_client_messages, dependent: :destroy
+  has_many :partner_clients, through: :partner_client_messages
 
   validates :name, :phone, presence: true
   validates :password_confirmation, presence: true, on: :create

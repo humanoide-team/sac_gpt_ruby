@@ -1,11 +1,15 @@
 class Api::V1::Partners::PartnerDetailsController < ApiPartnerController
   before_action :set_partner_detail, only: %i[show destroy update]
 
+  def show
+    render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :created
+  end
+
   def create
-    @partner_detail = PartnerDetail.new(partner_detail_params)
+    @partner_detail = PartnerDetail.new(partner_detail_params.merge(partner: @current_partner))
 
     if @partner_detail.save
-      render json: PartnerDetailAdminSerializer.new(@partner_detail).serialized_json, status: :created
+      render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@partner_detail.errors), status: :unprocessable_entity
     end
@@ -13,7 +17,7 @@ class Api::V1::Partners::PartnerDetailsController < ApiPartnerController
 
   def destroy
     if @partner_detail.destroy
-      render json: PartnerAdminSerializer.new(@partner_detail).serialized_json, status: :created
+      render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@partner_detail.errors), status: :unprocessable_entity
     end
@@ -21,7 +25,7 @@ class Api::V1::Partners::PartnerDetailsController < ApiPartnerController
 
   def update
     if @partner_detail.update(partner_detail_params)
-      render json: PartnerAdminSerializer.new(@partner_detail).serialized_json, status: :ok
+      render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :ok
     else
       render json: ErrorSerializer.serialize(@partner_detail.errors), status: :unprocessable_entity
     end

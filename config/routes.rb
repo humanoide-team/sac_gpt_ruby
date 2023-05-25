@@ -14,7 +14,11 @@ Rails.application.routes.draw do
 
         resources :partners, only: %i[create destroy update]
 
-        resources :partner_details, only: %i[create destroy update]
+        resources :partner_details, only: %i[show create destroy update]
+
+        resources :partner_client_messages, only: %i[index]
+
+        resources :partner_clients, only: %i[index]
 
       end
     end
