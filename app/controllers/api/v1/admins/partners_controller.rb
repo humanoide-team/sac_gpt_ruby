@@ -1,23 +1,45 @@
 class Api::V1::Admins::PartnersController < ApiAdminController
-  before_action :set_partner, only: %i[show]
+  before_action :set_partner, only: %i[show destroy update]
 
   def index
     @partners = Partner.all
-    render json: CleanerSerializer.new(@partners).serialized_json
+    render json: PartnerAdminSerializer.new(@partners).serialized_json
   end
 
   def show
-    render json: CleanerSerializer.new(@partner).serialized_json
+    render json: PartnerAdminSerializer.new(@partner).serialized_json
+  end
+
+  def create
+    @partner = Partner.new(partner_params)
+
+    if @partner.save
+      render json: PartnerAdminSerializer.new(@partner).serialized_json, status: :created
+    else
+      render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @partner.destroy
+      render json: PartnerAdminSerializer.new(@partner).serialized_json, status: :created
+    else
+      render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if @partner.update(partner_params)
+      render json: PartnerAdminSerializer.new(@partner).serialized_json, status: :ok
+    else
+      render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
+    end
   end
 
   private
 
-  def cleaner_params
-    ActiveModelSerializers::Deserialization.jsonapi_parse(params, polymorphic: [:cleaner, :cities, :regions])
-  end
-
-  def supervisor_note_params
-    ActiveModelSerializers::Deserialization.jsonapi_parse(params, polymorphic: [:supervisor_note])
+  def partner_params
+    ActiveModelSerializers::Deserialization.jsonapi_parse(params, polymorphic: [:partner])
   end
 
   def set_partner

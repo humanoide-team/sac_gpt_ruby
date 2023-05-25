@@ -61,11 +61,12 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'cancancan'
 gem 'devise'
 gem 'fast_jsonapi'
+gem 'friendly_id', '~> 5.2.4'
 gem 'httparty'
 gem 'jwt'
 gem 'paper_trail'
 gem 'paranoia', '~> 2.2'
 gem 'ruby-openai'
 gem 'simple_command'
-gem 'friendly_id', '~> 5.2.4'
+gem 'active_model_serializers'
 

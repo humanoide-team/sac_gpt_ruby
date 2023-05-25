@@ -7,8 +7,12 @@ class Partner < ApplicationRecord
   extend FriendlyId
   friendly_id :name_slug, use: :slugged
 
+  has_one :partner_detail, dependent: :delete
+
   validates :name, :phone, presence: true
   validates :password_confirmation, presence: true, on: :create
+
+  accepts_nested_attributes_for :partner_detail, reject_if: :all_blank
 
   def name_slug
     return unless name.present?

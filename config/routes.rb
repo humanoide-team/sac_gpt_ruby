@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
       namespace :admins do
         post 'authenticate', to: 'authentication#authenticate'
+
+        resources :partners
       end
 
       namespace :partners do
