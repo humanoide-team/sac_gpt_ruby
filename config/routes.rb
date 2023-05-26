@@ -17,6 +17,7 @@ Rails.application.routes.draw do
         resources :partner_details, only: %i[show create destroy update]
 
         resources :partner_client_messages, only: %i[index]
+        get 'partner_client_messages/list_by_client/:client_id', to: 'partner_client_messages#list_by_client'
 
         resources :partner_clients, only: %i[index]
 
