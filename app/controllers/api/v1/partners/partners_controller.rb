@@ -18,7 +18,7 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
 
   def destroy
     if @partner.destroy
-      render json: PartnerSerializer.new(@partner).serialized_json, status: :created
+      render json: PartnerSerializer.new(@partner).serialized_json, status: :ok
     else
       render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
     end

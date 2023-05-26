@@ -2,7 +2,7 @@ class Api::V1::Partners::PartnerDetailsController < ApiPartnerController
   before_action :set_partner_detail, only: %i[show destroy update]
 
   def show
-    render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :created
+    render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :ok
   end
 
   def create
@@ -17,7 +17,7 @@ class Api::V1::Partners::PartnerDetailsController < ApiPartnerController
 
   def destroy
     if @partner_detail.destroy
-      render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :created
+      render json: PartnerDetailSerializer.new(@partner_detail).serialized_json, status: :ok
     else
       render json: ErrorSerializer.serialize(@partner_detail.errors), status: :unprocessable_entity
     end
