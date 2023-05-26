@@ -24,7 +24,7 @@ class Api::V1::WebhooksController < ApiController
     last_response = client.partner_client_messages.by_partner(partner).where.not(automatic_response: nil).order(:created_at).last
     return if !last_response.nil? && (DateTime.now - tempo_espera.seconds) < last_response.created_at
 
-    last_response.update(automatic_response: '--')
+    @client.partner_client_messages.by_partner(partner).last.update(automatic_response: '--')
     historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
     @client.partner_client_messages.by_partner(partner).each do |partner_client_message|
       historico_conversa << { role: 'user', content: partner_client_message.message }
