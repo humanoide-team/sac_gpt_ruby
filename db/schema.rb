@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_25_154020) do
+ActiveRecord::Schema.define(version: 2023_05_26_142215) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 2023_05_25_154020) do
     t.text "automatic_response"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "webhook_uuid"
     t.index ["partner_client_id"], name: "index_partner_client_messages_on_partner_client_id"
     t.index ["partner_id"], name: "index_partner_client_messages_on_partner_id"
   end
