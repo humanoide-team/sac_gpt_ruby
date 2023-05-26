@@ -14,7 +14,7 @@ class Api::V1::WebhooksController < ApiController
     render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @client.partner_client_messages.by_partner(@partner).map(&:message).include?(pergunta_usuario)
 
     @client.partner_client_messages.create(partner: @partner, message: pergunta_usuario)
-    aguardar_e_enviar_resposta(@partner, @client, pergunta_usuario)
+    Thread.new { aguardar_e_enviar_resposta(@partner, @client, pergunta_usuario) }
   end
 
   def aguardar_e_enviar_resposta(partner, client, pergunta_usuario, tempo_espera=15)
