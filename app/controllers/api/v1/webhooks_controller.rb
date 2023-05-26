@@ -27,7 +27,7 @@ class Api::V1::WebhooksController < ApiController
     historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
     @client.partner_client_messages.by_partner(partner).each do |partner_client_message|
       historico_conversa << { role: 'user', content: partner_client_message.message }
-      historico_conversa << { role: 'assistant', content: partner_client_message.message } if partner_client_message.automatic_response
+      historico_conversa << { role: 'assistant', content: partner_client_message.automatic_response } if partner_client_message.automatic_response
     end
 
     response = gerar_resposta(pergunta_usuario, historico_conversa).gsub("\n", ' ').strip
