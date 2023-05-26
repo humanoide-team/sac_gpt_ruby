@@ -14,7 +14,7 @@ class Api::V1::WebhooksController < ApiController
     render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @client.partner_client_messages.by_partner(@partner).map(&:message).include?(pergunta_usuario)
 
     @client.partner_client_messages.create(partner: @partner, message: pergunta_usuario)
-    Thread.new { aguardar_e_enviar_resposta(@partner, @client, pergunta_usuario) }
+    aguardar_e_enviar_resposta(@partner, @client, pergunta_usuario)
   end
 
   def aguardar_e_enviar_resposta(partner, client, pergunta_usuario, tempo_espera=15)
@@ -24,6 +24,7 @@ class Api::V1::WebhooksController < ApiController
     last_response = client.partner_client_messages.by_partner(partner).where.not(automatic_response: nil).order(:created_at).last
     return if !last_response.nil? && (DateTime.now - tempo_espera.seconds) < last_response.created_at
 
+    last_response.update(automatic_response: '--')
     historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
     @client.partner_client_messages.by_partner(partner).each do |partner_client_message|
       historico_conversa << { role: 'user', content: partner_client_message.message }
