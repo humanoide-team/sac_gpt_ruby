@@ -9,5 +9,4 @@ class Api::V1::Partners::PartnerClientMessagesController < ApiPartnerController
     @messages = @current_partner.partner_client_messages.where(partner_client_id: params[:client_id]).order(id: :asc)
     render json: PartnerClientMessageSerializer.new(@messages).serialized_json, status: :ok
   end
-  
 end

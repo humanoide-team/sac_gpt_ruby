@@ -2,7 +2,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   before_action :set_client, only: %i[destroy]
 
   def index
-    @clients = @current_partner.partner_clients.uniq
+    @clients = @current_partner.partner_clients.order(id: :asc).uniq
     render json: PartnerClientSerializer.new(@clients).serialized_json, status: :ok
   end
 
