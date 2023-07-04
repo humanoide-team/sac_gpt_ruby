@@ -1,7 +1,26 @@
 require 'openai'
+require_relative '../../../services/node_api_client'
 
 class Api::V1::WebhooksController < ApiController
   include HTTParty
+
+  def auth_whatsapp
+    token = 'TOKEN_TOKEN'
+    response = NodeAPIClient.iniciar_instancia(token)# criar uma nova instancia da api
+
+    if response['error'] == false
+      key = response['key']
+      sleep(5)
+      get_qrcode(key)
+    else
+      error_message = response['message']
+    end
+  end
+
+  def get_qrcode(key)
+    qr_code = NodeAPIClient.obter_qr(key)
+    render json: qr_code
+  end
 
   def whatsapp
     @partner = Partner.find_by(phone: params['message']['to'])
@@ -18,9 +37,7 @@ class Api::V1::WebhooksController < ApiController
     Thread.new { aguardar_e_enviar_resposta(@partner, @client, partner_client_message) }
   end
 
-  def aguardar_e_enviar_resposta(partner, client, partner_client_message, tempo_espera=10)
-    zenvia_sandbox_api_url = 'https://api.zenvia.com/v2/channels/whatsapp/messages'
-
+  def aguardar_e_enviar_resposta(partner, client, partner_client_message, tempo_espera = 10)
     sleep(tempo_espera)
     last_response = client.partner_client_messages.by_partner(partner).where.not(automatic_response: nil).order(:created_at).last
     return if !last_response.nil? && (DateTime.now - 20.seconds) < last_response.created_at
@@ -33,19 +50,8 @@ class Api::V1::WebhooksController < ApiController
 
     response = gerar_resposta(partner_client_message.message, historico_conversa).gsub("\n", ' ').strip
     partner_client_message.update(automatic_response: response)
-
-    headers = {
-      'Content-Type': 'application/json',
-      'X-API-TOKEN': ENV['ZENVIA_API_KEY']
-    }
-    data = {
-      from: params['message']['to'],
-      to: params['message']['from'],
-      contents: [{ type: 'text', text: response }]
-    }
-
-    response = HTTParty.post(zenvia_sandbox_api_url, body: data.to_json, headers:)
-    puts "Erro na API do Zenvia: #{response.body}" if response.code != 200
+    response = NodeAPIClient.enviar_mensagem(params['message']['to'], response)
+    return 'Erro na API Node.js: #{response}' unless response['status'] == 'OK'
   end
 
   def gerar_resposta(pergunta, historico_conversa)

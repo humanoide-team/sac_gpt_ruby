@@ -1,0 +1,43 @@
+require 'net/http'
+require 'chunky_png'
+require 'base64'
+
+class NodeAPIClient
+  BASE_URL = 'http://localhost:7777'.freeze
+
+  def self.iniciar_instancia(token)
+    endpoint = '/instance/init' 
+    url = "#{BASE_URL}#{endpoint}"
+    query_params = { key: '123', token: token }
+
+    response = HTTParty.get(url, query: query_params)
+    JSON.parse(response.body)
+  end
+
+  def self.obter_qr(key)
+    url = URI.parse("http://localhost:7777/instance/qr")
+    url.query = "key=#{key}"
+  
+    http = Net::HTTP.new(url.host, url.port)
+    request = Net::HTTP::Get.new(url)
+    request["Cookie"] = "__profilin=p%3Dt"
+  
+    response = http.request(request)
+
+    puts "Request URL: #{url}"
+    puts "Response Code: #{response.code}"
+    puts "Response Body: #{response.body}"
+    
+    response.body
+  end
+  
+  def self.enviar_mensagem(numero, mensagem)
+    endpoint = '/message/text'
+    url = "#{BASE_URL}#{endpoint}"
+    query_params = { key: '123' }
+    body = { id: numero, message: mensagem }
+
+    response = HTTParty.post(url, query: query_params, body: body)
+    JSON.parse(response.body)
+  end
+end
