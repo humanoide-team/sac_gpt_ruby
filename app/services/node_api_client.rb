@@ -5,10 +5,10 @@ require 'base64'
 class NodeAPIClient
   BASE_URL = 'http://localhost:7777'.freeze
 
-  def self.iniciar_instancia(token)
-    endpoint = '/instance/init' 
+  def self.iniciar_instancia(token, key)
+    endpoint = '/instance/init'
     url = "#{BASE_URL}#{endpoint}"
-    query_params = { key: '123', token: token }
+    query_params = { key: key, token: token }
 
     response = HTTParty.get(url, query: query_params)
     JSON.parse(response.body)
@@ -30,11 +30,11 @@ class NodeAPIClient
     
     response.body
   end
-  
+
   def self.enviar_mensagem(numero, mensagem)
     endpoint = '/message/text'
     url = "#{BASE_URL}#{endpoint}"
-    query_params = { key: '123' }
+    query_params = { key: 'test' }
     body = { id: numero, message: mensagem }
 
     response = HTTParty.post(url, query: query_params, body: body)

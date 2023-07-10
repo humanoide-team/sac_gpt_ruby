@@ -5,8 +5,10 @@ class Api::V1::WebhooksController < ApiController
   include HTTParty
 
   def auth_whatsapp
-    token = 'TOKEN_TOKEN'
-    response = NodeAPIClient.iniciar_instancia(token)# criar uma nova instancia da api
+    token = params['token']
+    key = params['key']
+
+    response = NodeAPIClient.iniciar_instancia(token, key)
 
     if response['error'] == false
       key = response['key']
@@ -23,17 +25,17 @@ class Api::V1::WebhooksController < ApiController
   end
 
   def whatsapp
-    @partner = Partner.find_by(phone: params['message']['to'])
+    @partner = Partner.find_by(instance_key: params['instanceKey'])
     render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @partner.nil?
 
-    @client = PartnerClient.find_by(phone: params['message']['from'])
-    @client = PartnerClient.create(phone: params['message']['from'], name: params['message']['visitor']['name']) if @client.nil?
-    @client.update(name: params['message']['visitor']['name']) if params['message']['visitor']['name'] && @client.name.nil?
+    @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'])
+    @client = PartnerClient.create(phone: params['body']['key']['remoteJid'], name: params['body']['pushName']) if @client.nil?
+    @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
 
-    pergunta_usuario = params['message']['contents'][0]['text']
-    render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @client.partner_client_messages.by_partner(@partner).map(&:webhook_uuid).include?(params['id'])
+    pergunta_usuario = params['body']['text']['messages'][0]['message']['conversation']
+    render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @client.partner_client_messages.by_partner(@partner).map(&:webhook_uuid).include?(params['body']['key']['id'])
 
-    partner_client_message = @client.partner_client_messages.create(partner: @partner, message: pergunta_usuario, webhook_uuid: params['id'])
+    partner_client_message = @client.partner_client_messages.create(partner: @partner, message: pergunta_usuario, webhook_uuid: params['body']['key']['id'])
     Thread.new { aguardar_e_enviar_resposta(@partner, @client, partner_client_message) }
   end
 
@@ -50,7 +52,7 @@ class Api::V1::WebhooksController < ApiController
 
     response = gerar_resposta(partner_client_message.message, historico_conversa).gsub("\n", ' ').strip
     partner_client_message.update(automatic_response: response)
-    response = NodeAPIClient.enviar_mensagem(params['message']['to'], response)
+    response = NodeAPIClient.enviar_mensagem(params['body']['key']['remoteJid'], response)
     return 'Erro na API Node.js: #{response}' unless response['status'] == 'OK'
   end
 

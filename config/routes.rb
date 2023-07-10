@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1, defaults: { format: :json } do
-      get 'auth_whatsapp', to: 'webhooks#auth_whatsapp'
+      post 'auth_whatsapp', to: 'webhooks#auth_whatsapp'
       post 'whatsapp', to: 'webhooks#whatsapp'
 
       namespace :admins do
