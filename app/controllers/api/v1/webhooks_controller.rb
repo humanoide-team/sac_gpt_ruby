@@ -1,29 +1,5 @@
 require 'openai'
-require_relative '../../../services/node_api_client'
-
 class Api::V1::WebhooksController < ApiController
-  include HTTParty
-
-  def auth_whatsapp
-    token = params['token']
-    key = params['key']
-
-    response = NodeAPIClient.iniciar_instancia(token, key)
-
-    if response['error'] == false
-      key = response['key']
-      sleep(5)
-      get_qrcode(key)
-    else
-      error_message = response['message']
-    end
-  end
-
-  def get_qrcode(key)
-    qr_code = NodeAPIClient.obter_qr(key)
-    render json: qr_code
-  end
-
   def whatsapp
     @partner = Partner.find_by(instance_key: params['instanceKey'])
     render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @partner.nil?

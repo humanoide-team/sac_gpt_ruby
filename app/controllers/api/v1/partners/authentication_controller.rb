@@ -25,7 +25,7 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
 
   def auth_whatsapp
     token = ENV['NODE_API_WHATSAPP_TOKEN']
-    key = current_partner.instance_key
+    key = @current_partner.instance_key
 
     response = NodeAPIClient.iniciar_instancia(token, key)
 
@@ -41,5 +41,11 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
   def get_qrcode(key)
     qr_code = NodeAPIClient.obter_qr(key)
     render json: qr_code
+  end
+
+  private
+
+  def current_partner
+    @current_partner ||= current_user
   end
 end
