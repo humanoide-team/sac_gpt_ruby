@@ -1,5 +1,8 @@
+require_relative '../../../../services/node_api_client'
+
 class Api::V1::Partners::AuthenticationController < ApiPartnerController
-  skip_before_action :authenticate_request
+  skip_before_action :authenticate_request, only: :authenticate
+  include HTTParty
 
   def authenticate
     options = {
@@ -18,5 +21,31 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
     else
       render json: { error: command.errors }, status: :unauthorized
     end
+  end
+
+  def auth_whatsapp
+    token = ENV['NODE_API_WHATSAPP_TOKEN']
+    key = @current_partner.instance_key
+
+    response = NodeAPIClient.iniciar_instancia(token, key)
+
+    if response['error'] == false
+      key = response['key']
+      sleep(5)
+      get_qrcode(key)
+    else
+      error_message = response['message']
+    end
+  end
+
+  def get_qrcode(key)
+    qr_code = NodeAPIClient.obter_qr(key)
+    render json: qr_code
+  end
+
+  private
+
+  def current_partner
+    @current_partner ||= current_user
   end
 end

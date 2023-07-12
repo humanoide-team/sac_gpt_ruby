@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
       namespace :partners do
         post 'authenticate', to: 'authentication#authenticate'
+        get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
 
         resources :partners, only: %i[create destroy update]
 
