@@ -3,7 +3,7 @@ require 'chunky_png'
 require 'base64'
 
 class NodeAPIClient
-  BASE_URL = 'http://localhost:7777'.freeze
+  BASE_URL = ENV['NODE_API_URL'].freeze
 
   def self.iniciar_instancia(token, key)
     endpoint = '/instance/init'
@@ -15,7 +15,7 @@ class NodeAPIClient
   end
 
   def self.obter_qr(key)
-    url = URI.parse("http://localhost:7777/instance/qr")
+    url = URI.parse("#{BASE_URL}/instance/qr")
     url.query = "key=#{key}"
   
     http = Net::HTTP.new(url.host, url.port)
