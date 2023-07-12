@@ -1,9 +1,9 @@
-require_relative '../../../../services/node_api_client'
+require 'node_api_client'
 
 class Api::V1::Partners::AuthenticationController < ApiPartnerController
   skip_before_action :authenticate_request, only: :authenticate
   include HTTParty
-
+  
   def authenticate
     options = {
       email: params[:email],

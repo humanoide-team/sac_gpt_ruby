@@ -2,7 +2,7 @@ require 'net/http'
 require 'chunky_png'
 require 'base64'
 
-class NodeAPIClient
+class NodeApiClient
   BASE_URL = ENV['NODE_API_URL'].freeze
 
   def self.iniciar_instancia(token, key)
