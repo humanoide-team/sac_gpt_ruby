@@ -28,7 +28,6 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
     key = @current_partner.instance_key
 
     response = NodeAPIClient.iniciar_instancia(token, key)
-
     if response['error'] == false
       key = response['key']
       sleep(5)

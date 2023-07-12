@@ -15,19 +15,10 @@ class NodeAPIClient
   end
 
   def self.obter_qr(key)
-    url = URI.parse("#{BASE_URL}/instance/qr")
-    url.query = "key=#{key}"
-  
-    http = Net::HTTP.new(url.host, url.port)
-    request = Net::HTTP::Get.new(url)
-    request["Cookie"] = "__profilin=p%3Dt"
-  
-    response = http.request(request)
+    url = "#{BASE_URL}/instance/qr"
+    query_params = { key: key }
 
-    puts "Request URL: #{url}"
-    puts "Response Code: #{response.code}"
-    puts "Response Body: #{response.body}"
-    
+    response = HTTParty.get(url, query: query_params)
     response.body
   end
 

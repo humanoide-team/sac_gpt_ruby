@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.2'
+ruby '3.1.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', '~> 6.1.6', '>= 6.1.6.1'
@@ -9,8 +9,6 @@ gem 'rails', '~> 6.1.6', '>= 6.1.6.1'
 gem 'pg'
 
 gem 'chunky_png'
-
-gem 'zbar'
 
 # fornece classes e métodos para realizar solicitações HTTP
 gem 'net-http'
