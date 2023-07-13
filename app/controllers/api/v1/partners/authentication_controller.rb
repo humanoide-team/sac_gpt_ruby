@@ -3,7 +3,7 @@ require 'node_api_client'
 class Api::V1::Partners::AuthenticationController < ApiPartnerController
   skip_before_action :authenticate_request, only: :authenticate
   include HTTParty
-  
+
   def authenticate
     options = {
       email: params[:email],
@@ -27,7 +27,7 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
     token = ENV['NODE_API_WHATSAPP_TOKEN']
     key = @current_partner.instance_key
 
-    response = NodeAPIClient.iniciar_instancia(token, key)
+    response = NodeApiClient.iniciar_instancia(token, key)
     if response['error'] == false
       key = response['key']
       sleep(5)
@@ -38,7 +38,7 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
   end
 
   def get_qrcode(key)
-    qr_code = NodeAPIClient.obter_qr(key)
+    qr_code = NodeApiClient.obter_qr(key)
     render json: qr_code
   end
 
