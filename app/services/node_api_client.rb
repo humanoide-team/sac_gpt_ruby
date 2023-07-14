@@ -22,10 +22,10 @@ class NodeApiClient
     response.body
   end
 
-  def self.enviar_mensagem(numero, mensagem)
+  def self.enviar_mensagem(numero, mensagem, chave)
     endpoint = '/message/text'
     url = "#{BASE_URL}#{endpoint}"
-    query_params = { key: 'test' }
+    query_params = { key: chave }
     body = { id: numero, message: mensagem }
 
     response = HTTParty.post(url, query: query_params, body: body)
