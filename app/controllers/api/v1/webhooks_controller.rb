@@ -8,7 +8,7 @@ class Api::V1::WebhooksController < ApiController
     @client = PartnerClient.create(phone: params['body']['key']['remoteJid'], name: params['body']['pushName']) if @client.nil?
     @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
 
-    pergunta_usuario = params['body']['text']['messages'][0]['message']['conversation']
+    pergunta_usuario = params['body']['message']['messages']['conversation'] || params['body']['message']['messages']['extendedTextMessage']['text']
     render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @client.partner_client_messages.by_partner(@partner).map(&:webhook_uuid).include?(params['body']['key']['id'])
 
     partner_client_message = @client.partner_client_messages.create(partner: @partner, message: pergunta_usuario, webhook_uuid: params['body']['key']['id'])
