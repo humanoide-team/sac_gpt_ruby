@@ -11,7 +11,7 @@ class Partner < ApplicationRecord
   has_many :partner_client_messages, dependent: :destroy
   has_many :partner_clients, through: :partner_client_messages
 
-  validates :name, :phone, presence: true
+  validates :name, :service_number, :document, :contact_number, presence: true
   validates :password_confirmation, presence: true, on: :create
 
   accepts_nested_attributes_for :partner_detail, reject_if: :all_blank

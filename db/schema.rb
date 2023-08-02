@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_10_220100) do
+ActiveRecord::Schema.define(version: 2023_08_01_132402) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,6 +98,14 @@ ActiveRecord::Schema.define(version: 2023_07_10_220100) do
     t.string "company_products"
     t.string "company_contact"
     t.string "company_objective"
+    t.string "main_goals"
+    t.string "business_goals"
+    t.string "marketing_channels"
+    t.string "key_differentials"
+    t.string "target_audience"
+    t.string "tone_voice"
+    t.string "week_days"
+    t.string "meeting_hours"
     t.index ["partner_id"], name: "index_partner_details_on_partner_id"
   end
 
@@ -115,7 +123,7 @@ ActiveRecord::Schema.define(version: 2023_07_10_220100) do
 
   create_table "partners", force: :cascade do |t|
     t.string "name"
-    t.string "phone"
+    t.string "service_number"
     t.string "password"
     t.datetime "deleted_at"
     t.string "slug"
@@ -127,6 +135,8 @@ ActiveRecord::Schema.define(version: 2023_07_10_220100) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "instance_key"
+    t.string "document"
+    t.string "contact_number"
   end
 
   create_table "waiting_list_clients", force: :cascade do |t|
