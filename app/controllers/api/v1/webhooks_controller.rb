@@ -4,9 +4,9 @@ class Api::V1::WebhooksController < ApiController
     @partner = Partner.find_by(instance_key: params['instanceKey'])
     render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @partner.nil?
 
-    @client = PartnerClient.find_by(service_number: params['body']['key']['remoteJid'])
+    @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'])
     if @client.nil?
-      @client = PartnerClient.create(service_number: params['body']['key']['remoteJid'],
+      @client = PartnerClient.create(phone: params['body']['key']['remoteJid'],
                                      name: params['body']['pushName'])
     end
     @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
