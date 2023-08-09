@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_01_132402) do
+ActiveRecord::Schema.define(version: 2023_08_09_012302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,11 @@ ActiveRecord::Schema.define(version: 2023_08_01_132402) do
     t.string "pagarme_subscription_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "number"
+    t.string "holder"
+    t.string "expires_at"
+    t.string "cvv"
+    t.string "galax_pay_id"
     t.index ["partner_id"], name: "index_credit_cards_on_partner_id"
   end
 
@@ -135,8 +140,36 @@ ActiveRecord::Schema.define(version: 2023_08_01_132402) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "instance_key"
+    t.integer "galax_pay_id"
     t.string "document"
     t.string "contact_number"
+  end
+
+  create_table "payment_plans", force: :cascade do |t|
+    t.string "name"
+    t.integer "periodicity"
+    t.integer "quantity"
+    t.string "additional_info"
+    t.integer "plan_price_payment"
+    t.string "plan_price_value"
+    t.integer "galax_pay_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "payment_subscriptions", force: :cascade do |t|
+    t.date "first_pay_day_date"
+    t.string "additional_info"
+    t.integer "main_payment_method_id"
+    t.bigint "partner_id", null: false
+    t.bigint "credit_card_id", null: false
+    t.bigint "payment_plan_id", null: false
+    t.integer "galax_pay_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["credit_card_id"], name: "index_payment_subscriptions_on_credit_card_id"
+    t.index ["partner_id"], name: "index_payment_subscriptions_on_partner_id"
+    t.index ["payment_plan_id"], name: "index_payment_subscriptions_on_payment_plan_id"
   end
 
   create_table "waiting_list_clients", force: :cascade do |t|
@@ -153,4 +186,7 @@ ActiveRecord::Schema.define(version: 2023_08_01_132402) do
   add_foreign_key "partner_details", "partners"
   add_foreign_key "partner_payments", "credit_cards"
   add_foreign_key "partner_payments", "partners"
+  add_foreign_key "payment_subscriptions", "credit_cards"
+  add_foreign_key "payment_subscriptions", "partners"
+  add_foreign_key "payment_subscriptions", "payment_plans"
 end
