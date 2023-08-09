@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_09_012302) do
+ActiveRecord::Schema.define(version: 2023_08_09_171808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -167,6 +167,8 @@ ActiveRecord::Schema.define(version: 2023_08_09_012302) do
     t.integer "galax_pay_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "status"
+    t.string "payment_link"
     t.index ["credit_card_id"], name: "index_payment_subscriptions_on_credit_card_id"
     t.index ["partner_id"], name: "index_payment_subscriptions_on_partner_id"
     t.index ["payment_plan_id"], name: "index_payment_subscriptions_on_payment_plan_id"
