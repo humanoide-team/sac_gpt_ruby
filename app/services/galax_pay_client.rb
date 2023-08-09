@@ -130,7 +130,43 @@ class GalaxPayClient
     response = HTTParty.post("#{BASE_URL}/subscriptions", body:, headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
-      JSON.parse(response.body)['Subscription']['galaxPayId']
+      JSON.parse(response.body)['Subscription']
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+    end
+  end
+
+  def self.cancel_payment_subscription(subscription_galax_pay_id)
+    # https://docs.galaxpay.com.br/subscriptions/cancel
+
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.delete("#{BASE_URL}/subscriptions/#{subscription_galax_pay_id}/galaxPayId", headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      JSON.parse(response.body)['type']
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+    end
+  end
+
+  def self.cancel_payment_transaction(transaction_galax_pay_id)
+    # https://docs.galaxpay.com.br/subscriptions/cancel-transaction
+
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.delete("#{BASE_URL}/transactions/#{transaction_galax_pay_id}/galaxPayId", headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      JSON.parse(response.body)['type']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
     end
@@ -153,7 +189,6 @@ class GalaxPayClient
       puts "Falha na requisição. Código de status: #{response.code}"
     end
   end
-
 
   def self.generate_authorization_token
     # https://docs.galaxpay.com.br/auth/token
