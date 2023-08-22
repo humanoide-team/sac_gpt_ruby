@@ -10,11 +10,11 @@ class Api::V1::WebhooksController < ApiController
                                      name: params['body']['pushName'])
     end
     @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
-
+    puts 
     pergunta_usuario = if params['body'] && params['body']['message']
                          message = params['body']['message']
-                         if message['messages']
-                           conversation = message['messages']['conversation']
+                         if message['conversation']
+                           conversation = message['conversation']
                            conversation
                          elsif message['extendedTextMessage']
                            text = message['extendedTextMessage']['text']
