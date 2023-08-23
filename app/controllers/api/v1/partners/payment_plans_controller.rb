@@ -1,4 +1,4 @@
-class Api::V1::Partners::PaymentPlansController < ApiAdminController
+class Api::V1::Partners::PaymentPlansController < ApiPartnerController
   before_action :set_payment_plan, only: %i[show destroy update]
 
   def index

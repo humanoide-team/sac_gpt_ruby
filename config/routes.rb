@@ -9,6 +9,9 @@ Rails.application.routes.draw do
         resources :partners
 
         resources :payment_plans, only: %i[index show create destroy]
+
+        resources :payment_transactions, only: %i[index]
+        get 'payment_transactions/:id/by_client', to: 'payment_transactions#by_client'
       end
 
       namespace :partners do
@@ -31,6 +34,7 @@ Rails.application.routes.draw do
         resources :payment_subscriptions, only: %i[create show]
         put 'payment_subscriptions/:id/cancel', to: 'payment_subscriptions#cancel'
 
+        resources :payment_transactions, only: %i[index]
       end
     end
   end
