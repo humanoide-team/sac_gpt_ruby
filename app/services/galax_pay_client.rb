@@ -9,14 +9,15 @@ class GalaxPayClient
   def self.create_client(id, name, document, email, phone)
     # https://docs.galaxpay.com.br/customers/create
     data = {
-      myId: id,
+      myId: "sac-gpt-client-#{id}",
       name:,
       document:,
       phones: [phone],
-      email: [
+      emails: [
         email
       ]
     }
+    puts data
     body = data.to_json
 
     token = generate_authorization_token
@@ -30,7 +31,7 @@ class GalaxPayClient
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts 'Corpo da resposta:'
-      JSON.parse(response.body)['Customer']['galaxPayId']
+      JSON.parse(response.body)['Customer']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
       puts "#{response.body}"
@@ -40,7 +41,7 @@ class GalaxPayClient
   def self.create_client_payment_card(id, number, holder, expiresAt, cvv, galax_pay_id)
     # https://docs.galaxpay.com.br/cards/create
     data = {
-      myId: "sac-gpt-#{id}",
+      myId: "sac-gpt-credit-card-#{id}",
       number:,
       holder:,
       expiresAt:,
@@ -57,7 +58,7 @@ class GalaxPayClient
     response = HTTParty.post("#{BASE_URL}/cards/#{galax_pay_id}/galaxPayId", body:, headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
-      JSON.parse(response.body)['Card']['galaxPayId']
+      JSON.parse(response.body)['Card']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
       puts "#{response.body}"
@@ -67,7 +68,7 @@ class GalaxPayClient
   def self.create_payment_plan(id, name, periodicity, quantity, additionalInfo, plan_price_payment, plan_price_value)
     # https://docs.galaxpay.com.br/plans/create
     data = {
-      myId: "sac-gpt-#{id}",
+      myId: "sac-gpt-payment-plan-#{id}",
       name:,
       periodicity:,
       quantity:,
@@ -91,7 +92,7 @@ class GalaxPayClient
     response = HTTParty.post("#{BASE_URL}/plans", body:, headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
-      JSON.parse(response.body)['Plan']['galaxPayId']
+      JSON.parse(response.body)['Plan']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
     end
@@ -100,13 +101,13 @@ class GalaxPayClient
   def self.create_payment_subscription(id, planMyId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
     # https://docs.galaxpay.com.br/subscriptions/create-with-plan
     data = {
-      myId: "sac-gpt-#{id}",
+      myId: "sac-gpt-payment-subscription-#{id}",
       planMyId:,
       firstPayDayDate:,
       additionalInfo:,
       mainPaymentMethodId:,
       Customer: {
-          myId: "sac-gpt-#{customer.id}",
+          myId: customer.galax_pay_my_id,
           name: customer.name,
           document: customer.document,
           email: [
@@ -115,7 +116,7 @@ class GalaxPayClient
       },
       PaymentMethodCreditCard: {
         Card: {
-          myId: "sac-gpt-#{credit_card_my_id}",
+          myId: credit_card_my_id,
         }
       }
     }

@@ -1,11 +1,27 @@
+require 'securerandom'
+
 class CreditCard < ApplicationRecord
   belongs_to :partner
 
-  after_create :create_galax_pay_credit_card
+  before_create :create_galax_pay_credit_card
 
-  def create_galax_pay_credit_card()
-    # Partner.last.credit_cards.create(number: "4111 1111 1111 1111", holder: "JOAO J J DA SILVA", expires_at: "2031-07", cvv: "363")
-    galax_pay_id = GalaxPayClient.create_client_payment_card(id, number, holder, expires_at, cvv, partner.galax_pay_id)
-    update_attribute(:galax_pay_id, galax_pay_id)
+  attr_accessor :card_number, :card_holder_name, :card_cvv
+
+  def create_galax_pay_credit_card
+    uuid = SecureRandom.uuid
+
+    galax_pay_credit_card = GalaxPayClient.create_client_payment_card(uuid, card_number, card_holder_name, expires_at, card_cvv, partner.galax_pay_id)
+    if galax_pay_credit_card['galaxPayId'].nil?
+      errors.add(:base, 'Dados do cartão invalido')
+      throw :abort
+    else
+      self.galax_pay_id = galax_pay_credit_card['galaxPayId']
+      self.number = galax_pay_credit_card['number']
+      self.expires_at = galax_pay_credit_card['expiresAt']
+      self.holder_name = card_holder_name
+      self.galax_pay_id = galax_pay_credit_card['galaxPayId']
+      self.galax_pay_my_id = galax_pay_credit_card['myId']
+      self.default = true
+    end
   end
 end

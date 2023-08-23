@@ -1,5 +1,7 @@
+require 'securerandom'
+
 class PaymentPlan < ApplicationRecord
-  after_create :create_galax_pay_payment_plan
+  before_create :create_galax_pay_payment_plan
 
   enum periodicity: {
     weekly: 0,
@@ -16,8 +18,16 @@ class PaymentPlan < ApplicationRecord
   }
 
   def create_galax_pay_payment_plan
-    # PaymentPlan.create(name: "Teste Plan", periodicity: "monthly", quantity: 12, additional_info: "esse e um teste", plan_price_payment: "creditcard", plan_price_value: 123456)
-    galax_pay_id = GalaxPayClient.create_payment_plan(id, name, periodicity, quantity, additional_info, plan_price_payment, plan_price_value )
-    update_attribute(:galax_pay_id, galax_pay_id)
+    uuid = SecureRandom.uuid
+
+    galax_pay_payment_plan = GalaxPayClient.create_payment_plan(uuid, name, periodicity, quantity, additional_info, plan_price_payment, plan_price_value )
+
+    if galax_pay_payment_plan.nil?
+      errors.add(:base, 'Erro ao criar Plano de pagamento')
+      throw :abort
+    else
+      self.galax_pay_id = galax_pay_payment_plan['galaxPayId'].to_i
+      self.galax_pay_my_id = galax_pay_payment_plan['myId']
+    end
   end
 end

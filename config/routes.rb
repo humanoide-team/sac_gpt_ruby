@@ -7,6 +7,8 @@ Rails.application.routes.draw do
         post 'authenticate', to: 'authentication#authenticate'
 
         resources :partners
+
+        resources :payment_plans, only: %i[index show create destroy]
       end
 
       namespace :partners do
@@ -21,6 +23,14 @@ Rails.application.routes.draw do
         get 'partner_client_messages/list_by_client/:client_id', to: 'partner_client_messages#list_by_client'
 
         resources :partner_clients, only: %i[index destroy]
+
+        resources :credit_cards, only: %i[show create destroy]
+
+        resources :payment_plans, only: %i[index show]
+
+        resources :payment_subscriptions, only: %i[create show]
+        put 'payment_subscriptions/:id/cancel', to: 'payment_subscriptions#cancel'
+
       end
     end
   end

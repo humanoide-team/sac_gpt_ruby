@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_09_171808) do
+ActiveRecord::Schema.define(version: 2023_08_09_012302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,19 +31,15 @@ ActiveRecord::Schema.define(version: 2023_08_09_171808) do
 
   create_table "credit_cards", force: :cascade do |t|
     t.bigint "partner_id", null: false
-    t.string "first_digits"
-    t.string "last_digits"
     t.string "brand"
     t.string "holder_name"
-    t.string "pagarme_card_id"
-    t.string "pagarme_subscription_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "number"
-    t.string "holder"
     t.string "expires_at"
-    t.string "cvv"
-    t.string "galax_pay_id"
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
+    t.boolean "default"
     t.index ["partner_id"], name: "index_credit_cards_on_partner_id"
   end
 
@@ -141,6 +137,7 @@ ActiveRecord::Schema.define(version: 2023_08_09_171808) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "instance_key"
     t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
     t.string "document"
     t.string "contact_number"
   end
@@ -152,6 +149,7 @@ ActiveRecord::Schema.define(version: 2023_08_09_171808) do
     t.string "additional_info"
     t.integer "plan_price_payment"
     t.string "plan_price_value"
+    t.string "galax_pay_my_id"
     t.integer "galax_pay_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -164,11 +162,12 @@ ActiveRecord::Schema.define(version: 2023_08_09_171808) do
     t.bigint "partner_id", null: false
     t.bigint "credit_card_id", null: false
     t.bigint "payment_plan_id", null: false
-    t.integer "galax_pay_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
     t.integer "status"
     t.string "payment_link"
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["credit_card_id"], name: "index_payment_subscriptions_on_credit_card_id"
     t.index ["partner_id"], name: "index_payment_subscriptions_on_partner_id"
     t.index ["payment_plan_id"], name: "index_payment_subscriptions_on_payment_plan_id"
