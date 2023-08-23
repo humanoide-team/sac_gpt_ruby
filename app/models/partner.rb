@@ -56,8 +56,8 @@ class Partner < ApplicationRecord
     end
   end
 
-  def list_transactions
-    transactions = GalaxPayClient.get_transactions_by_client(galax_pay_id)
+  def list_transactions(start_at, limit)
+    GalaxPayClient.get_transactions_by_client(galax_pay_id, start_at, limit)
   end
 
   def generate_instance_key
