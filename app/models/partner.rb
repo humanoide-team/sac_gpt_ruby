@@ -25,8 +25,13 @@ class Partner < ApplicationRecord
   accepts_nested_attributes_for :partner_detail, reject_if: :all_blank
 
   after_save :generate_instance_key, unless: :instance_key?
+  after_create :send_welcome_mail
 
   before_create :create_galax_pay_client
+
+  def send_welcome_mail
+    PartnerMailer._send_welcome_partner(self).deliver
+  end
 
   def name_slug
     return unless name.present?
