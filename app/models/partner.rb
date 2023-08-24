@@ -33,6 +33,30 @@ class Partner < ApplicationRecord
     PartnerMailer._send_welcome_partner(self).deliver
   end
 
+  def password_recovery_mail
+    PartnerMailer._send_password_recovery_mail(self).deliver
+  end
+
+  def subscription_confirmation_mail
+    PartnerMailer._send_subscription_confirmation_mail(self).deliver
+  end
+
+  def renovation_plan_mail
+    PartnerMailer._send_renovation_plan_mail(self).deliver
+  end
+
+  def cancellation_plan_mail
+    PartnerMailer._send_cancellation_plan_mail(self).deliver
+  end
+
+  def alert_exchange_card_mail
+    PartnerMailer._send_alert_exchange_card_mail(self).deliver
+  end
+
+  def new_lead_received_mail
+    PartnerMailer._send_new_lead_received_mail(self).deliver
+  end
+
   def name_slug
     return unless name.present?
 
