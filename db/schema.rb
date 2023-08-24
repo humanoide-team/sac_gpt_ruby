@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_09_012302) do
+ActiveRecord::Schema.define(version: 2023_08_24_171638) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -105,8 +105,6 @@ ActiveRecord::Schema.define(version: 2023_08_09_012302) do
     t.string "key_differentials"
     t.string "target_audience"
     t.string "tone_voice"
-    t.string "week_days"
-    t.string "meeting_hours"
     t.index ["partner_id"], name: "index_partner_details_on_partner_id"
   end
 
