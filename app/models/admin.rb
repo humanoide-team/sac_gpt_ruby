@@ -15,4 +15,12 @@ class Admin < ApplicationRecord
 
     ["#{name.parameterize}"]
   end
+
+  def weekly_summary_mail
+    AdminMailer._send_weekly_summary(self).deliver
+  end
+
+  def recovery_password_mail
+    AdminMailer._send_recovery_password(self).deliver
+  end
 end
