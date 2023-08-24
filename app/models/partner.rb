@@ -2,7 +2,6 @@ require 'securerandom'
 
 class Partner < ApplicationRecord
   acts_as_paranoid
-  has_paper_trail
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
