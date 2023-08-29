@@ -27,6 +27,8 @@ class Partner < ApplicationRecord
 
   before_create :create_galax_pay_client
 
+  after_update :generate_instance_key, if: :service_number_is_updated?
+
   def name_slug
     return unless name.present?
 
@@ -63,4 +65,9 @@ class Partner < ApplicationRecord
     token = encrypted_data(id.to_s)
     update_attribute(:instance_key, token)
   end
+
+  def service_number_is_updated?
+    saved_change_to_service_number?
+  end
+
 end
