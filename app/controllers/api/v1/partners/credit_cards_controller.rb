@@ -1,6 +1,11 @@
 class Api::V1::Partners::CreditCardsController < ApiPartnerController
   before_action :set_credit_card, only: %i[show destroy]
 
+  def index
+    credit_cards = @current_partner.credit_cards
+    render json: CreditCardSerializer.new(credit_cards).serialized_json, status: :ok
+  end
+
   def show
     render json: CreditCardSerializer.new(@credit_card).serialized_json, status: :ok
   end

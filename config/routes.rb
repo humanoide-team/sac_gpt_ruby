@@ -27,7 +27,7 @@ Rails.application.routes.draw do
 
         resources :partner_clients, only: %i[index destroy]
 
-        resources :credit_cards, only: %i[show create destroy]
+        resources :credit_cards, only: %i[index show create destroy]
 
         resources :payment_plans, only: %i[index show]
 
