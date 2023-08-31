@@ -32,8 +32,8 @@ Rails.application.routes.draw do
         resources :payment_plans, only: %i[index show]
 
         resources :payment_subscriptions, only: %i[index show create destroy]
-        put 'payment_subscriptions/:id/cancel', to: 'payment_subscriptions#cancel'
         get 'payment_subscriptions/last_active_subscription', to: 'payment_subscriptions#last_active_subscription'
+        put 'payment_subscriptions/:id/cancel', to: 'payment_subscriptions#cancel'
 
         resources :payment_transactions, only: %i[index]
       end
