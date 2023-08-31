@@ -11,7 +11,7 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
   end
 
   def last_active_subscription
-    @payment_subscription = @current_partner.payment_subscriptions.where(status: :canceled).last
+    @payment_subscription = @current_partner.payment_subscriptions.where.not(status: :canceled).last
     render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :ok
   end
 
