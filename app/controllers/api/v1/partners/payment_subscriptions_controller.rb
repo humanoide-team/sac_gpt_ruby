@@ -10,6 +10,11 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
     render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :ok
   end
 
+  def last_active_subscription
+    @payment_subscription = @current_partner.payment_subscriptions.where(status: :canceled).last
+    render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :ok
+  end
+
   def create
     payment_subscriptions = @current_partner.payment_subscriptions.where(status: :active)
     if !payment_subscriptions.empty?
