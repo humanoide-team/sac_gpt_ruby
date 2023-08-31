@@ -3,7 +3,7 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
 
   def index
     @payment_subscriptions = @current_partner.payment_subscriptions
-    render json: PaymentPlanSerializer.new(@payment_subscriptions).serialized_json
+    render json: PaymentSubscriptionSerializer.new(@payment_subscriptions).serialized_json
   end
 
   def show
