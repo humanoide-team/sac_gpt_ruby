@@ -19,14 +19,18 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     historico_conversa = messages(@current_partner, @client)
     pergunta = 'Estime com uma nota de 1 a 5 o quanto o usuario esta interresado em contratar nossos servicos'
     response = gerar_resposta(pergunta, historico_conversa).gsub("\n", ' ').strip
-    render json: response, status: :ok
+    render json: {
+      data: { body: response }
+    }, status: :ok
   end
 
   def messages_resume
     pergunta = 'Faca um resumo de toda essa conversa em um paragrafo'
     historico_conversa = messages(@current_partner, @client)
     response = gerar_resposta(pergunta, historico_conversa).gsub("\n", ' ').strip
-    render json: response, status: :ok
+    render json: {
+      data: { body: response }
+    }, status: :ok
   end
 
   private
