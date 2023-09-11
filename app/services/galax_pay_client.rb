@@ -191,7 +191,7 @@ class GalaxPayClient
     end
   end
 
-  def self.get_all_transactions(startAt, limit)
+  def self.get_all_transactions(status, startAt, limit)
     # https://docs.galaxpay.com.br/transactions/list
 
     token = generate_authorization_token
@@ -200,7 +200,7 @@ class GalaxPayClient
       'Authorization': "Bearer #{token}",
       'Content-Type': 'application/json'
     }
-    response = HTTParty.get("#{BASE_URL}/transactions?startAt=#{startAt}&limit=#{limit}", headers:)
+    response = HTTParty.get("#{BASE_URL}/transactions?status=#{status}&startAt=#{startAt}&limit=#{limit}", headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Transactions']
