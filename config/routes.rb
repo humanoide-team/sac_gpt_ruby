@@ -26,7 +26,7 @@ Rails.application.routes.draw do
         get 'partner_client_messages/list_by_client/:client_id', to: 'partner_client_messages#list_by_client'
 
         get 'partner_clients/lead_classification/:id', to: 'partner_clients#lead_classification'
-        get 'partner_clients/messages_resume/:id', to: 'partner_clients#messages_resume'
+
         resources :partner_clients, only: %i[index destroy]
 
         resources :credit_cards, only: %i[index show create destroy]

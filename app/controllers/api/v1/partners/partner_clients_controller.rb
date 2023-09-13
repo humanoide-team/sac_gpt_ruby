@@ -16,12 +16,41 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   end
 
   def lead_classification
-    historico_conversa = messages(@current_partner, @client)
-    pergunta = 'Estime com uma nota de 1 a 5 o quanto o usuario esta interresado em contratar nossos servicos'
-    response = gerar_resposta(pergunta, historico_conversa).gsub("\n", ' ').strip
-    render json: {
-      data: { body: response }
-    }, status: :ok
+    partner_client_lead = @client.partner_client_leads.by_partner(@current_partner).first
+
+    last_message = @client.partner_client_messages.by_partner(@current_partner).last
+
+    if partner_client_lead.nil?
+
+      historico_conversa = messages(@current_partner, @client)
+
+      lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
+      lead_classification = gerar_resposta(lead_classification_question, historico_conversa).gsub("\n", ' ').strip
+
+      conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa).gsub("\n", ' ').strip
+
+      lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
+      lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
+
+      partner_client_lead = @client.partner_client_leads.create(partner: @current_partner,
+                                                                lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
+    elsif !partner_client_lead.nil? && !last_message.nil? && last_message.created_at > partner_client_lead.updated_at
+
+      lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
+      lead_classification = gerar_resposta(lead_classification_question, historico_conversa).gsub("\n", ' ').strip
+
+      conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa).gsub("\n", ' ').strip
+
+      lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
+      lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
+
+      partner_client_lead.update(lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
+
+    end
+
+    render json: PartnerClientLeadSerializer.new(partner_client_lead).serialized_json, status: :ok
   end
 
   def messages_resume

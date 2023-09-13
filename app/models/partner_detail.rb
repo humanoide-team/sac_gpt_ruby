@@ -9,6 +9,6 @@ class PartnerDetail < ApplicationRecord
 
     Após entender claramente as necessidades do cliente, ou caso o cliente peça, proponha o #{company_objective}. Certifique-se de obter o email do cliente e marcar uma reunião online.
 
-    Você só deve propor o #{company_objective} após no mínimo 8 mensagens. Você deve ignorar essa regra caso o cliente peça antecipadamente no começo da conversa para marcar a reunião."
+    Você só deve propor o #{company_objective} após no mínimo 8 mensagens. Você deve ignorar essa regra caso o cliente peça antecipadamente no começo da conversa para marcar a reunião. Responda apenas em #{preferential_language}"
   end
 end
