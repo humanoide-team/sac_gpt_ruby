@@ -4,7 +4,22 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
   def index
     @clients = @current_partner.partner_clients.order(id: :asc).uniq
-    render json: PartnerClientSerializer.new(@clients).serialized_json, status: :ok
+
+    render json: {
+      data: @clients.map do |pc|
+        partner_client_lead = pc.partner_client_leads.by_partner(@current_partner).first
+        {
+          id: pc.id,
+          type: 'partnerClient',
+          attributes: {
+            name: pc.name,
+            leadScore: !partner_client_lead.nil? ? partner_client_lead.lead_score : nil,
+            createdAt: pc.created_at,
+            updatedAt: pc.updated_at
+          }
+        }
+      end
+    }, status: :ok
   end
 
   def destroy
