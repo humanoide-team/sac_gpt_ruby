@@ -13,6 +13,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
           type: 'partnerClient',
           attributes: {
             name: pc.name,
+            phone: pc.phone,
             leadScore: !partner_client_lead.nil? ? partner_client_lead.lead_score : nil,
             createdAt: pc.created_at,
             updatedAt: pc.updated_at
