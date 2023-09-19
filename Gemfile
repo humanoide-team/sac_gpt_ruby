@@ -12,6 +12,7 @@ gem 'chunky_png'
 
 # fornece classes e métodos para realizar solicitações HTTP
 gem 'net-http'
+gem 'whenever', require: false
 
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
@@ -66,6 +67,8 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'cancancan'
 gem 'devise'
+gem 'devise-jwt'
+gem 'devise_token_auth'
 gem 'fast_jsonapi'
 gem 'friendly_id', '~> 5.2.4'
 gem 'httparty'
