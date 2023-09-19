@@ -36,6 +36,8 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
     last_message = @client.partner_client_messages.by_partner(@current_partner).last
 
+    historico_conversa = messages(@current_partner, @client)
+
     if partner_client_lead.nil?
 
       historico_conversa = messages(@current_partner, @client)
@@ -104,7 +106,6 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
         temperature: 0.7
       }
     )
-
     response['choices'][0]['message']['content'].strip
   end
 
