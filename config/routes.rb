@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  root to: 'public/home#index'
+  devise_for :partners, controllers: {
+    passwords: 'partners/passwords'
+  }
+  
+  
+
   namespace :api, defaults: { format: :json } do
     namespace :v1, defaults: { format: :json } do
       post 'whatsapp', to: 'webhooks#whatsapp'
@@ -16,6 +23,7 @@ Rails.application.routes.draw do
         get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
 
         resources :partners, only: %i[create destroy update]
+        patch 'update_password', to: 'partners#update_password'
 
         resources :partner_details, only: %i[show create destroy update]
 
@@ -30,7 +38,6 @@ Rails.application.routes.draw do
 
         resources :payment_subscriptions, only: %i[create show]
         put 'payment_subscriptions/:id/cancel', to: 'payment_subscriptions#cancel'
-
       end
     end
   end
