@@ -11,7 +11,7 @@ class CreditCard < ApplicationRecord
     uuid = SecureRandom.uuid
 
     galax_pay_credit_card = GalaxPayClient.create_client_payment_card(uuid, card_number, card_holder_name, expires_at, card_cvv, partner.galax_pay_id)
-    if galax_pay_credit_card['galaxPayId'].nil?
+    if galax_pay_credit_card.nil?
       errors.add(:base, 'Dados do cartão invalido')
       throw :abort
     else

@@ -2,7 +2,6 @@ require 'securerandom'
 
 class Partner < ApplicationRecord
   acts_as_paranoid
-  has_paper_trail
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
@@ -18,6 +17,7 @@ class Partner < ApplicationRecord
   has_many :partner_payments, dependent: :destroy
   has_many :credit_cards, dependent: :destroy
   has_many :payment_subscriptions, dependent: :destroy
+  has_many :partner_client_leads, dependent: :destroy
 
   validates :name, :service_number, :document, :contact_number, presence: true
   validates :password_confirmation, presence: true, on: :create
@@ -28,6 +28,8 @@ class Partner < ApplicationRecord
   after_create :send_welcome_mail
 
   before_create :create_galax_pay_client
+
+  after_update :generate_instance_key, if: :service_number_is_updated?
 
   def send_welcome_mail
     PartnerMailer._send_welcome_partner(self).deliver
@@ -85,12 +87,17 @@ class Partner < ApplicationRecord
     end
   end
 
-  def list_transactions
-    transactions = GalaxPayClient.get_transactions_by_client(galax_pay_id)
+  def list_transactions(status, start_at, limit)
+    GalaxPayClient.get_transactions_by_client(galax_pay_id, status, start_at, limit)
   end
 
   def generate_instance_key
     token = encrypted_data(id.to_s)
     update_attribute(:instance_key, token)
   end
+
+  def service_number_is_updated?
+    saved_change_to_service_number?
+  end
+
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_09_012302) do
+ActiveRecord::Schema.define(version: 2023_09_13_211207) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,18 @@ ActiveRecord::Schema.define(version: 2023_08_09_012302) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "partner_client_leads", force: :cascade do |t|
+    t.bigint "partner_id", null: false
+    t.bigint "partner_client_id", null: false
+    t.text "conversation_summary"
+    t.text "lead_classification"
+    t.integer "lead_score"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_client_id"], name: "index_partner_client_leads_on_partner_client_id"
+    t.index ["partner_id"], name: "index_partner_client_leads_on_partner_id"
+  end
+
   create_table "partner_client_messages", force: :cascade do |t|
     t.bigint "partner_id", null: false
     t.bigint "partner_client_id", null: false
@@ -105,8 +117,7 @@ ActiveRecord::Schema.define(version: 2023_08_09_012302) do
     t.string "key_differentials"
     t.string "target_audience"
     t.string "tone_voice"
-    t.string "week_days"
-    t.string "meeting_hours"
+    t.string "preferential_language"
     t.index ["partner_id"], name: "index_partner_details_on_partner_id"
   end
 
@@ -136,10 +147,10 @@ ActiveRecord::Schema.define(version: 2023_08_09_012302) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "instance_key"
-    t.integer "galax_pay_id"
-    t.string "galax_pay_my_id"
     t.string "document"
     t.string "contact_number"
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
   end
 
   create_table "payment_plans", force: :cascade do |t|
@@ -182,6 +193,8 @@ ActiveRecord::Schema.define(version: 2023_08_09_012302) do
   end
 
   add_foreign_key "credit_cards", "partners"
+  add_foreign_key "partner_client_leads", "partner_clients"
+  add_foreign_key "partner_client_leads", "partners"
   add_foreign_key "partner_client_messages", "partner_clients"
   add_foreign_key "partner_client_messages", "partners"
   add_foreign_key "partner_details", "partners"
