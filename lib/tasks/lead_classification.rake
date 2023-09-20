@@ -11,11 +11,12 @@ namespace :lead_classification do
 
         last_message = client.partner_client_messages.by_partner(current_partner).last
 
+        historico_conversa = messages(current_partner, client)
+
         if partner_client_lead.nil? && last_message.created_at < DateTime.now - 1.hour
 
-          historico_conversa = messages(current_partner, client)
-
           lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
+          
           lead_classification = gerar_resposta(lead_classification_question, historico_conversa).gsub("\n", ' ').strip
 
           conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
