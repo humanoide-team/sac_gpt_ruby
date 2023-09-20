@@ -217,7 +217,7 @@ class GalaxPayClient
     }
     body = data.to_json
     # encoded_string = Base64.encode64("#{GALAX_ID}:#{GALAX_HASH}")
-    encoded_string = 'NTQ3Mzo4M013NXU4OTg4UWo2ZlpxUzRaOEs3THpPbzFqMjhTNzA2UjBCZUZl'
+    encoded_string = Base64.strict_encode64("#{GALAX_ID}:#{GALAX_HASH}")
 
     headers = {
       'Authorization': "Basic #{encoded_string}",
