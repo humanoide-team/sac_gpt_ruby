@@ -77,4 +77,4 @@ gem 'simple_command'
 gem 'active_model_serializers'
 gem 'rack-cors'
 gem 'slim-rails'
-
+gem 'mailgun-ruby', '~>1.2.10'
