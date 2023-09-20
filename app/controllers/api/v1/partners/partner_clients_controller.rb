@@ -53,6 +53,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
       partner_client_lead = @client.partner_client_leads.create(partner: @current_partner,
                                                                 lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
+      new_lead_received_mail(partner_client_lead)
     elsif !partner_client_lead.nil? && !last_message.nil? && last_message.created_at > partner_client_lead.updated_at
 
       lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
@@ -65,10 +66,14 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
 
       partner_client_lead.update(lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
-
+      new_lead_received_mail(partner_client_lead)
     end
 
     render json: PartnerClientLeadSerializer.new(partner_client_lead).serialized_json, status: :ok
+  end
+
+  def new_lead_received_mail(lead)
+    PartnerMailer._send_new_lead_received_mail(lead).deliver
   end
 
   def messages_resume
@@ -79,6 +84,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       data: { body: response }
     }, status: :ok
   end
+
 
   private
 

@@ -43,5 +43,10 @@ class PaymentSubscription < ApplicationRecord
     return unless response == true
 
     update_attribute(:status, 'canceled')
+    cancellation_plan_mail
+  end
+
+  def cancellation_plan_mail
+    PaymentPlanMailer._send_cancellation_plan_mail(self).deliver
   end
 end
