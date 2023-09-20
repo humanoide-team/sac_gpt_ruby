@@ -28,6 +28,16 @@ class PaymentPlan < ApplicationRecord
     else
       self.galax_pay_id = galax_pay_payment_plan['galaxPayId'].to_i
       self.galax_pay_my_id = galax_pay_payment_plan['myId']
+
+      send_subscription_confirmation_mail
     end
   end
+
+  def subscription_confirmation_mail
+    PaymentPlanMailer._send_subscription_confirmation_mail(self).deliver
+  end
+
+  # def renovation_plan_mail
+  #   PaymentPlanMailer._send_renovation_plan_mail(self).deliver
+  # end
 end

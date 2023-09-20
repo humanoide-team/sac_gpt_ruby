@@ -4,6 +4,7 @@ class CreditCard < ApplicationRecord
   belongs_to :partner
 
   before_create :create_galax_pay_credit_card
+  after_create :alert_exchange_card_mail
 
   attr_accessor :card_number, :card_holder_name, :card_cvv
 
@@ -23,5 +24,9 @@ class CreditCard < ApplicationRecord
       self.galax_pay_my_id = galax_pay_credit_card['myId']
       self.default = true
     end
+  end
+
+  def alert_exchange_card_mail
+    PaymentPlanMailer._send_alert_exchange_card_mail(self).deliver
   end
 end
