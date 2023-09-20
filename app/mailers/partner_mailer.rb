@@ -7,8 +7,9 @@ class PartnerMailer < ApplicationMailer
     mail(to: @partner.email, subject: 'Bem-vindo ao SacGpt! 🎉')
   end
 
-  def _send_password_recovery_mail(partner)
+  def _send_password_recovery_mail(partner, recover_token)
     @partner = partner
+    @recover_token = recover_token
     mail(to: @partner.email, subject: 'Recuperação de Conta SacGpt')
   end
 

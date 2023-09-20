@@ -36,7 +36,7 @@ class Partner < ApplicationRecord
   end
 
   def password_recovery_mail
-    PartnerMailer._send_password_recovery_mail(self).deliver
+    PartnerMailer._send_password_recovery_mail(self, generate_recover_password_key).deliver
   end
 
   def subscription_confirmation_mail
@@ -69,9 +69,20 @@ class Partner < ApplicationRecord
     SecureRandom.random_bytes(32)
   end
 
-  def encrypted_data(data)
-    crypt = ActiveSupport::MessageEncryptor.new(generate_key)
-    crypt.encrypt_and_sign(data)
+  def encrypted_data(data, key)
+    @verifier = ActiveSupport::MessageVerifier.new(key)
+    @verifier.generate(data, expires_in: 30.minutes)
+  end
+
+  def generate_recover_password_key
+    data = encrypted_data(email, ENV['ENCRYPTION_KEY'])
+    puts data
+    data
+  end
+
+  def generate_instance_key
+    token = encrypted_data(id.to_s, generate_key)
+    update_attribute(:instance_key, token)
   end
 
   def create_galax_pay_client
@@ -91,13 +102,7 @@ class Partner < ApplicationRecord
     GalaxPayClient.get_transactions_by_client(galax_pay_id, status, start_at, limit)
   end
 
-  def generate_instance_key
-    token = encrypted_data(id.to_s)
-    update_attribute(:instance_key, token)
-  end
-
   def service_number_is_updated?
     saved_change_to_service_number?
   end
-
 end
