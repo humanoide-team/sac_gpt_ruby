@@ -25,10 +25,39 @@ class Partner < ApplicationRecord
   accepts_nested_attributes_for :partner_detail, reject_if: :all_blank
 
   after_save :generate_instance_key, unless: :instance_key?
+  after_create :send_welcome_mail
 
   before_create :create_galax_pay_client
 
   after_update :generate_instance_key, if: :service_number_is_updated?
+
+  def send_welcome_mail
+    PartnerMailer._send_welcome_partner(self).deliver
+  end
+
+  def password_recovery_mail
+    PartnerMailer._send_password_recovery_mail(self, generate_recover_password_key).deliver
+  end
+
+  def subscription_confirmation_mail
+    PartnerMailer._send_subscription_confirmation_mail(self).deliver
+  end
+
+  def renovation_plan_mail
+    PartnerMailer._send_renovation_plan_mail(self).deliver
+  end
+
+  def cancellation_plan_mail
+    PartnerMailer._send_cancellation_plan_mail(self).deliver
+  end
+
+  def alert_exchange_card_mail
+    PartnerMailer._send_alert_exchange_card_mail(self).deliver
+  end
+
+  def new_lead_received_mail
+    PartnerMailer._send_new_lead_received_mail(self).deliver
+  end
 
   def name_slug
     return unless name.present?
@@ -40,9 +69,20 @@ class Partner < ApplicationRecord
     SecureRandom.random_bytes(32)
   end
 
-  def encrypted_data(data)
-    crypt = ActiveSupport::MessageEncryptor.new(generate_key)
-    crypt.encrypt_and_sign(data)
+  def encrypted_data(data, key)
+    @verifier = ActiveSupport::MessageVerifier.new(key)
+    @verifier.generate(data, expires_in: 30.minutes)
+  end
+
+  def generate_recover_password_key
+    data = encrypted_data(email, ENV['ENCRYPTION_KEY'])
+    puts data
+    data
+  end
+
+  def generate_instance_key
+    token = encrypted_data(id.to_s, generate_key)
+    update_attribute(:instance_key, token)
   end
 
   def create_galax_pay_client
@@ -62,13 +102,7 @@ class Partner < ApplicationRecord
     GalaxPayClient.get_transactions_by_client(galax_pay_id, status, start_at, limit)
   end
 
-  def generate_instance_key
-    token = encrypted_data(id.to_s)
-    update_attribute(:instance_key, token)
-  end
-
   def service_number_is_updated?
     saved_change_to_service_number?
   end
-
 end

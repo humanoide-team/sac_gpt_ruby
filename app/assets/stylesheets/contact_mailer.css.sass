@@ -1,0 +1,365 @@
+body
+  margin: 0px
+  padding: 0px
+  font-family: Arial
+  background: #fafafa
+
+a
+  color: #3D497D
+  text-decoration: none
+  &:hover
+    text-decoration: underline
+
+.button
+  transition: all 0.2s ease-in-out 0s
+  background: #426aff
+  color: white
+  font-weight: 400
+  padding: 15px 30px
+  border-radius: 10px
+  &:hover
+    background: #0000
+    border: 2px solid #426aff
+
+.subject
+  color: #CAC8C4
+  font-size: 12px
+  text-align: left
+  margin-bottom: 5px
+
+.holder
+  width: inherit
+  max-width: 480px
+  margin: 0 auto
+  display: block
+
+.container
+  width: 100%
+  height: 100%
+  display: table
+  text-align: center
+  background: #fafafa
+  padding-bottom: 100px
+
+  h1, h2, h3, h4, h5, h6
+    text-align: left
+
+  h1
+    font-size: 1.5em
+    margin-left: 1em
+
+  table
+    width: 80%
+    margin: 20px auto
+    td, th
+      border: solid 1px #4A4A4A
+      padding: 5px
+
+  &__cta
+    margin-bottom: 30px
+
+  &__product-text
+    margin-top: 30px
+    font-size: 18px
+    color: #4A4A4A
+    span
+      color: #ff5041
+
+  &__bg
+    display: table-cell
+    text-align: center
+    padding-top: 30px
+
+
+  &__images
+    background: #0C1B5C
+    height: 250px
+    width: 100%
+    text-align: center
+    position: relative
+    overflow: hidden
+    background-size: cover !important
+    background-position: center !important
+
+    &__logo
+      width: 50%
+      float: left
+      margin-left: 20px
+      img
+        margin-top: 43%
+        width: 190px
+
+    &__ilustration
+      width: 50%
+      float: right
+      img
+        width: 200px
+        margin-right: -110px
+        margin-top: -45%
+
+  &__box
+    width: 100%
+    background: white
+    border: 1px solid #EEEEEE
+    border-radius: 2px
+    padding: 60px 0px
+    padding-bottom: 30px
+    > img
+      margin-top: -60px
+    p
+      font-size: 13px
+      color: #888
+      line-height: 1.5
+      text-align: left
+      padding: 0 60px
+    &__footer
+      font-size: 14px
+      color: #777
+      font-weight: bold
+      margin: 40px 60px
+      border-top: 1px solid #dedede
+      padding-top: 40px
+
+
+
+  &__intro
+    text-align: left
+    font-size: 14px
+    color: #4A4A4A
+    padding: 0 60px
+
+  &__text
+    color: #888
+    font-size: 13px
+    font-weight: 100
+    line-height: 1.5
+    text-align: left
+    padding: 0 60px
+    strong, b
+      color: #4A4A4A
+      font-weight: bold
+
+    p
+      padding: 10px 0
+
+
+
+  &__box-footer
+    text-align: center
+    width: 100%
+    border-bottom: 1px solid #efefef
+    height: 45px
+    padding-top: 20px
+    p
+      color: #9B9B9B
+      font-size: 12px
+      padding: 0 10px
+    hr
+      border: none
+      border-top: 1px solid #efefef
+      margin-top: 30px
+      margin-bottom: 30px
+
+    &__social-list
+      float: left
+      display: block
+      padding: 0 60px
+      img
+        width: 20px
+        height: 20px
+        margin-right: 10px
+
+    &__link
+      font-size: 14px
+      font-weight: 100
+
+.footer
+  padding: 30px 0
+  font-size: 12px
+  color: #9B9B9B
+
+  &__call
+    text-align: center
+    color: #888
+    width: 80%
+    padding-bottom: 20px
+    margin: 0 auto
+
+.btn
+  padding: 15px 30px
+  background: #3DAFA7
+  color: white
+  border-radius: 3px
+  min-width: 100%
+  font-size: 14px
+  font-weight: bold
+  box-sizing: border-box
+
+
+
+
+.digest
+  width: inherit
+  max-width: 500px
+  margin: 0 auto
+  display: block
+  padding: 3% 7%
+  background: #fff
+  border: 1px solid #EEEEEE
+  border-radius: 5px 5px 0 0
+
+
+  &__tagline
+    font-size: 11px
+    color: white
+    margin-top: -10px
+    margin-bottom: 80px
+    background: #0C1B5C
+    padding: 8px 15px
+    display: inline-block
+    border-radius: 2px
+    letter-spacing: 1px
+    a
+      font-size: 11px
+      color: white!important
+      margin-top: -10px
+      margin-bottom: 80px
+      background: #0C1B5C
+      padding: 8px 15px
+      display: inline-block
+      border-radius: 2px
+      letter-spacing: 1px
+
+  &__logo
+    padding: 10px
+
+  &__section
+    text-align: left
+    margin-bottom: 60px
+    padding-bottom: 60px
+    border-bottom: 1px solid #efefef
+
+    &__header
+      background: #56CFB9
+      display: inline
+      border-radius: 2px
+      padding: 10px 20px
+      font-size: 12px
+      letter-spacing: 1px
+      color: white
+      font-weight: 100
+
+    &__title
+      color: #777
+      font-weight: lighter
+      margin: 20px 0
+      line-height: 1em
+      margin-top: 40px
+      p
+        font-size: 12px
+
+
+  &__news, &__learn
+    display: flex
+    padding-top: 50px
+    position: relative
+    justify-content: space-between
+
+    &__image
+      width: 25%
+      height: 100px
+      overflow: hidden
+      position: relative
+      img
+        height: 100%
+        width: auto
+        position: absolute
+        transform: translateX(-50%)
+        left: 50%
+
+    &__body
+      width: 72%
+
+    &__tags
+      background: #0C1B5C
+      font-size: 8px
+      color: white
+      text-transform: uppercase
+      display: inline-block
+      padding: 4px 5px 3px
+      border-radius: 3px
+      margin-bottom: 2px
+      margin-right: 2px
+
+    &__title
+      color: #4A4A4A
+      font-size: 12px
+      font-weight: 600
+      margin-top: 5px
+
+    &__description
+      color: #777
+      font-size: 12px
+      margin-top: -5px
+      line-height: 1.3em
+    a
+      text-decoration: none
+
+  &__learn
+
+    &__body
+      width: 72%
+
+    &__image
+      outline: 1px solid #f8f8f8
+      height: 25vw
+      max-height: 180px
+
+    &__body-tag
+      background: #0C1B5C
+      font-size: 8px
+      color: white
+      text-transform: uppercase
+      display: inline-block
+      padding: 4px 5px 3px
+      border-radius: 3px
+      margin-bottom: 5px
+
+    &__body-title
+      color: #4A4A4A
+      font-size: 14px
+      font-weight: 600
+
+    &__body-description
+      color: #777
+      font-size: 12px
+      margin-top: 5px
+      line-height: 1.3em
+
+  &__feature
+    margin-top: 50px
+    &__title
+      color: #4A4A4A
+      font-size: 14px
+      font-weight: 600
+    &__description
+      color: #777
+      font-size: 12px
+      margin-top: 5px
+      line-height: 1.3em
+    &__image
+      width: 100%
+      height: 85vw
+      max-height: 500px
+      max-width: 500px
+      min-height: 260px
+      min-width: 260px
+      padding-top: 10px
+      outline: 1px solid #f8f8f8
+
+
+  .container__box-footer__social-list
+    padding: 0px
+
+  .container__box-footer__link
+    float: right

@@ -17,8 +17,11 @@ Rails.application.routes.draw do
       namespace :partners do
         post 'authenticate', to: 'authentication#authenticate'
         get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
+        post 'recover_password', to: 'authentication#send_recover_password_mail'
+        patch 'recover_password/:id', to: 'authentication#recover_password'
 
         resources :partners, only: %i[create destroy update]
+        patch 'partners/recover_password', to: 'partners#recover_password'
 
         resources :partner_details, only: %i[show create destroy update]
 
