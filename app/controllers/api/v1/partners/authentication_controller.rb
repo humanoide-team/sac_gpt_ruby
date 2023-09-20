@@ -1,7 +1,7 @@
 require 'node_api_client'
 
 class Api::V1::Partners::AuthenticationController < ApiPartnerController
-  skip_before_action :authenticate_request, only: %i[authenticate send_recover_passwod_mail recover_password]
+  skip_before_action :authenticate_request, only: %i[authenticate send_recover_password_mail recover_password]
 
   include HTTParty
 
