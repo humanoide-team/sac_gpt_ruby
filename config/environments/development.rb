@@ -81,5 +81,4 @@ Rails.application.configure do
     domain: ENV['SMTP_DOMAIN'],
     # api_host: 'api.eu.mailgun.net'  # Uncomment this line for EU region domains
   }
-  
 end

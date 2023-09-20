@@ -6,7 +6,7 @@
 # Read more: https://github.com/cyu/rack-cors
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'localhost:3000', '127.0.0.1:3000', 'localhost:3001', '127.0.0.1:3001', 'localhost:4200', '127.0.0.1:4200', 'sac-gpt-admin.herokuapp.com'
+    origins 'localhost:3000', '127.0.0.1:3000', 'localhost:3001', '127.0.0.1:3001', 'localhost:4200', '127.0.0.1:4200', 'sac-gpt-admin.herokuapp.com', 'http://app.sacgpt.com.br/'
 
     resource '*',
       headers: :any,
