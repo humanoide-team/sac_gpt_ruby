@@ -25,6 +25,7 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
 
     @payment_subscription = PaymentSubscription.new(payment_subscription_params.merge(partner: @current_partner))
     if @payment_subscription.save
+      @current_partner.update(active: true)
       render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@payment_subscription.errors), status: :unprocessable_entity
@@ -33,6 +34,7 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
 
   def cancel
     if @payment_subscription.cancel_galax_pay_payment_subscription
+      @current_partner.update(active: false)
       render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :ok
     else
       render json: ErrorSerializer.serialize(@payment_subscription.errors), status: :unprocessable_entity
@@ -41,6 +43,7 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
 
   def destroy
     if @payment_subscription.destroy
+      @current_partner.update(active: false)
       render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :ok
     else
       render json: ErrorSerializer.serialize(@payment_subscription.errors), status: :unprocessable_entity
