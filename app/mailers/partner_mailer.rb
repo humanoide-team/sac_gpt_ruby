@@ -1,5 +1,5 @@
 class PartnerMailer < ApplicationMailer
-  default from: 'from@example.com'
+  default from: 'noreply@sacgpt.com.br'
   layout 'mailer'
 
   def _send_welcome_partner(partner)
