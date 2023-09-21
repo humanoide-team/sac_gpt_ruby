@@ -100,22 +100,10 @@ Rails.application.configure do
   # mailer
   config.action_mailer.delivery_method = :mailgun
   config.action_mailer.mailgun_settings = {
-    authentication: :plain,
-    address: "smtp.mailgun.org",
-    api_key: ENV['SMTP_SECRET_API_KEY'],
-    port: 587,
+    api_key: ENV['SMTP_PASSWORD'],
     domain: ENV['SMTP_DOMAIN'],
-    user_name: "postmaster@sacgpt.com.br",
-    password: ENV['SMTP_PASSWORD']
     # api_host: 'api.eu.mailgun.net'  # Uncomment this line for EU region domains
   }
-
-  # config.action_mailer.delivery_method = :mailgun
-  # config.action_mailer.mailgun_settings = {
-  #   api_key: ENV['SMTP_SECRET_API_KEY'],
-  #   domain: ENV['SMTP_DOMAIN'],
-  #   # api_host: 'api.eu.mailgun.net'  # Uncomment this line for EU region domains
-  # }
 
   # Inserts middleware to perform automatic connection switching.
   # The `database_selector` hash is used to pass options to the DatabaseSelector
