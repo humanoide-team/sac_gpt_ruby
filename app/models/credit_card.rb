@@ -27,6 +27,6 @@ class CreditCard < ApplicationRecord
   end
 
   def alert_exchange_card_mail
-    PaymentPlanMailer._send_alert_exchange_card_mail(self).deliver
+    PaymentPlanMailer._send_alert_exchange_card_mail(self, partner).deliver
   end
 end

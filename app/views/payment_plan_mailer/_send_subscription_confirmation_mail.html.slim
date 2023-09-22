@@ -5,17 +5,17 @@
       / .container__images style="background: url('#{banner_url}')"
 
       .container__box
-        p.container__intro Prezado(a) <strong>#{@partner.name},</strong>
+        p.container__intro Prezado(a) <strong>#{@subscription.partner.name},</strong>
         br
         br
         p.container__text É com grande satisfação que confirmamos a sua assinatura do plano [Nome do Plano] no SacGpt! Bem-vindo(a) à nossa comunidade de clientes comprometidos com um atendimento virtual de qualidade e eficiência.
 
         p.container__text <strong>Detalhes da Sua Assinatura:</strong>
         br
-        p.container__text - Plano: [Nome do Plano]
-        p.container__text - Duração: [Duração da Assinatura]
-        p.container__text - Data de Início: [Data de Início da Assinatura]
-        p.container__text - Valor: [Valor do Plano]
+        p.container__text - Plano: #{@subscription.payment_plan.name}
+        p.container__text - Data do primeiro pagamento: #{@subscription.first_pay_day_date.strftime("%d/%m/%Y")}
+        p.container__text - Recorrencia da cobrança: Mensal
+        p.container__text - Valor: #{@subscription.payment_plan.plan_price_value / 100}
         br
         br
         p.container__text Agradecemos por escolher o SacGpt para otimizar o atendimento ao cliente da sua empresa. A sua assinatura nos permite continuar desenvolvendo e aprimorando nossas soluções de atendimento virtual, visando sempre atender às suas necessidades e proporcionar uma experiência excepcional.
@@ -31,5 +31,4 @@
         br
         br
         p.container__text Atenciosamente,
-        p.container__text [Seu Nome]
         p.container__text Equipe SacGpt

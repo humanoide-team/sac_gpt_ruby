@@ -34,6 +34,9 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
 
   def cancel
     if @payment_subscription.cancel_galax_pay_payment_subscription
+
+      @payment_subscription.cancellation_plan_mail
+      
       @current_partner.update(active: false)
       render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :ok
     else

@@ -9,6 +9,10 @@ class PaymentSubscription < ApplicationRecord
 
   before_destroy :cancel_galax_pay_payment_subscription
 
+  after_creation :subscription_confirmation_mail
+
+  after_destroy :cancellation_plan_mail
+
   enum main_payment_method_id: {
     creditcard: 0
   }
@@ -46,7 +50,11 @@ class PaymentSubscription < ApplicationRecord
     cancellation_plan_mail
   end
 
+  def subscription_confirmation_mail
+    PaymentPlanMailer._send_subscription_confirmation_mail(self).deliver
+  end
+
   def cancellation_plan_mail
-    PaymentPlanMailer._send_cancellation_plan_mail(self).deliver
+    PaymentPlanMailer._send_cancellation_plan_mail(partner).deliver
   end
 end

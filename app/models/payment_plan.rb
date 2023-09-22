@@ -33,11 +33,4 @@ class PaymentPlan < ApplicationRecord
     end
   end
 
-  def subscription_confirmation_mail
-    PaymentPlanMailer._send_subscription_confirmation_mail(self).deliver
-  end
-
-  # def renovation_plan_mail
-  #   PaymentPlanMailer._send_renovation_plan_mail(self).deliver
-  # end
 end

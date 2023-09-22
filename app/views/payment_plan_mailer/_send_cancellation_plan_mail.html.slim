@@ -5,15 +5,15 @@
       / .container__images style="background: url('#{banner_url}')"
 
       .container__box
-        p.container__intro Prezado(a) <strong>#{@partner.name},</strong>
+        p.container__intro Prezado(a) <strong>#{@subscription.partner.name},</strong>
         br
         br
         p.container__text Recebemos a sua solicitação de cancelamento do plano [Nome do Plano] no SacGpt. Lamentamos ver você partir e gostaríamos de agradecer por ter sido parte da nossa comunidade.
         
         p.container__text Detalhes do Cancelamento:
         br
-        p.container__text - Plano: [Nome do Plano]
-        p.container__text - Data de Cancelamento: [Data de Cancelamento]
+        p.container__text - Plano: #{@subscription.payment_plan.name}        
+        p.container__text - Data de Cancelamento: #{@subscription.updated_at.strftime("%d/%m/%Y")}
         p.container__text Entendemos que as necessidades podem mudar, e respeitamos a sua decisão. Se houver algum feedback que você gostaria de compartilhar sobre a sua experiência com o SacGpt, ficaríamos felizes em ouvir.
         p.container__text Por favor, esteja ciente de que, após o cancelamento, você não terá mais acesso aos recursos e benefícios do plano a partir de [Data de Cancelamento]. Caso mude de ideia ou deseje retomar a assinatura, você sempre será bem-vindo(a) de volta.
         br
