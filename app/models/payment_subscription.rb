@@ -9,7 +9,7 @@ class PaymentSubscription < ApplicationRecord
 
   before_destroy :cancel_galax_pay_payment_subscription
 
-  after_creation :subscription_confirmation_mail
+  after_create :subscription_confirmation_mail
 
   after_destroy :cancellation_plan_mail
 
