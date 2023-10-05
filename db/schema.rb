@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_13_211207) do
+ActiveRecord::Schema.define(version: 2023_09_21_201616) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -151,6 +151,7 @@ ActiveRecord::Schema.define(version: 2023_09_13_211207) do
     t.string "contact_number"
     t.integer "galax_pay_id"
     t.string "galax_pay_my_id"
+    t.boolean "active", default: false
   end
 
   create_table "payment_plans", force: :cascade do |t|

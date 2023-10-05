@@ -30,5 +30,4 @@ class PaymentPlan < ApplicationRecord
       self.galax_pay_my_id = galax_pay_payment_plan['myId']
     end
   end
-
 end

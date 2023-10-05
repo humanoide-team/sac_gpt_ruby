@@ -44,12 +44,27 @@ namespace :lead_classification do
       end
     end
   end
+
   def messages(partner, client)
     historico_conversa = [{ role: 'system', content: partner.partner_detail.message_content }]
-    client.partner_client_messages.by_partner(partner).each do |pcm|
-      historico_conversa << { role: 'user', content: pcm.message.nil? ? '' : pcm.message }
+
+    client.partner_client_messages.by_partner(partner).order(:created_at).each do |pcm|
+      historico_conversa << { role: 'user', content: pcm.message }
       historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
     end
+
+    messages_length = 0
+
+    if messages_length >= 9500
+      historico_conversa = [{ role: 'system', content: partner.partner_detail.message_content }]
+      historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{@partner_client_lead.conversation_summary}"}
+
+      client.partner_client_messages.by_partner(partner).where('created_at > ?', @partner_client_lead.created_at).order(:created_at).each do |pcm|
+        historico_conversa << { role: 'user', content: pcm.message }
+        historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
+      end
+    end
+
     historico_conversa
   end
 
