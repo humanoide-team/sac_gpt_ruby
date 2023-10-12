@@ -31,4 +31,12 @@ class NodeApiClient
     response = HTTParty.post(url, query: query_params, body: body)
     JSON.parse(response.body)
   end
+
+  def self.send_callback(callback_url, body)
+    endpoint = '/api/v1/whatsapp'
+    url = "#{callback_url}#{endpoint}"
+
+    response = HTTParty.post(url, body:)
+    JSON.parse(response.body)
+  end
 end
