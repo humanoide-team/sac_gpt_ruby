@@ -27,7 +27,7 @@ namespace :lead_classification do
 
           client.partner_client_leads.create(partner: current_partner,
                                              lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
-        elsif !partner_client_lead.nil? && !last_message.nil? && last_message.created_at > partner_client_lead.updated_at && last_message.created_at < DateTime.now - 12.hour
+        elsif !partner_client_lead.nil? && !last_message.nil? && last_message.created_at > partner_client_lead.updated_at && last_message.created_at < DateTime.now - 1.hour
 
           lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
           lead_classification = gerar_resposta(lead_classification_question, historico_conversa).gsub("\n", ' ').strip
@@ -59,7 +59,7 @@ namespace :lead_classification do
       historico_conversa = [{ role: 'system', content: partner.partner_detail.message_content }]
       historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{@partner_client_lead.conversation_summary}"}
 
-      client.partner_client_messages.by_partner(partner).where('created_at > ?', @partner_client_lead.created_at).order(:created_at).each do |pcm|
+      client.partner_client_messages.by_partner(partner).where('created_at > ?', @partner_client_lead.updated_at).order(:created_at).each do |pcm|
         historico_conversa << { role: 'user', content: pcm.message }
         historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
       end
@@ -87,6 +87,7 @@ namespace :lead_classification do
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e
       puts e
+      puts response
     end
   end
 end

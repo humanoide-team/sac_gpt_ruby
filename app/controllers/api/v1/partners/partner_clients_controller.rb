@@ -101,7 +101,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       historico_conversa = [{ role: 'system', content: partner.partner_detail.message_content }]
       historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{@partner_client_lead.conversation_summary}"}
 
-      client.partner_client_messages.by_partner(partner).where('created_at > ?', @partner_client_lead.created_at).order(:created_at).each do |pcm|
+      client.partner_client_messages.by_partner(partner).where('created_at > ?', @partner_client_lead.updated_at).order(:created_at).each do |pcm|
         historico_conversa << { role: 'user', content: pcm.message }
         historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
       end
@@ -113,21 +113,24 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   def gerar_resposta(pergunta, historico_conversa)
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
-    client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
-    messages = historico_conversa + [{ role: 'user', content: pergunta }]
-    response = client.chat(
-      parameters: {
-        model: 'gpt-4',
-        messages:,
-        max_tokens: 1500,
-        n: 1,
-        stop: nil,
-        temperature: 0.7
-      }
-    )
-
-    puts response
-    response['choices'][0]['message']['content'].strip
+    begin
+      client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
+      messages = historico_conversa + [{ role: 'user', content: pergunta }]
+      response = client.chat(
+        parameters: {
+          model: 'gpt-4',
+          messages:,
+          max_tokens: 1500,
+          n: 1,
+          stop: nil,
+          temperature: 0.7
+        }
+      )
+      response['choices'][0]['message']['content'].strip
+    rescue StandardError => e
+      puts e
+      puts response
+    end
   end
 
   def set_client

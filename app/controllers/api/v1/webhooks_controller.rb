@@ -40,24 +40,45 @@ class Api::V1::WebhooksController < ApiController
     last_response = client.partner_client_messages.by_partner(partner).order(:created_at).last
     return if !last_response.nil? && last_response.created_at > partner_client_message.created_at
 
-    historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
-    client.partner_client_messages.by_partner(partner).each do |pcm|
-      historico_conversa << { role: 'user', content: pcm.message }
-      historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
-    end
-    messages_length = 0
+    partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
-    historico_conversa.each { |m| messages_length += m[:content].length }
+    if partner_client_conversation_info.nil?
 
-    partner_client_lead = client.partner_client_leads.by_partner(partner).first
-
-    if messages_length >= 9500 && !partner_client_lead.nil?
       historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
-      historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_lead.conversation_summary}"}
 
-      client.partner_client_messages.by_partner(partner).where('created_at > ?', partner_client_lead.created_at).order(:created_at).each do |pcm|
-        historico_conversa << { role: 'user', content: pcm.message }
-        historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
+      messages = client.partner_client_messages.by_partner(partner)
+
+      generate_message_history(messages, historico_conversa)
+
+      messages_length = 0
+
+      historico_conversa.each { |m| messages_length += m[:content].length }
+
+      if messages_length >= 4000
+        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info)
+
+        historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+        historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
+      end
+
+    elsif !partner_client_conversation_info.nil?
+
+      historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+      historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
+
+      messages = client.partner_client_messages.by_partner(partner).where('created_at > ?', partner_client_conversation_info.updated_at).order(:created_at)
+
+      generate_message_history(messages, historico_conversa)
+
+      messages_length = 0
+
+      historico_conversa.each { |m| messages_length += m[:content].length }
+
+      if messages_length >= 4000
+        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info)
+
+        historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+        historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
       end
     end
 
@@ -69,20 +90,36 @@ class Api::V1::WebhooksController < ApiController
 
   def gerar_resposta(pergunta, historico_conversa)
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
-    puts historico_conversa
-    client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
-    messages = historico_conversa + [{ role: 'user', content: pergunta }]
-    response = client.chat(
-      parameters: {
-        model: 'gpt-4',
-        messages:,
-        max_tokens: 1500,
-        n: 1,
-        stop: nil,
-        temperature: 0.7
-      }
-    )
-    puts response
-    response['choices'][0]['message']['content'].strip
+
+    begin
+      client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
+      messages = historico_conversa + [{ role: 'user', content: pergunta }]
+      response = client.chat(
+        parameters: {
+          model: 'gpt-4',
+          messages:,
+          max_tokens: 1500,
+          n: 1,
+          stop: nil,
+          temperature: 0.7
+        }
+      )
+      response['choices'][0]['message']['content'].strip
+    rescue StandardError => e
+      puts e
+      puts response
+    end
+  end
+
+  def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info)
+    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n", ' ').strip
+    partner_client_conversation_info.update(system_conversation_resume: resume)
+  end
+
+  def generate_message_history(messages, historico_conversa)
+    messages.each do |pcm|
+      historico_conversa << { role: 'user', content: pcm.message }
+      historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
+    end
   end
 end
