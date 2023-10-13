@@ -4,10 +4,12 @@ class Api::V1::WebhooksController < ApiController
     @partner = Partner.find_by(instance_key: params['instanceKey'])
 
     permitted_params = params.permit!
-
-    NodeApiClient.send_callback(ENV['CALLBACK_URL'], permitted_params.to_h) if ENV['SEND_CALLBACK'] == 'true'
-
+    puts permitted_params
+    NodeApiClient.send_callback(permitted_params.to_h)
+    puts '***************ENVIOU CALLBACK************************'
     return render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @partner.nil? || @partner.partner_detail.nil?
+
+    puts '********************RESPONDENDO****************************'
 
     @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'])
     if @client.nil?

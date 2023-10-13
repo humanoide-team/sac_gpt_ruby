@@ -4,6 +4,8 @@ require 'base64'
 
 class NodeApiClient
   BASE_URL = ENV['NODE_API_URL'].freeze
+  SEND_CALLBACK = ENV['SEND_CALLBACK'].freeze
+  CALLBACK_URL = ENV['CALLBACK_URL'].freeze
 
   def self.iniciar_instancia(token, key)
     endpoint = '/instance/init'
@@ -33,8 +35,10 @@ class NodeApiClient
   end
 
   def self.send_callback(callback_url, body)
+    return if SEND_CALLBACK == 'false'
+    
     endpoint = '/api/v1/whatsapp'
-    url = "#{callback_url}#{endpoint}"
+    url = "#{CALLBACK_URL}#{endpoint}"
 
     response = HTTParty.post(url, body:)
     JSON.parse(response.body)
