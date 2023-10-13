@@ -60,7 +60,7 @@ class Api::V1::WebhooksController < ApiController
       historico_conversa.each { |m| messages_length += m[:content].length }
 
       if messages_length >= 4000
-        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client)
+        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
         partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
@@ -81,7 +81,7 @@ class Api::V1::WebhooksController < ApiController
       historico_conversa.each { |m| messages_length += m[:content].length }
 
       if messages_length >= 4000
-        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client)
+        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
         historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
@@ -117,10 +117,10 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client)
+  def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
     resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n", ' ').strip
     if partner_client_conversation_info.nil?
-      client.partner_client_conversation_infos.create(system_conversation_resume: resume)
+      client.partner_client_conversation_infos.create(system_conversation_resume: resume, partner:)
     else
       partner_client_conversation_info.update(system_conversation_resume: resume)
     end
