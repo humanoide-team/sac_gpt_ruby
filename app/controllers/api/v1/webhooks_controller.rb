@@ -5,7 +5,7 @@ class Api::V1::WebhooksController < ApiController
 
     permitted_params = params.permit!
 
-    NodeApiClient.send_callback(ENV['CALLBACK_URL'], permitted_params.to_h) if ENV['SEND_CALLBACK']
+    NodeApiClient.send_callback(ENV['CALLBACK_URL'], permitted_params.to_h) if ENV['SEND_CALLBACK'] == 'true'
 
     return render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @partner.nil? || @partner.partner_detail.nil?
 
