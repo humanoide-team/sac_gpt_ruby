@@ -93,7 +93,7 @@ class Api::V1::WebhooksController < ApiController
     response = gerar_resposta(last_response.message, historico_conversa).gsub("\n", ' ').strip
     last_response.update(automatic_response: response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], response, partner.instance_key)
-    return 'Erro na API Node.js: #{response}' unless response['status'] == 'OK'
+    return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
   end
 
   def gerar_resposta(pergunta, historico_conversa)

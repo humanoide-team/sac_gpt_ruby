@@ -36,7 +36,7 @@ class NodeApiClient
 
   def self.send_callback(body)
     return if SEND_CALLBACK == 'false'
-
+    puts '***************************ENVIANDO CALLBACK**************************'
     endpoint = '/api/v1/whatsapp'
     url = "#{CALLBACK_URL}#{endpoint}"
 
