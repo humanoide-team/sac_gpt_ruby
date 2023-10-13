@@ -34,9 +34,9 @@ class NodeApiClient
     JSON.parse(response.body)
   end
 
-  def self.send_callback(callback_url, body)
+  def self.send_callback(body)
     return if SEND_CALLBACK == 'false'
-    
+
     endpoint = '/api/v1/whatsapp'
     url = "#{CALLBACK_URL}#{endpoint}"
 
