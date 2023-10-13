@@ -40,7 +40,6 @@ class NodeApiClient
     endpoint = '/api/v1/whatsapp'
     url = "#{CALLBACK_URL}#{endpoint}"
 
-    response = HTTParty.post(url, body:)
-    JSON.parse(response.body)
+    HTTParty.post(url, body:)
   end
 end
