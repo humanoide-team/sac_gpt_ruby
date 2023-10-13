@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_21_201616) do
+ActiveRecord::Schema.define(version: 2023_10_12_140523) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,16 @@ ActiveRecord::Schema.define(version: 2023_09_21_201616) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "partner_client_conversation_infos", force: :cascade do |t|
+    t.bigint "partner_id", null: false
+    t.bigint "partner_client_id", null: false
+    t.text "system_conversation_resume"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_client_id"], name: "index_partner_client_conversation_infos_on_partner_client_id"
+    t.index ["partner_id"], name: "index_partner_client_conversation_infos_on_partner_id"
   end
 
   create_table "partner_client_leads", force: :cascade do |t|
@@ -194,6 +204,8 @@ ActiveRecord::Schema.define(version: 2023_09_21_201616) do
   end
 
   add_foreign_key "credit_cards", "partners"
+  add_foreign_key "partner_client_conversation_infos", "partner_clients"
+  add_foreign_key "partner_client_conversation_infos", "partners"
   add_foreign_key "partner_client_leads", "partner_clients"
   add_foreign_key "partner_client_leads", "partners"
   add_foreign_key "partner_client_messages", "partner_clients"

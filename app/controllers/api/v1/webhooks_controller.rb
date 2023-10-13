@@ -3,7 +3,9 @@ class Api::V1::WebhooksController < ApiController
   def whatsapp
     @partner = Partner.find_by(instance_key: params['instanceKey'])
 
-    NodeApiClient.send_callback(ENV['CALLBACK_URL'], params) if ENV['SEND_CALLBACK']
+    permitted_params = params.permit!
+
+    NodeApiClient.send_callback(ENV['CALLBACK_URL'], permitted_params.to_h) if ENV['SEND_CALLBACK']
 
     return render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @partner.nil? || @partner.partner_detail.nil?
 
