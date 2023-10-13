@@ -60,9 +60,8 @@ class Api::V1::WebhooksController < ApiController
       historico_conversa.each { |m| messages_length += m[:content].length }
 
       if messages_length >= 4000
-
-        client.partner_client_conversation_infos.create()
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client)
+        partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
         historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
