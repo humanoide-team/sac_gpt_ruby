@@ -60,6 +60,8 @@ class Api::V1::WebhooksController < ApiController
       historico_conversa.each { |m| messages_length += m[:content].length }
 
       if messages_length >= 4000
+
+        client.partner_client_conversation_infos.create()
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info)
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
@@ -80,7 +82,7 @@ class Api::V1::WebhooksController < ApiController
       historico_conversa.each { |m| messages_length += m[:content].length }
 
       if messages_length >= 4000
-        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info)
+        generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client)
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
         historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
@@ -116,9 +118,13 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info)
+  def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client)
     resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n", ' ').strip
-    partner_client_conversation_info.update(system_conversation_resume: resume)
+    if partner_client_conversation_info.nil?
+      client.partner_client_conversation_infos.create(system_conversation_resume: resume)
+    else
+      partner_client_conversation_info.update(system_conversation_resume: resume)
+    end
   end
 
   def generate_message_history(messages, historico_conversa)
