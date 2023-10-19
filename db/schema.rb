@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_10_12_140523) do
+ActiveRecord::Schema.define(version: 2023_10_19_183203) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(version: 2023_10_12_140523) do
     t.string "phone"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "email"
   end
 
   create_table "partner_details", force: :cascade do |t|
@@ -162,6 +163,10 @@ ActiveRecord::Schema.define(version: 2023_10_12_140523) do
     t.integer "galax_pay_id"
     t.string "galax_pay_my_id"
     t.boolean "active", default: false
+    t.string "calendar_token"
+    t.string "access_token"
+    t.datetime "expires_at"
+    t.string "refresh_token"
   end
 
   create_table "payment_plans", force: :cascade do |t|
@@ -195,6 +200,21 @@ ActiveRecord::Schema.define(version: 2023_10_12_140523) do
     t.index ["payment_plan_id"], name: "index_payment_subscriptions_on_payment_plan_id"
   end
 
+  create_table "schedules", force: :cascade do |t|
+    t.integer "schedule_type"
+    t.string "summary"
+    t.string "description"
+    t.datetime "date_time_start"
+    t.datetime "date_time_end"
+    t.string "event"
+    t.bigint "partner_id", null: false
+    t.bigint "partner_client_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_client_id"], name: "index_schedules_on_partner_client_id"
+    t.index ["partner_id"], name: "index_schedules_on_partner_id"
+  end
+
   create_table "waiting_list_clients", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -216,4 +236,6 @@ ActiveRecord::Schema.define(version: 2023_10_12_140523) do
   add_foreign_key "payment_subscriptions", "credit_cards"
   add_foreign_key "payment_subscriptions", "partners"
   add_foreign_key "payment_subscriptions", "payment_plans"
+  add_foreign_key "schedules", "partner_clients"
+  add_foreign_key "schedules", "partners"
 end

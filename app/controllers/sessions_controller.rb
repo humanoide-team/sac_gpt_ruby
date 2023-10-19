@@ -3,12 +3,15 @@ class SessionsController < ApplicationController
     user_data = request.env['omniauth.auth']
     session[:token] = user_data['credentials']['token']
 
-    @partner = Partner.find_by(email: auth.info.email)
+    @partner = Partner.find(params['partnerId'])
 
     unless @partner.nil?
-      @partner.update(calendar_token: session[:token])
+      @partner.access_token = user_data.credentials.token
+      @partner.expires_at = user_data.credentials.expires_at
+      @partner.refresh_token = user_data.credentials.refresh_token
+      @partner.save!
 
-      return render json: { error: 'Conta conectada' }, status: 200
+      return render json: { message: 'Conta conectada' }, status: 200
     end
     render json: { error: 'Usuário não existe' }, status: 401
   end
