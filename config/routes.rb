@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+
+  get '/auth/google_oauth2/callback', to: 'sessions#create'
+  get '/auth/failure', to: redirect('/')
+  
   namespace :api, defaults: { format: :json } do
     namespace :v1, defaults: { format: :json } do
       post 'whatsapp', to: 'webhooks#whatsapp'
@@ -22,6 +26,8 @@ Rails.application.routes.draw do
 
         resources :partners, only: %i[create destroy update]
         patch 'partners/recover_password', to: 'partners#recover_password'
+
+        post 'partners/calendar_auth', to: 'partners#calendar_token_auth'
 
         resources :partner_details, only: %i[show create destroy update]
 
