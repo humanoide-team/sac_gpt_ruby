@@ -23,4 +23,9 @@ class SessionsController < ApplicationController
     puts e
     render json: { message: e.message }, status: 200
   end
+
+  def failure
+    render json: { error: params['message'] }, status: 401
+  end
+
 end
