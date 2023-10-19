@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
-  post '/api/v1/auth/google_oauth2/callback', to: 'sessions#create'
-  get '/api/v1/auth/failure', to: redirect('/')
+  post 'auth/google_oauth2/callback', to: 'sessions#create'
+  get 'auth/failure', to: redirect('/')
   
   namespace :api, defaults: { format: :json } do
     namespace :v1, defaults: { format: :json } do
