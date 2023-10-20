@@ -23,6 +23,8 @@
         p.container__text Se você tiver alguma pergunta ou precisar de assistência, nossa equipe de suporte está à disposição. Entre em contato através do e-mail [endereço de e-mail de suporte] ou pelo telefone [número de telefone de suporte].
         p.container__text Agradecemos pela sua confiança no SacGPT para impulsionar o crescimento dos seus negócios. Estamos aqui para apoiá-lo(a) em todas as etapas.
         br
+          = link_to 'Download', "#{ENV['WEB_PAGE']}/chat/#{@client.id}}", class: "btn"
+
         br
         p.container__text Atenciosamente,
         p.container__text #{@partner.name}
