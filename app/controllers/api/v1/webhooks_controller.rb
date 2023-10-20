@@ -49,9 +49,9 @@ class Api::V1::WebhooksController < ApiController
 
     partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
-    if partner_client_conversation_info.nil?
+    historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
 
-      historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+    if partner_client_conversation_info.nil?
 
       messages = client.partner_client_messages.by_partner(partner)
 
@@ -69,9 +69,7 @@ class Api::V1::WebhooksController < ApiController
         historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
       end
 
-    elsif !partner_client_conversation_info.nil?
-
-      historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+    else
       historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
 
       messages = client.partner_client_messages.by_partner(partner).where('created_at > ?', partner_client_conversation_info.updated_at).order(:created_at)

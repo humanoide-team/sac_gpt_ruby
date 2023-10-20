@@ -27,5 +27,4 @@ class SessionsController < ApplicationController
   def failure
     render json: { error: params['message'] }, status: 401
   end
-
 end
