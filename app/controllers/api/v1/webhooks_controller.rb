@@ -114,6 +114,7 @@ class Api::V1::WebhooksController < ApiController
     rescue StandardError => e
       puts e
       puts response
+      'Desculpe, não entendi a sua pergunta.'
     end
   end
 
