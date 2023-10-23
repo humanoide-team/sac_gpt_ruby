@@ -19,6 +19,7 @@ class Partner < ApplicationRecord
   has_many :payment_subscriptions, dependent: :destroy
   has_many :partner_client_leads, dependent: :destroy
   has_many :partner_client_conversation_infos, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   validates :name, :service_number, :document, :contact_number, presence: true
   validates :password_confirmation, presence: true, on: :create
