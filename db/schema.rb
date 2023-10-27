@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_10_19_183203) do
+ActiveRecord::Schema.define(version: 2023_10_26_010200) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,17 @@ ActiveRecord::Schema.define(version: 2023_10_19_183203) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "partner_id", null: false
+    t.string "title"
+    t.string "description"
+    t.integer "notification_type"
+    t.boolean "readed", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_notifications_on_partner_id"
   end
 
   create_table "partner_client_conversation_infos", force: :cascade do |t|
@@ -121,7 +132,7 @@ ActiveRecord::Schema.define(version: 2023_10_19_183203) do
     t.string "company_services"
     t.string "company_products"
     t.string "company_contact"
-    t.string "company_objective"
+    t.string "company_objectives", default: [], array: true
     t.string "main_goals"
     t.string "business_goals"
     t.string "marketing_channels"
@@ -224,6 +235,7 @@ ActiveRecord::Schema.define(version: 2023_10_19_183203) do
   end
 
   add_foreign_key "credit_cards", "partners"
+  add_foreign_key "notifications", "partners"
   add_foreign_key "partner_client_conversation_infos", "partner_clients"
   add_foreign_key "partner_client_conversation_infos", "partners"
   add_foreign_key "partner_client_leads", "partner_clients"
