@@ -23,7 +23,7 @@ class Schedule < ApplicationRecord
   def create
     client = get_google_calendar_client(partner)
     event = get_event
-    client.insert_event('primary', event)
+    client.insert_event('primary', event, conference_data_version: 1)
   end
 
   def get_google_calendar_client(partner)
@@ -102,4 +102,4 @@ class Schedule < ApplicationRecord
 end
 
 # Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T19:00:31.172Z", date_time_end: "2023-10-30T20:00:31.172Z", partner_id: 30, partner_client_id: 84)
-# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T19:00:31.172Z", date_time_end: "2023-10-30T20:00:31.172Z", partner_id: 30, partner_client_id: 84)
+# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T20:00:31.172Z", date_time_end: "2023-10-30T21:00:31.172Z", partner_id: 26, partner_client_id: 1)
