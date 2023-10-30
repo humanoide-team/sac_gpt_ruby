@@ -65,7 +65,7 @@ class Schedule < ApplicationRecord
     Google::Apis::CalendarV3::Event.new({
                                                   summary: ,
                                                   location: '',
-                                                  description: ,
+                                                  description:,
                                                   start: {
                                                     date_time: Google::Apis::CalendarV3::EventDateTime.new(date_time: date_time_start)
                                                   },
@@ -84,6 +84,11 @@ class Schedule < ApplicationRecord
                                                       )
                                                     ]
                                                   },
+                                                  conference_data: {
+                                                    create_request: {
+                                                      request_id: "#{id}-sac-meeting-schedule"
+                                                    }
+                                                  },
                                                   notification_settings: {
                                                     notifications: [
                                                       { type: 'event_creation', method: 'email' },
@@ -96,4 +101,5 @@ class Schedule < ApplicationRecord
   end
 end
 
-# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-19T19:00:31.172Z", date_time_end: "2023-10-19T20:00:31.172Z", partner_id: 30, partner_client_id: 2)
+# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T19:00:31.172Z", date_time_end: "2023-10-30T20:00:31.172Z", partner_id: 30, partner_client_id: 84)
+# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T19:00:31.172Z", date_time_end: "2023-10-30T20:00:31.172Z", partner_id: 30, partner_client_id: 84)
