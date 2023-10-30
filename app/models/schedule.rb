@@ -21,9 +21,16 @@ class Schedule < ApplicationRecord
   end
 
   def create
+    puts "###############################Creating a new Calendar event"###############################"
     client = get_google_calendar_client(partner)
+    puts client
+    puts "###############################Google calendar Client############################################"
     event = get_event
+    puts event
+    puts "###############################Google Calendar Event"###############################"
+
     client.insert_event('primary', event, conference_data_version: 1)
+    puts "Sucess Event created"
   end
 
   def get_google_calendar_client(partner)
