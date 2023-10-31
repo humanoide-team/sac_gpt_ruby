@@ -1,5 +1,5 @@
 require 'google/apis/calendar_v3'
-require 'googleauth'
+require "google/api_client/client_secrets.rb"
 
 class Schedule < ApplicationRecord
   belongs_to :partner
@@ -8,28 +8,15 @@ class Schedule < ApplicationRecord
   after_create :create_event
 
   def create_event
-    event = Google::Apis::CalendarV3::Event.new(
-      start: Google::Apis::CalendarV3::EventDateTime.new(date_time: date_time_start),
-      end: Google::Apis::CalendarV3::EventDateTime.new(date_time: date_time_end),
-      summary:,
-      description:
-    )
-
-    @calendar_service = Google::Apis::CalendarV3::CalendarService.new
-    @calendar_service.authorization = partner.calendar_token
-    @calendar_service.insert_event('primary', event)
-  end
-
-  def create
-    puts "###############################Creating a new Calendar event"###############################"
     client = get_google_calendar_client(partner)
-    puts client
-    puts "###############################Google calendar Client############################################"
     event = get_event
-    puts event
-    puts "###############################Google Calendar Event"###############################"
-
-    client.insert_event('primary', event, conference_data_version: 1)
+    begin
+      client.insert_event('primary', event, send_notifications: true, conference_data_version: 1)
+    rescue StandardError => e
+      puts e
+      errors.add(:base, 'Fail to create Event.')
+      throw :abort
+    end
     puts "Sucess Event created"
   end
 
@@ -58,6 +45,7 @@ class Schedule < ApplicationRecord
         )
       end
     rescue StandardError => e
+      puts e
       errors.add(:base, 'Your token has been expired. Please login again with google.')
       throw :abort
     end
@@ -67,19 +55,23 @@ class Schedule < ApplicationRecord
   private
 
   def get_event
-    attendees = partner_client.email
-
-    Google::Apis::CalendarV3::Event.new({
+    Google::Apis::CalendarV3::Event.new(
                                                   summary: ,
                                                   location: '',
                                                   description:,
-                                                  start: {
-                                                    date_time: Google::Apis::CalendarV3::EventDateTime.new(date_time: date_time_start)
-                                                  },
-                                                  end: {
-                                                    date_time: Google::Apis::CalendarV3::EventDateTime.new(date_time: date_time_end)
-                                                  },
-                                                  attendees:,
+                                                  start: Google::Apis::CalendarV3::EventDateTime.new(
+                                                    date_time: date_time_start.iso8601(3),
+                                                    time_zone: 'America/Sao_Paulo'
+                                                  ),
+                                                  end: Google::Apis::CalendarV3::EventDateTime.new(
+                                                    date_time: date_time_end.iso8601(3),
+                                                    time_zone: 'America/Sao_Paulo'
+                                                  ),
+                                                  attendees: [
+                                                    {
+                                                      email: partner_client.email
+                                                    }
+                                                  ],
                                                   reminders: {
                                                     use_default: false,
                                                     overrides: [
@@ -94,6 +86,9 @@ class Schedule < ApplicationRecord
                                                   conference_data: {
                                                     create_request: {
                                                       request_id: "#{id}-sac-meeting-schedule"
+                                                    },
+                                                    conference_solution_key: {
+                                                      type: 'hangoutsMeet'
                                                     }
                                                   },
                                                   notification_settings: {
@@ -104,7 +99,7 @@ class Schedule < ApplicationRecord
                                                       { type: 'event_response', method: 'email' }
                                                     ]
                                                   }, 'primary': true
-                                                })
+                                                )
   end
 end
 
