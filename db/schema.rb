@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_10_26_010200) do
+ActiveRecord::Schema.define(version: 2023_11_17_191701) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -70,6 +70,7 @@ ActiveRecord::Schema.define(version: 2023_10_26_010200) do
     t.boolean "readed", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "metadata"
     t.index ["partner_id"], name: "index_notifications_on_partner_id"
   end
 
