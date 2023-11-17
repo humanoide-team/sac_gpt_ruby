@@ -17,7 +17,7 @@ class PartnerClientMessage < ApplicationRecord
       notification_type: :new_lead_received,
       metadata: {
         partner_client_message: id,
-        partner_client: partner_client
+        partner_client: :partner_client
       }
     )
   end
