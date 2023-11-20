@@ -1,17 +1,11 @@
 development:
   adapter: postgresql
-  host: localhost
-  user: postgres
-  password: postgres
   database: sac_gpt_database_development
   pool: 10
   timeout: 5000
 
 test:
   adapter: postgresql
-  host: localhost
-  user: postgres
-  password: postgres
   database: sac_gpt_database_test
   pool: 10
   timeout: 5000
