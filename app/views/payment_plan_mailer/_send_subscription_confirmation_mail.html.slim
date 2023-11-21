@@ -15,7 +15,7 @@
         p.container__text - Plano: #{@subscription.payment_plan.name}
         p.container__text - Data do primeiro pagamento: #{@subscription.first_pay_day_date.strftime("%d/%m/%Y")}
         p.container__text - Recorrencia da cobrança: Mensal
-        p.container__text - Valor: #{@subscription.payment_plan.plan_price_value / 100}
+        p.container__text - Valor: #{@subscription.payment_plan.plan_price_value.to_i / 100}
         br
         br
         p.container__text Agradecemos por escolher o SacGPT para otimizar o atendimento ao cliente da sua empresa. A sua assinatura nos permite continuar desenvolvendo e aprimorando nossas soluções de atendimento virtual, visando sempre atender às suas necessidades e proporcionar uma experiência excepcional.
