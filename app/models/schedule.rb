@@ -8,6 +8,8 @@ class Schedule < ApplicationRecord
   after_create :create_event
 
   def create_event
+    return if partner.access_token.nil?
+
     client = get_google_calendar_client(partner)
     event = get_event
     begin

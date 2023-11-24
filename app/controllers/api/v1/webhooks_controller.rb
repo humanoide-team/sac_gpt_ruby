@@ -7,7 +7,10 @@ class Api::V1::WebhooksController < ApiController
     puts permitted_params
     NodeApiClient.send_callback(permitted_params.to_h)
     puts '***************ENVIOU CALLBACK************************'
-    return render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @partner.nil? || @partner.partner_detail.nil?
+    if @partner.nil? || @partner.partner_detail.nil?
+      return render json: { status: 'OK', current_date: DateTime.now.to_s,
+                            params: }
+    end
 
     puts '********************RESPONDENDO****************************'
 
@@ -66,13 +69,16 @@ class Api::V1::WebhooksController < ApiController
         partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
-        historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
+        historico_conversa << { role: 'system',
+                                content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}" }
       end
 
     else
-      historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
+      historico_conversa << { role: 'system',
+                              content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}" }
 
-      messages = client.partner_client_messages.by_partner(partner).where('created_at > ?', partner_client_conversation_info.updated_at).order(:created_at)
+      messages = client.partner_client_messages.by_partner(partner).where('created_at > ?',
+                                                                          partner_client_conversation_info.updated_at).order(:created_at)
 
       generate_message_history(messages, historico_conversa)
 
@@ -84,14 +90,29 @@ class Api::V1::WebhooksController < ApiController
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
-        historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}"}
+        historico_conversa << { role: 'system',
+                                content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}" }
       end
     end
 
     response = gerar_resposta(last_response.message, historico_conversa).gsub("\n", ' ').strip
+    identificar_agendamento(response)
     last_response.update(automatic_response: response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], response, partner.instance_key)
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
+  end
+
+  def identificar_agendamento(response)
+    return unless partner.partner_detail.meeting_objective?
+
+    regex = %r{#Agendamento para o dia (\d{2}/\d{2}/\d{4}) às (\d{2}:\d{2})#}
+    match_data = response.match(regex)
+    return unless match_data
+
+    data_hora_string = "#{match_data[1]} #{match_data[2]}"
+    data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
+    Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{@client.name}", date_time_start: data_hora,
+                    date_time_end: data_hora + 1.hour, partner_id: @partner.id, partner_client_id: @client.id)
   end
 
   def gerar_resposta(pergunta, historico_conversa)
@@ -120,7 +141,8 @@ class Api::V1::WebhooksController < ApiController
   end
 
   def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
-    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n", ' ').strip
+    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n",
+                                                                                                             ' ').strip
     if partner_client_conversation_info.nil?
       client.partner_client_conversation_infos.create(system_conversation_resume: resume, partner:)
     else
