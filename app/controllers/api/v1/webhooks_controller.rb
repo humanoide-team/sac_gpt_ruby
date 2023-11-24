@@ -103,7 +103,7 @@ class Api::V1::WebhooksController < ApiController
   end
 
   def identificar_agendamento(response)
-    return unless partner.partner_detail.meeting_objective?
+    return unless @partner.partner_detail.meeting_objective?
 
     regex = %r{#Agendamento para o dia (\d{2}/\d{2}/\d{4}) às (\d{2}:\d{2})#}
     match_data = response.match(regex)
