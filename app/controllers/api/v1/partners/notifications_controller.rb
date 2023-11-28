@@ -1,5 +1,5 @@
 class Api::V1::Partners::NotificationsController < ApiPartnerController
-  before_action :set_notification, only: %i[destroy]
+  before_action :set_notification, only: %i[update]
 
   def index
     @notifications = @current_partner.notifications.where(readed: false)
