@@ -62,9 +62,7 @@ class Partner < ApplicationRecord
   end
 
   def generate_recover_password_key
-    data = encrypted_data(email, ENV['ENCRYPTION_KEY'])
-    puts data
-    data
+    encrypted_data(email, ENV['ENCRYPTION_KEY'])
   end
 
   def generate_instance_key

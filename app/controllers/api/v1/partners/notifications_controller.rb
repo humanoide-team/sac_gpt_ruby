@@ -1,4 +1,6 @@
 class Api::V1::Partners::NotificationsController < ApiPartnerController
+  before_action :set_notification, only: %i[destroy]
+
   def index
     @notifications = @current_partner.notifications.where(readed: false)
     render json: NotificationSerializer.new(@notifications).serialized_json, status: :ok
