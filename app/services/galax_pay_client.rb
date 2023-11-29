@@ -209,14 +209,49 @@ class GalaxPayClient
     end
   end
 
+  def self.get_balance_movements(initialDate, finalDate)
+    # https://docs.galaxpay.com.br/balance/list
+
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.get("#{BASE_URL}/company/balance/movements?initialDate=#{status}&finalDate=#{startAt}", headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      JSON.parse(response.body)
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+    end
+  end
+
+  def self.get_balance()
+    #https://docs.galaxpay.com.br/balance/get-balance
+
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.get("#{BASE_URL}/company/balance", headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      JSON.parse(response.body)
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+    end
+  end
+
   def self.generate_authorization_token
     # https://docs.galaxpay.com.br/auth/token
     data = {
       grant_type: 'authorization_code',
-      scope: 'customers.read customers.write plans.read plans.write transactions.read transactions.write webhooks.write cards.read cards.write card-brands.read subscriptions.read subscriptions.write charges.read charges.write boletos.read carnes.read payment-methods.read'
+      scope: 'customers.read customers.write plans.read plans.write transactions.read transactions.write webhooks.write cards.read cards.write card-brands.read subscriptions.read subscriptions.write charges.read charges.write boletos.read carnes.read payment-methods.read balance.read'
     }
     body = data.to_json
-    # encoded_string = Base64.encode64("#{GALAX_ID}:#{GALAX_HASH}")
     encoded_string = Base64.strict_encode64("#{GALAX_ID}:#{GALAX_HASH}")
 
     headers = {
