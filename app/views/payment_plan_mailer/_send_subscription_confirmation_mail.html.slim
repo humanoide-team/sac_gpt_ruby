@@ -5,29 +5,35 @@
       / .container__images style="background: url('#{banner_url}')"
 
       .container__box
-        p.container__intro Prezado(a) <strong>#{@subscription.partner.name},</strong>
+        p.container__intro Saudações <strong>#{@subscription.partner.name},</strong>
         br
         br
-        p.container__text É com grande satisfação que confirmamos a sua assinatura do plano [Nome do Plano] no SacGPT! Bem-vindo(a) à nossa comunidade de clientes comprometidos com um atendimento virtual de qualidade e eficiência.
-
+        p.container__text É com grande satisfação que confirmamos a sua assinatura do plano [Nome do Plano] no SacGPT! Boas vindas à nossa comunidade de clientes comprometidos com um atendimento virtual de qualidade e eficiência.
+        br
         p.container__text <strong>Detalhes da Sua Assinatura:</strong>
         br
         p.container__text - Plano: #{@subscription.payment_plan.name}
-        p.container__text - Data do primeiro pagamento: #{@subscription.first_pay_day_date.strftime("%d/%m/%Y")}
-        p.container__text - Recorrencia da cobrança: Mensal
+        p.container__text - Data de Início: #{@subscription.first_pay_day_date.strftime("%d/%m/%Y")}
         p.container__text - Valor: #{@subscription.payment_plan.plan_price_value.to_i / 100}
+        br
+        p.container__text <strong>Detalhes do cartão:</strong>
+        br
+        p.container__text - Número: #{@credit_card.number}
+        p.container__text - Nome: #{@credit_card.holder_name} 
+        p.container__text - Data de expiração: #{@credit_card.expires_at} 
+        p.container__text - Bandeira: #{@credit_card.brand} 
+        p.container__text - Vencimento do cartão: #{@credit_card.expires_at} 
         br
         br
         p.container__text Agradecemos por escolher o SacGPT para otimizar o atendimento ao cliente da sua empresa. A sua assinatura nos permite continuar desenvolvendo e aprimorando nossas soluções de atendimento virtual, visando sempre atender às suas necessidades e proporcionar uma experiência excepcional.
-
+        br
         p.container__text A partir de agora, você terá acesso a todos os recursos exclusivos do seu plano, incluindo [listar recursos ou benefícios específicos do plano]. Para começar a aproveitar ao máximo a sua assinatura, siga os seguintes passos:
-
-        p.container__text 1 - Faça login na sua conta SacGPT usando suas credenciais de assinante.
-        p.container__text 2 - Explore e utilize os recursos do plano para melhorar a eficiência e a qualidade do seu atendimento ao cliente.
         br
-        p.container__text 3 - Caso tenha dúvidas ou precise de suporte, nossa equipe de atendimento está pronta para ajudar. Entre em contato através do e-mail [endereço de e-mail de suporte] ou pelo telefone [número de telefone de suporte].
+        p.container__text 1 - <strong>Faça login</strong> na sua conta SacGPT <strong>usando suas credenciais de assinante.</strong>
+        p.container__text 2 - Explore e <strong>utilize os recursos do plano</strong> para melhorar a eficiência e a qualidade do seu <strong>atendimento ao cliente.</strong>
+        p.container__text 3 - Caso tenha dúvidas ou precise de suporte, <strong>nossa equipe de atendimento está pronta para ajudar.</strong> Entre em contato através do e-mail [endereço de e-mail de suporte] ou pelo telefone [número de telefone de suporte].
         br
-        p.container__text Mais uma vez, agradecemos por escolher o SacGPT como parceiro para aprimorar o atendimento da sua empresa. Estamos ansiosos para ajudá-lo(a) a alcançar seus objetivos de negócios com nossas soluções de atendimento virtual.
+        p.container__text Mais uma vez, agradecemos por escolher o SacGPT como parceiro para aprimorar o atendimento da sua empresa. Estamos ansiosos para te ajudar a alcançar seus objetivos de negócios com nossas soluções de atendimento virtual.
         br
         br
         p.container__text Atenciosamente,

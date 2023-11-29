@@ -2,9 +2,10 @@ class PaymentPlanMailer < ApplicationMailer
   default from: 'from@example.com'
   layout 'mailer'
 
-  def _send_subscription_confirmation_mail(subscription, partner)
+  def _send_subscription_confirmation_mail(subscription, partner, credit_card)
     @partner = partner
     @subscription = subscription
+    @credit_card = credit_card
     mail(to: @partner.email, subject: 'Confirmação de Assinatura do Plano SacGPT')
   end
 

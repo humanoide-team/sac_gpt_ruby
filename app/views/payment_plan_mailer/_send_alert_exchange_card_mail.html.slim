@@ -12,11 +12,9 @@
 
         p.container__text <strong>Detalhes da Troca de Cartão de Crédito:</strong>
         br
-        p.container__text - Numero: #{@credit_card.number} 
-        p.container__text - Nome: #{@credit_card.holder_name} 
-        p.container__text - Data de expiração: #{@credit_card.expires_at} 
-        p.container__text - Marca: #{@credit_card.brand} 
-
+        p.container__text - Assinatura: [Nome do Plano]
+        p.container__text - Antigo Cartão: [Últimos 4 dígitos do Cartão Antigo]
+        p.container__text - Novo Cartão: #{@credit_card.number}
         p.container__text - Data da Troca: #{@credit_card.created_at.strftime("%d/%m/%Y")} 
         br
         br
