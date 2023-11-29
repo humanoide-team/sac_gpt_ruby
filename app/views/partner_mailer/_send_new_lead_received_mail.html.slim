@@ -1,18 +1,20 @@
 .container
   .container__bg
     .holder
-      .subject Novo Lead Recebido: #{@client.name} - SacGPT
+      .subject Nova Lead Recebida: #{@client.name} - SacGPT
       / .container__images style="background: url('#{banner_url}')"
 
       .container__box
-        p.container__intro Prezado(a) <strong>#{@partner.name},</strong>
+        p.container__intro Saudações <strong>#{@partner.name},</strong>
         br
         br
-        p.container__text Gostaríamos de informar que uma novo lead foi recebida através da plataforma SacGPT. Estamos entusiasmados em compartilhar essa atualização com você.
+        p.container__text Gostaríamos de informar que uma nova lead foi recebida através da plataforma SacGPT. Estamos entusiasmados em compartilhar essa atualização com você.
 
-        p.container__text <strong>Detalhes da Novo Lead:</strong>
+        p.container__text <strong>Detalhes da Nova Lead:</strong>
         br
         p.container__text - Nome: #{@client.name}
+        p.container__text - Empresa: #{@partner.name}
+        p.container__text - E-mail: #{@client.email}
         p.container__text - Telefone: #{@client.phone.split('@')[0]}
         p.container__text - Mensagem: #{@lead.message}
         p.container__text - Data e Hora: #{@lead.created_at.strftime("%m/%d/%Y %I:%M %p")}
@@ -24,8 +26,6 @@
         p.container__text Agradecemos pela sua confiança no SacGPT para impulsionar o crescimento dos seus negócios. Estamos aqui para apoiá-lo(a) em todas as etapas.
         br
           = link_to 'Download', "#{ENV['WEB_PAGE']}/chat/#{@client.id}}", class: "btn"
-
         br
         p.container__text Atenciosamente,
-        p.container__text #{@partner.name}
         p.container__text Equipe SacGPT

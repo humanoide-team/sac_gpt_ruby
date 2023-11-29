@@ -51,7 +51,7 @@ class PaymentSubscription < ApplicationRecord
   end
 
   def subscription_confirmation_mail
-    PaymentPlanMailer._send_subscription_confirmation_mail(self, partner).deliver
+    PaymentPlanMailer._send_subscription_confirmation_mail(self, partner, credit_card).deliver
     partner.notifications.create(
       title: 'Confirmação de Assinatura do Plano SacGPT',
       description: "É com grande satisfação que confirmamos a sua assinatura do #{payment_plan.name} no SacGPT!",
