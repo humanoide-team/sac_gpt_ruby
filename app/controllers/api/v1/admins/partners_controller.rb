@@ -2,7 +2,7 @@ class Api::V1::Admins::PartnersController < ApiAdminController
   before_action :set_partner, only: %i[show destroy update]
 
   def index
-    @partners = Partner.all.order(id: :asc)
+    @partners = Partner.all.order(id: :desc)
     render json: PartnerAdminShortSerializer.new(@partners).serialized_json
   end
 
