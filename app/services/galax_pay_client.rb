@@ -218,7 +218,7 @@ class GalaxPayClient
       'Authorization': "Bearer #{token}",
       'Content-Type': 'application/json'
     }
-    response = HTTParty.get("#{BASE_URL}/company/balance/movements?initialDate=#{status}&finalDate=#{startAt}", headers:)
+    response = HTTParty.get("#{BASE_URL}/company/balance/movements?initialDate=#{initialDate}&finalDate=#{finalDate}", headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)
