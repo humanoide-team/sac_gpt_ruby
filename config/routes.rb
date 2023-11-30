@@ -16,6 +16,8 @@ Rails.application.routes.draw do
 
         resources :payment_transactions, only: %i[index]
         get 'payment_transactions/:id/by_client', to: 'payment_transactions#by_client'
+        get 'payment_transactions/balance_movements', to: 'payment_transactions#balance_movements'
+        get 'payment_transactions/balance', to: 'payment_transactions#balance'
       end
 
       namespace :partners do
