@@ -73,4 +73,13 @@ class PaymentSubscription < ApplicationRecord
       }
     )
   end
+
+  def self.top_plan_by_subs
+    top_plan_by_subs = PaymentSubscription.group(:payment_plan_id).count.max_by { |_, count| count }
+    return unless top_plan_by_subs
+
+    payment_plan_id, subscriptions_count = top_plan_by_subs
+    payment_plan = PaymentPlan.find(payment_plan_id)
+    { payment_plan: payment_plan, subscriptions_count: subscriptions_count }
+  end
 end
