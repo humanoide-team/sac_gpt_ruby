@@ -3,7 +3,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   before_action :set_client, only: %i[lead_classification messages_resume destroy]
 
   def index
-    @clients = @current_partner.partner_clients.order(id: :asc).uniq
+    @clients = @current_partner.partner_clients.order(id: :desc).uniq
 
     render json: {
       data: @clients.map do |pc|
