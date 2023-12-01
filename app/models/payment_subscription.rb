@@ -21,7 +21,9 @@ class PaymentSubscription < ApplicationRecord
     active: 0,
     canceled: 1,
     closed: 2,
-    stopped: 3
+    stopped: 3,
+    waitingPayment: 4,
+    inactive: 5
   }
 
   def create_galax_pay_payment_subscription
