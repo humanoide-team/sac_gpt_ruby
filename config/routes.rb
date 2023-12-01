@@ -26,7 +26,7 @@ Rails.application.routes.draw do
         post 'recover_password', to: 'authentication#send_recover_password_mail'
         patch 'recover_password/:id', to: 'authentication#recover_password'
 
-        resources :partners, only: %i[create destroy update]
+        resources :partners, only: %i[show create destroy update]
         patch 'partners/recover_password', to: 'partners#recover_password'
 
         post 'partners/calendar_auth', to: 'partners#calendar_token_auth'

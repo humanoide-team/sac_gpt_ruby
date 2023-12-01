@@ -3,7 +3,7 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
   skip_before_action :authenticate_request, only: %i[create]
 
   def show
-    render json: PartnerAdminSerializer.new(@partner).serialized_json
+    render json: PartnerSerializer.new(@partner).serialized_json
   end
 
   def create
@@ -47,6 +47,6 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
   end
 
   def set_partner
-    @partner = Partner.find(params[:id])
+    @partner = @current_partner
   end
 end
