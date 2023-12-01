@@ -10,7 +10,21 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
     @partner = Partner.new(partner_params)
 
     if @partner.save
-      render json: PartnerSerializer.new(@partner).serialized_json, status: :created
+      options = {
+        email: partner_params[:email],
+        password: partner_params[:password],
+        expires_at: 7.days.from_now
+      }
+
+      command = AuthenticatePartner.call(options)
+
+      if command.success?
+        partner = command.current_partner
+        partner.auth_token = command.result
+        partner.expires_at = options[:expires_at]
+      end
+
+      render json: PartnerSerializer.new(partner).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
     end
