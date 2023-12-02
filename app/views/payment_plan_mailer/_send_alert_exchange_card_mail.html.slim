@@ -1,30 +1,31 @@
-.container
-  .container__bg
-    .holder
-      .subject Aviso de Troca de Cartão de Crédito no SacGPT
-      / .container__images style="background: url('#{banner_url}')"
+.email
+  .email__wrapper
+    table.email__outer
+      = render 'email/header'
+      tr
+        td.email__main-content
+          p.container__intro Prezado(a) <strong>#{@partner.name},</strong>
+          br
+          br
+          p.container__text Esperamos que este e-mail o(a) encontre bem. Gostaríamos de informar sobre uma recente atualização em relação ao método de pagamento associado à sua assinatura no SacGpt.
 
-      .container__box
-        p.container__intro Prezado(a) <strong>#{@partner.name},</strong>
-        br
-        br
-        p.container__text Esperamos que este e-mail o(a) encontre bem. Gostaríamos de informar sobre uma recente atualização em relação ao método de pagamento associado à sua assinatura no SacGPT.
+          p.container__text <strong>Detalhes da Troca de Cartão de Crédito:</strong>
+          br
+          p.container__text - Assinatura: #{@credit_card.payment_subscription.payment_plan.name}
+          p.container__text - Novo Cartão: #{@credit_card.number}
+          p.container__text - Data da Troca: #{@credit_card.created_at.strftime("%d/%m/%Y")} 
+          br
+          br
+          p.container__text Agradecemos por manter sua assinatura conosco. Para garantir a continuidade do acesso aos recursos do seu plano, atualizamos o método de pagamento para o novo cartão de crédito informado.
 
-        p.container__text <strong>Detalhes da Troca de Cartão de Crédito:</strong>
-        br
-        p.container__text - Assinatura: [Nome do Plano]
-        p.container__text - Novo Cartão: #{@credit_card.number}
-        p.container__text - Data da Troca: #{@credit_card.created_at.strftime("%d/%m/%Y")} 
-        br
-        br
-        p.container__text Agradecemos por manter sua assinatura conosco. Para garantir a continuidade do acesso aos recursos do seu plano, atualizamos o método de pagamento para o novo cartão de crédito informado.
+          p.container__text Lembramos que não há nenhuma ação adicional necessária de sua parte. O próximo pagamento relacionado à sua assinatura será debitado do novo cartão a partir de #{@credit_card.payment_subscription.next_payment_day.strftime("%d/%m/%Y")} ..
 
-        p.container__text Lembramos que não há nenhuma ação adicional necessária de sua parte. O próximo pagamento relacionado à sua assinatura será debitado do novo cartão a partir de [Data do Próximo Pagamento].
+          p.container__text Se você tiver alguma pergunta ou precisar de assistência, nossa equipe de suporte está à disposição. Entre em contato através do e-mail <strong>equipe.sacgpt@sacgpt.com.br</strong>.
 
-        p.container__text Se você tiver alguma pergunta ou precisar de assistência, nossa equipe de suporte está à disposição. Entre em contato através do e-mail [endereço de e-mail de suporte] ou pelo telefone [número de telefone de suporte].
+          p.container__text Agradecemos novamente por escolher o SacGpt. Estamos aqui para garantir uma experiência contínua e eficaz no atendimento virtual da sua empresa.
+          br
+          br
+          p.container__text Atenciosamente,
+          p.container__text Equipe SacGpt
 
-        p.container__text Agradecemos novamente por escolher o SacGPT. Estamos aqui para garantir uma experiência contínua e eficaz no atendimento virtual da sua empresa.
-        br
-        br
-        p.container__text Atenciosamente,
-        p.container__text Equipe SacGPT
+      = render 'email/footer'

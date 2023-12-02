@@ -36,8 +36,8 @@ class Partner < ApplicationRecord
   def send_welcome_mail
     PartnerMailer._send_welcome_partner(self).deliver
     notifications.create(
-      title: 'Bem-vindo ao SacGPT! 🎉',
-      description: 'É com grande satisfação que damos as boas-vindas à família SacGPT! Agradecemos por escolher a nossa plataforma.',
+      title: 'Bem-vindo ao SacGpt! 🎉',
+      description: 'É com grande satisfação que damos as boas-vindas à família SacGpt! Agradecemos por escolher a nossa plataforma.',
       notification_type: :welcome_partner
     )
   end

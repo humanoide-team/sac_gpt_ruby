@@ -1,32 +1,33 @@
-.container
-  .container__bg
-    .holder
-      .subject Boas vindas ao SacGPT! 🎉
-      / .container__images style="background: url('#{banner_url}')"
+.email
+  .email__wrapper
+    table.email__outer
+      = render 'email/header'
+      tr
+        td.email__main-content
+          p.container__intro Saudações, <strong>#{@partner.name}</strong>
+          br
+          br
+          p.container__text É com grande satisfação que damos as boas-vindas à família SacGpt! Estamos emocionados por te ter como assinante e agradecemos por escolher a nossa plataforma para aprimorar a experiência de atendimento ao cliente da sua empresa.
+          p.container__text No SacGpt, estamos empenhados em fornecer as melhores soluções de atendimento virtual baseadas em inteligência artificial para ajudar você a oferecer suporte excepcional aos seus clientes. Nossa equipe está constantemente trabalhando para aprimorar e otimizar a plataforma, garantindo que você tenha as ferramentas necessárias para criar interações de alta qualidade e eficiência.
+          br
+          p.container__text <strong>Aqui estão alguns benefícios exclusivos que você pode esperar como assinante do SacGpt:</strong>
+          p.container__text 1 - Respostas instantâneas e precisas para as perguntas dos seus clientes.
+          p.container__text 2 - Personalização avançada para se adequar à identidade da sua marca.
+          p.container__text 3 - Recursos de análise para acompanhar o desempenho e melhorar continuamente.
+          br
+          br
+          p.container__text Para começar a explorar a plataforma e aproveitar ao máximo os recursos disponíveis, siga estes passos simples:
+          p.container__text 1 - Faça login na sua conta SacGpt usando suas credenciais de assinante.
+          p.container__text 2 - Explore as diferentes configurações e personalizações disponíveis para adaptar o atendimento virtual às necessidades da sua empresa.
+          p.container__text 3 - Acompanhe o desempenho do SacGpt no atendimento do sua empresa.
+          br
+          p.container__text Estamos aqui para ajudar em cada etapa do caminho. Se você tiver alguma dúvida, feedback ou precisar de suporte, não hesite em entrar em contato com nossa equipe de suporte técnico. Estamos comprometidos em garantir que sua experiência com o SacGpt seja excelente.
+          br
+          p.container__text Mais uma vez, boas vindas ao SacGpt! Estamos ansiosos para ver o impacto positivo que você trará ao seu atendimento ao cliente com a nossa plataforma.
+          br
+          br
+          p.container__text Atenciosamente,
+          br
+          p.container__text Equipe SacGpt.
 
-      .container__box
-        p.container__intro Saudações <strong>#{@partner.name},</strong>
-        br
-        br
-        p.container__text É com grande satisfação que damos as boas-vindas à família SacGPT! Estamos emocionados por te ter como assinante e agradecemos por escolher a nossa plataforma para aprimorar a experiência de atendimento ao cliente da sua empresa.
-        p.container__text No SacGPT, estamos empenhados em fornecer as melhores soluções de atendimento virtual baseadas em inteligência artificial para ajudar você a oferecer suporte excepcional aos seus clientes. Nossa equipe está constantemente trabalhando para aprimorar e otimizar a plataforma, garantindo que você tenha as ferramentas necessárias para criar interações de alta qualidade e eficiência.
-        br
-        p.container__text <strong>Aqui estão alguns benefícios exclusivos que você pode esperar como assinante do SacGPT:</strong>
-        p.container__text Respostas instantâneas e precisas para as perguntas dos seus clientes.
-        p.container__text Personalização avançada para se adequar à identidade da sua marca.
-        p.container__text Recursos de análise para acompanhar o desempenho e melhorar continuamente.
-        br
-        br
-        p.container__text Para começar a explorar a plataforma e aproveitar ao máximo os recursos disponíveis, siga estes passos simples:
-        p.container__text 1 - Faça login na sua conta SacGPT usando suas credenciais de assinante.
-        p.container__text 2 - Explore as diferentes configurações e personalizações disponíveis para adaptar o atendimento virtual às necessidades da sua empresa.
-        p.container__text 3 - Acompanhe o desempenho do SacGPT no atendimento da sua empresa.
-        br
-        p.container__text Estamos aqui para ajudar em cada etapa do caminho. Se você tiver alguma dúvida, feedback ou precisar de suporte, não hesite em entrar em contato com nossa equipe de suporte técnico. Estamos comprometidos em garantir que sua experiência com o SacGPT seja excelente.
-        br
-        p.container__text Mais uma vez, boas vindas ao SacGPT! Estamos ansiosos para ver o impacto positivo que você trará ao seu atendimento ao cliente com a nossa plataforma.
-        br
-        br
-        p.container__text Atenciosamente,
-        br
-        p.container__text Equipe SacGPT
+      = render 'email/footer'

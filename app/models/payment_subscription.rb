@@ -30,7 +30,7 @@ class PaymentSubscription < ApplicationRecord
     uuid = SecureRandom.uuid
 
     galax_pay_payment_subscription = GalaxPayClient.create_payment_subscription(uuid, payment_plan.galax_pay_my_id, first_pay_day_date, additional_info,
-                                                          main_payment_method_id, partner, credit_card.galax_pay_my_id)
+                                                                                main_payment_method_id, partner, credit_card.galax_pay_my_id)
 
     if galax_pay_payment_subscription.nil?
       errors.add(:base, 'Erro ao criar Inscricao')
@@ -43,20 +43,31 @@ class PaymentSubscription < ApplicationRecord
     end
   end
 
+  def edit_payment_method_galax_pay_payment_subscription(credit_card)
+    galax_pay_payment_subscription = GalaxPayClient.edit_payment_subscription_credit_card(galax_pay_id,
+                                                                                          payment_plan.plan_price_value.to_i, payment_plan.plan_price_payment, credit_card.galax_pay_my_id)
+
+    return false if galax_pay_payment_subscription.nil?
+
+    update_attribute(:credit_card_id, credit_card.id)
+  end
+
   def cancel_galax_pay_payment_subscription
     response = GalaxPayClient.cancel_payment_subscription(galax_pay_id)
 
     return unless response == true
 
     update_attribute(:status, 'canceled')
+    update_attribute(:credit_card_id, nil)
+
     cancellation_plan_mail
   end
 
   def subscription_confirmation_mail
     PaymentPlanMailer._send_subscription_confirmation_mail(self, partner, credit_card).deliver
     partner.notifications.create(
-      title: 'Confirmação de Assinatura do Plano SacGPT',
-      description: "É com grande satisfação que confirmamos a sua assinatura do #{payment_plan.name} no SacGPT!",
+      title: 'Confirmação de Assinatura do Plano SacGpt',
+      description: "É com grande satisfação que confirmamos a sua assinatura do #{payment_plan.name} no SacGpt!",
       notification_type: :subscription_confirmation,
       metadata: {
         payment_subscription: id
@@ -67,12 +78,28 @@ class PaymentSubscription < ApplicationRecord
   def cancellation_plan_mail
     PaymentPlanMailer._send_cancellation_plan_mail(self, partner).deliver
     partner.notifications.create(
-      title: 'Confirmação de Cancelamento do Plano SacGPT',
+      title: 'Confirmação de Cancelamento do Plano SacGpt',
       description: 'Recebemos a sua solicitação de cancelamento do plano. Lamentamos ver você partir e gostaríamos de agradecer por ter sido parte da nossa comunidade.',
       notification_type: :cancellation_plan,
       metadata: {
         payment_subscription: id
       }
     )
+  end
+
+  def next_payment_day
+    today = Date.today
+    year = today.year
+    month = today.month
+    payment_day = first_pay_day_date.day
+
+    if today <= Date.new(year, month, payment_day)
+      Date.new(year, month, payment_day)
+    else
+
+      next_month = month == 12 ? 1 : month + 1
+      next_year = month == 12 ? year + 1 : year
+      Date.new(next_year, next_month, payment_day)
+    end
   end
 end

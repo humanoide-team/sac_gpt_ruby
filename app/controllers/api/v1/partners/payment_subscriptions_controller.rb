@@ -43,7 +43,7 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
   end
 
   def destroy
-    if @payment_subscription.destroy
+    if @payment_subscription.cancel_galax_pay_payment_subscription
       @current_partner.update(active: false)
       render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :ok
     else
