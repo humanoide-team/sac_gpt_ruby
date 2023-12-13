@@ -7,9 +7,9 @@
           p.container__intro Saudações, <strong>#{@partner.name}</strong>
           br
           br
-          p.container__text Gostaríamos de informar que uma nova lead foi recebida através da plataforma SacGpt. Estamos entusiasmados em compartilhar essa atualização com você.
+          p.container__text Gostaríamos de informar que um novp lead foi recebido através da plataforma SacGPT. Estamos entusiasmados em compartilhar essa atualização com você.
 
-          p.container__text <strong>Detalhes da Nova Lead:</strong>
+          p.container__text <strong>Detalhes do Novo Lead:</strong>
           br
           p.container__text - Nome: #{@client.name}
           p.container__text - Empresa: #{@partner.name}
@@ -19,14 +19,14 @@
           p.container__text - Data e Hora: #{@lead.created_at.strftime("%m/%d/%Y %I:%M %p")}
           br
           br
-          p.container__text Agradecemos por confiar no SacGpt para ajudar a capturar e gerenciar leads de forma eficaz. A sua plataforma de atendimento virtual está contribuindo para conectar a sua empresa com potenciais clientes de maneira mais rápida e conveniente.
-          p.container__text Para visualizar mais detalhes ou tomar medidas em relação a esta lead, acesse a sua conta SacGpt e vá para a seção de gerenciamento de leads.
+          p.container__text Agradecemos por confiar no SacGPT para ajudar a capturar e gerenciar leads de forma eficaz. A sua plataforma de atendimento virtual está contribuindo para conectar a sua empresa com potenciais clientes de maneira mais rápida e conveniente.
+          p.container__text Para visualizar mais detalhes ou tomar medidas em relação a este lead, acesse a sua conta SacGPT e vá para a seção de gerenciamento de leads.
           p.container__text Se você tiver alguma pergunta ou precisar de assistência, nossa equipe de suporte está à disposição. Entre em contato através do e-mail <strong>equipe.sacgpt@sacgpt.com.br</strong>.
-          p.container__text Agradecemos pela sua confiança no SacGpt para impulsionar o crescimento dos seus negócios. Estamos aqui para apoiá-lo(a) em todas as etapas.
+          p.container__text Agradecemos pela sua confiança no SacGPT para impulsionar o crescimento dos seus negócios. Estamos aqui para apoiá-lo(a) em todas as etapas.
           br
-            = link_to 'Download', "#{ENV['WEB_PAGE']}/chat/#{@client.id}}", class: "btn"
+
           br
           p.container__text Atenciosamente,
-          p.container__text Equipe SacGpt
+          p.container__text Equipe SacGPT
 
       = render 'email/footer'

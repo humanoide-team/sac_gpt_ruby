@@ -13,7 +13,7 @@ class PartnerClientMessage < ApplicationRecord
     PartnerMailer._send_new_lead_received_mail(self).deliver
     partner.notifications.create(
       title: 'Novo Lead Recebido',
-      description: 'Gostaríamos de informar que uma novo lead foi recebida através da plataforma SacGpt. Estamos entusiasmados em compartilhar essa atualização com você.',
+      description: 'Gostaríamos de informar que uma novo lead foi recebida através da plataforma SacGPT. Estamos entusiasmados em compartilhar essa atualização com você.',
       notification_type: :new_lead_received,
       metadata: {
         partner_client_message: id,

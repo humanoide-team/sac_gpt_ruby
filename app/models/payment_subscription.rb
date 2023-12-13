@@ -66,8 +66,8 @@ class PaymentSubscription < ApplicationRecord
   def subscription_confirmation_mail
     PaymentPlanMailer._send_subscription_confirmation_mail(self, partner, credit_card).deliver
     partner.notifications.create(
-      title: 'Confirmação de Assinatura do Plano SacGpt',
-      description: "É com grande satisfação que confirmamos a sua assinatura do #{payment_plan.name} no SacGpt!",
+      title: 'Confirmação de Assinatura do Plano SacGPT',
+      description: "É com grande satisfação que confirmamos a sua assinatura do #{payment_plan.name} no SacGPT!",
       notification_type: :subscription_confirmation,
       metadata: {
         payment_subscription: id
@@ -78,7 +78,7 @@ class PaymentSubscription < ApplicationRecord
   def cancellation_plan_mail
     PaymentPlanMailer._send_cancellation_plan_mail(self, partner).deliver
     partner.notifications.create(
-      title: 'Confirmação de Cancelamento do Plano SacGpt',
+      title: 'Confirmação de Cancelamento do Plano SacGPT',
       description: 'Recebemos a sua solicitação de cancelamento do plano. Lamentamos ver você partir e gostaríamos de agradecer por ter sido parte da nossa comunidade.',
       notification_type: :cancellation_plan,
       metadata: {

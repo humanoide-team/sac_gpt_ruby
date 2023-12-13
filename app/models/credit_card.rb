@@ -40,8 +40,8 @@ class CreditCard < ApplicationRecord
   def alert_exchange_card_mail
     PaymentPlanMailer._send_alert_exchange_card_mail(self, partner).deliver
     partner.notifications.create(
-      title: 'Aviso de Troca de Cartão de Crédito no SacGpt',
-      description: 'Recebemos uma atualização em relação ao método de pagamento associado à sua assinatura no SacGpt.',
+      title: 'Aviso de Troca de Cartão de Crédito no SacGPT',
+      description: 'Recebemos uma atualização em relação ao método de pagamento associado à sua assinatura no SacGPT.',
       notification_type: :alert_exchange_card,
       metadata: {
         payment_subscription: id

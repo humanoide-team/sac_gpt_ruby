@@ -45,7 +45,7 @@ class Api::V1::WebhooksController < ApiController
     Thread.new { aguardar_e_enviar_resposta(@partner, @client, partner_client_message) }
   end
 
-  def aguardar_e_enviar_resposta(partner, client, partner_client_message, tempo_espera = 20)
+  def aguardar_e_enviar_resposta(partner, client, partner_client_message, tempo_espera = 8)
     sleep(tempo_espera)
     last_response = client.partner_client_messages.by_partner(partner).order(:created_at).last
     return if !last_response.nil? && last_response.created_at > partner_client_message.created_at
