@@ -12,7 +12,7 @@
           p.container__text <strong>Detalhes da Troca de Cartão de Crédito:</strong>
           br
           p.container__text - Assinatura: #{@credit_card.payment_subscription.payment_plan.name}
-          p.container__text - Novo Cartão: #{@credit_card.number}
+          p.container__text - Novo Cartão: #{@credit_card.mask_credit_card_number}
           p.container__text - Data da Troca: #{@credit_card.created_at.strftime("%d/%m/%Y")} 
           br
           br

@@ -54,4 +54,9 @@ class CreditCard < ApplicationRecord
 
     partner.credit_cards.where(default: true).update(default: false)
   end
+
+  def mask_credit_card_number
+    number.gsub(/.(?=....)/, '*')
+  end
+
 end

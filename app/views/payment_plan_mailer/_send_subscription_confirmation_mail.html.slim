@@ -17,7 +17,7 @@
           br
           p.container__text <strong>Detalhes do cartão:</strong>
           br
-          p.container__text - Número: #{@credit_card.number}
+          p.container__text - Número: #{@credit_card.mask_credit_card_number}
           p.container__text - Nome: #{@credit_card.holder_name} 
           p.container__text - Data de expiração: #{@credit_card.expires_at} 
           p.container__text - Bandeira: #{@credit_card.brand} 
