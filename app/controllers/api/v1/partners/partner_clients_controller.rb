@@ -13,6 +13,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
           attributes: {
             name: pc.name,
             phone: pc.phone,
+            lastMessage: pc.partner_client_messages.last.created_at,
             leadScore: !partner_client_lead.nil? ? partner_client_lead.lead_score : nil,
             createdAt: pc.created_at,
             updatedAt: pc.updated_at
