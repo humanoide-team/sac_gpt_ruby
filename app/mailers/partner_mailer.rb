@@ -19,4 +19,9 @@ class PartnerMailer < ApplicationMailer
     @client = lead.partner_client
     mail(to: @partner.email, subject: 'Novo Lead Recebido - SacGPT')
   end
+
+  def _send_support_mail(contact, subject, body)
+    @body = body
+    mail(to: 'equipe.sacgpt@sacgpt.com.br', subject: subject, from: contact)
+  end
 end
