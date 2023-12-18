@@ -51,6 +51,9 @@ Rails.application.routes.draw do
         put 'payment_subscriptions/:id/cancel', to: 'payment_subscriptions#cancel'
 
         resources :payment_transactions, only: %i[index]
+
+        post 'support/send_mail', to: 'support#send_mail'
+
       end
     end
   end
