@@ -137,6 +137,34 @@ class GalaxPayClient
     end
   end
 
+  def self.edit_payment_subscription_credit_card(subscription_galax_pay_id, value, mainPaymentMethodId, credit_card_my_id)
+    # https://docs.galaxpay.com.br/subscriptions/edit-value
+    data = {
+      value:,
+      mainPaymentMethodId:,
+      PaymentMethodCreditCard: {
+        Card: {
+          myId: credit_card_my_id,
+        }
+      }
+    }
+    body = data.to_json
+
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.put("#{BASE_URL}/subscriptions/#{subscription_galax_pay_id}/galaxPayId", body:, headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      JSON.parse(response.body)['Subscription']
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+    end
+  end
+
   def self.cancel_payment_subscription(subscription_galax_pay_id)
     # https://docs.galaxpay.com.br/subscriptions/cancel
 

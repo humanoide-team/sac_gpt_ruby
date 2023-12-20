@@ -1,0 +1,13 @@
+.email
+  .email__wrapper
+    table.email__outer
+      = render 'email/header'
+      tr
+        td.email__main-content
+          br
+          br
+          p.container__text = @body
+          br
+
+
+      = render 'email/footer'

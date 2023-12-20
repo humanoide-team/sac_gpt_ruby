@@ -20,6 +20,11 @@ class Api::V1::Partners::CreditCardsController < ApiPartnerController
   end
 
   def destroy
+    unless @credit_card.payment_subscription.nil?
+      return render json: { error: 'Cartão de credito associado a uma assinatura não pode ser excluido' },
+                    status: :unprocessable_entity
+    end
+
     if @credit_card.destroy
       render json: CreditCardSerializer.new(@credit_card).serialized_json, status: :ok
     else

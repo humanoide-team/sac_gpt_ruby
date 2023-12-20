@@ -2,8 +2,8 @@ class PartnerClientMessage < ApplicationRecord
   belongs_to :partner
   belongs_to :partner_client
 
-  scope :by_partner_id, ->(partner_id) { where(partner_id: partner_id) }
-  scope :by_partner, ->(partner) { where(partner: partner) }
+  scope :by_partner_id, ->(partner_id) { where(partner_id:) }
+  scope :by_partner, ->(partner) { where(partner:) }
 
   after_create :new_lead_received_mail
 
@@ -17,7 +17,7 @@ class PartnerClientMessage < ApplicationRecord
       notification_type: :new_lead_received,
       metadata: {
         partner_client_message: id,
-        partner_client: partner_client
+        partner_client:
       }
     )
   end

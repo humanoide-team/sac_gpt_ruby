@@ -4,14 +4,18 @@ class CreditCard < ApplicationRecord
   belongs_to :partner
 
   before_create :create_galax_pay_credit_card
-  after_create :alert_exchange_card_mail
+  before_create :set_all_credit_card_default_false
+
+  after_create :change_subscription_payment_method
+  has_one :payment_subscription
 
   attr_accessor :card_number, :card_holder_name, :card_cvv
 
   def create_galax_pay_credit_card
     uuid = SecureRandom.uuid
 
-    galax_pay_credit_card = GalaxPayClient.create_client_payment_card(uuid, card_number, card_holder_name, expires_at, card_cvv, partner.galax_pay_id)
+    galax_pay_credit_card = GalaxPayClient.create_client_payment_card(uuid, card_number, card_holder_name, expires_at,
+                                                                      card_cvv, partner.galax_pay_id)
     if galax_pay_credit_card.nil?
       errors.add(:base, 'Dados do cartão invalido')
       throw :abort
@@ -26,6 +30,13 @@ class CreditCard < ApplicationRecord
     end
   end
 
+  def change_subscription_payment_method
+    payment_subscriptions = partner.payment_subscriptions.where(status: :active)
+    return if payment_subscriptions.empty?
+
+    alert_exchange_card_mail if payment_subscriptions.first.edit_payment_method_galax_pay_payment_subscription(self)
+  end
+
   def alert_exchange_card_mail
     PaymentPlanMailer._send_alert_exchange_card_mail(self, partner).deliver
     partner.notifications.create(
@@ -37,4 +48,15 @@ class CreditCard < ApplicationRecord
       }
     )
   end
+
+  def set_all_credit_card_default_false
+    return unless default && default_changed?
+
+    partner.credit_cards.where(default: true).update(default: false)
+  end
+
+  def mask_credit_card_number
+    number.gsub(/.(?=....)/, '*')
+  end
+
 end

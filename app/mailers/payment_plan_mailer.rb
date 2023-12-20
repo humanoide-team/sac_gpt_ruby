@@ -1,5 +1,5 @@
 class PaymentPlanMailer < ApplicationMailer
-  default from: 'from@example.com'
+  default from: 'noreply@sacgpt.com.br'
   layout 'mailer'
 
   def _send_subscription_confirmation_mail(subscription, partner, credit_card)
@@ -9,10 +9,10 @@ class PaymentPlanMailer < ApplicationMailer
     mail(to: @partner.email, subject: 'Confirmação de Assinatura do Plano SacGPT')
   end
 
-  # def _send_renovation_plan_mail(partner)
-  #   @partner = partner
-  #   mail(to: @partner.email, subject: 'Renovação de Plano Mensal SacGPT')
-  # end
+  def _send_renovation_plan_mail(partner)
+    @partner = partner
+    mail(to: @partner.email, subject: 'Renovação de Plano Mensal SacGPT')
+  end
 
   def _send_cancellation_plan_mail(subscription, partner)
     @partner = partner
