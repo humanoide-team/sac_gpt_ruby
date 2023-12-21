@@ -5,7 +5,7 @@ class Schedule < ApplicationRecord
   belongs_to :partner
   belongs_to :partner_client
 
-  after_create :create_event
+  before_create :create_event
 
   def create_event
     return if partner.access_token.nil?
@@ -37,7 +37,6 @@ class Schedule < ApplicationRecord
     begin
       client.authorization = secrets.to_authorization
       client.authorization.grant_type = 'refresh_token'
-
       unless partner.present?
         client.authorization.refresh!
         partner.update_attributes(

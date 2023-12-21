@@ -95,24 +95,31 @@ class Api::V1::WebhooksController < ApiController
       end
     end
 
-    response = gerar_resposta(last_response.message, historico_conversa).gsub("\n", ' ').strip
-    identificar_agendamento(response)
-    last_response.update(automatic_response: response)
+    text_response = gerar_resposta(last_response.message, historico_conversa).gsub("\n", ' ').strip
+    text_response = identificar_agendamento(text_response)
+    last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], response, partner.instance_key)
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
   end
 
   def identificar_agendamento(response)
-    return unless @partner.partner_detail.meeting_objective?
+    return response unless @partner.partner_detail.meeting_objective?
 
     regex = %r{#Agendamento para o dia (\d{2}/\d{2}/\d{4}) às (\d{2}:\d{2})#}
     match_data = response.match(regex)
-    return unless match_data
+
+    return response unless match_data
 
     data_hora_string = "#{match_data[1]} #{match_data[2]}"
-    data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M').change(offset: '+0300')
-    Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{@client.name}", date_time_start: data_hora,
-                    date_time_end: data_hora + 1.hour, partner_id: @partner.id, partner_client_id: @client.id)
+    data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
+    schedule = Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{@client.name}", date_time_start: data_hora + 3.hours,
+                    date_time_end: data_hora + 4.hours, partner_id: @partner.id, partner_client_id: @client.id)
+
+    if schedule
+      "Agendamento para o dia #{match_data[1]} as #{match_data[2]}"
+    else
+      'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
+    end
   end
 
   def gerar_resposta(pergunta, historico_conversa)
