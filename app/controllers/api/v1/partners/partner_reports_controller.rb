@@ -3,7 +3,7 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
     # Overview
     partner_leads = @current_partner.partner_client_leads
     lead_count = partner_leads.count
-    client_scores = partner_leads.map do |pl|
+    client_scores = partner_leads.order(lead_score: :desc).limit(10).map do |pl|
       {
         client: PartnerClientSerializer.new(pl.partner_client),
         clientScore: pl.lead_score

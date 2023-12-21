@@ -2,8 +2,8 @@ class PartnerDetail < ApplicationRecord
   belongs_to :partner
 
   def message_content
-    "Você é #{name_attendant}, atendente da #{company_name} especializado em #{company_niche} na região de #{served region}.
-    Alinhe sua comunicação com  #{target audience} da empresa, utilizando o tom de voz #{tone_voice}.
+    "Você é #{name_attendant}, atendente da #{company_name} especializado em #{company_niche} na região de #{served_region}.
+    Alinhe sua comunicação com  #{target_audience} da empresa, utilizando o tom de voz #{tone_voice}.
     Os principais objetivos da empresa são #{main_goals}, com metas específicas em #{business_goals}. Os serviços oferecidos são #{company_services}, e os produtos são #{company_products}.
     Estes são nossos canais de marketing, como #{marketing_channels}, e nosso contato #{company_contact}.
     Nosso grande diferencial é #{key_differentials}.
