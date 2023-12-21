@@ -54,7 +54,6 @@ class Schedule < ApplicationRecord
     client
   end
 
-  private
 
   def get_event
     Google::Apis::CalendarV3::Event.new(
