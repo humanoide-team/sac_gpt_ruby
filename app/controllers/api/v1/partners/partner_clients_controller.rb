@@ -121,6 +121,9 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
           temperature: 0.7
         }
       )
+      token_count = @partner_client_lead.token_count.nil? ? response['usage']['total_tokens'].to_i : @partner_client_lead.token_count += response['usage']['total_tokens'].to_i
+      @partner_client_lead.update(token_count:)
+
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e
       puts e

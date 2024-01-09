@@ -1,4 +1,6 @@
 require 'openai'
+require 'tiktoken_ruby'
+
 class Api::V1::WebhooksController < ApiController
   def whatsapp
     @partner = Partner.find_by(instance_key: params['instanceKey'])
@@ -35,6 +37,12 @@ class Api::V1::WebhooksController < ApiController
                          ' '
                        end
 
+    @partner_client_lead = @client.partner_client_leads.by_partner(@partner).first
+
+    if @partner_client_lead.nil?
+      @partner_client_lead = @client.partner_client_leads.create(partner: @partner, token_count: 0)
+    end
+
     if @client.partner_client_messages.by_partner(@partner).map(&:webhook_uuid).include?(params['body']['key']['id'])
       render json: { status: 'OK', current_date: DateTime.now.to_s,
                      params: }
@@ -59,12 +67,7 @@ class Api::V1::WebhooksController < ApiController
       messages = client.partner_client_messages.by_partner(partner)
 
       generate_message_history(messages, historico_conversa)
-
-      messages_length = 0
-
-      historico_conversa.each { |m| messages_length += m[:content].length }
-
-      if messages_length >= 4000
+      if num_tokens_from_messages(historico_conversa) >= 1000
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
         partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
@@ -81,12 +84,7 @@ class Api::V1::WebhooksController < ApiController
                                                                           partner_client_conversation_info.updated_at).order(:created_at)
 
       generate_message_history(messages, historico_conversa)
-
-      messages_length = 0
-
-      historico_conversa.each { |m| messages_length += m[:content].length }
-
-      if messages_length >= 4000
+      if num_tokens_from_messages(historico_conversa) >= 1000
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
 
         historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
@@ -138,6 +136,10 @@ class Api::V1::WebhooksController < ApiController
           temperature: 0.7
         }
       )
+
+      token_count = @partner_client_lead.token_count.nil? ? response['usage']['total_tokens'].to_i : @partner_client_lead.token_count += response['usage']['total_tokens'].to_i
+      @partner_client_lead.update(token_count:)
+
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e
       puts e
@@ -162,5 +164,19 @@ class Api::V1::WebhooksController < ApiController
       historico_conversa << { role: 'user', content: pcm.message }
       historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
     end
+  end
+
+  def num_tokens_from_messages(messages, model="gpt-4")
+    encoding = Tiktoken.encoding_for_model(model)
+    num_tokens = 0
+    messages.each do |message|
+      num_tokens += 4
+      message.each do |key, value|
+        num_tokens += encoding.encode(value).length
+        num_tokens -= 1 if key == 'name'
+      end
+    end
+    num_tokens += 2
+    num_tokens
   end
 end

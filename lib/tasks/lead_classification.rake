@@ -7,13 +7,13 @@ namespace :lead_classification do
       partner_clients = current_partner.partner_clients.uniq
 
       partner_clients.each do |client|
-        partner_client_lead = client.partner_client_leads.by_partner(current_partner).first
+        @partner_client_lead = client.partner_client_leads.by_partner(current_partner).first
 
         last_message = client.partner_client_messages.by_partner(current_partner).last
 
         historico_conversa = messages(current_partner, client)
 
-        if partner_client_lead.nil? && last_message.created_at < DateTime.now - 1.hour
+        if @partner_client_lead.nil? && last_message.created_at < DateTime.now - 1.hour
 
           lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
 
@@ -27,7 +27,7 @@ namespace :lead_classification do
 
           client.partner_client_leads.create(partner: current_partner,
                                              lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
-        elsif !partner_client_lead.nil? && !last_message.nil? && last_message.created_at > partner_client_lead.updated_at && last_message.created_at < DateTime.now - 1.hour
+        elsif !@partner_client_lead.nil? && !last_message.nil? && last_message.created_at > @partner_client_lead.updated_at && last_message.created_at < DateTime.now - 1.hour
 
           lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
           lead_classification = gerar_resposta(lead_classification_question, historico_conversa).gsub("\n", ' ').strip
@@ -38,7 +38,7 @@ namespace :lead_classification do
           lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
           lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
 
-          partner_client_lead.update(lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
+          @partner_client_lead.update(lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
         end
         sleep(5)
       end
@@ -84,6 +84,10 @@ namespace :lead_classification do
           temperature: 0.7
         }
       )
+
+      token_count = @partner_client_lead.token_count.nil? ? response['usage']['total_tokens'].to_i : @partner_client_lead.token_count += response['usage']['total_tokens'].to_i
+      @partner_client_lead.update(token_count:)
+
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e
       puts e

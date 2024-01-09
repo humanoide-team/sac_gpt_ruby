@@ -360,6 +360,7 @@ GEM
       sprockets (>= 3.0.0)
     temple (0.10.2)
     thor (1.2.2)
+    tiktoken_ruby (0.0.6-x86_64-linux)
     tilt (2.2.0)
     timeout (0.4.0)
     trailblazer-option (0.1.2)
@@ -437,6 +438,7 @@ DEPENDENCIES
   simple_command
   slim-rails
   spring
+  tiktoken_ruby
   turbolinks (~> 5)
   tzinfo-data
   web-console (>= 4.1.0)
