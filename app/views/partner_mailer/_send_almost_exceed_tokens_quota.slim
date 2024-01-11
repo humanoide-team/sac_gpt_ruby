@@ -1,0 +1,16 @@
+.email
+  .email__wrapper
+    table.email__outer
+      = render 'email/header'
+      tr
+        td.email__main-content
+          p.container__intro Saudações, <strong>#{@partner.name}</strong>
+          br
+          br
+          p.container__text Atigiu 90% da sua cota de tokens
+
+          br
+          p.container__text Atenciosamente,
+          p.container__text Equipe SacGPT
+
+      = render 'email/footer'

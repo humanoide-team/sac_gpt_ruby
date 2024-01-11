@@ -2,6 +2,7 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
   def index
     # Overview
     partner_leads = @current_partner.partner_client_leads
+    montly_usage = @current_partner.current_mothly_history
     lead_count = partner_leads.count
     client_scores = partner_leads.order(lead_score: :desc).limit(10).map do |pl|
       {
@@ -26,7 +27,9 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
           attendantPerformance: {
             answersCount: answers_count
           },
-          usageStatistics: {},
+          usageStatistics: {
+            montlyTokensConsumed: montly_usage.max_token_count
+          },
           salesAnalysis: {}
         }
       }

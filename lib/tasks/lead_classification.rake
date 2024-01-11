@@ -4,6 +4,8 @@ namespace :lead_classification do
     partners = Partner.all
 
     partners.each do |current_partner|
+      next unless current_partner.active
+
       partner_clients = current_partner.partner_clients.uniq
 
       partner_clients.each do |client|
@@ -85,8 +87,10 @@ namespace :lead_classification do
         }
       )
 
-      token_count = @partner_client_lead.token_count.nil? ? response['usage']['total_tokens'].to_i : @partner_client_lead.token_count += response['usage']['total_tokens'].to_i
-      @partner_client_lead.update(token_count:)
+      token_cost = response['usage']['total_tokens'].to_i
+      montly_history = @partner.current_mothly_history
+      montly_history.increase_token_count(token_cost)
+      @partner_client_lead.increase_token_count(token_cost)
 
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e

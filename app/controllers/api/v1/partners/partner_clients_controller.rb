@@ -3,7 +3,9 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   before_action :set_client, only: %i[lead_classification messages_resume destroy]
 
   def index
-    @clients = @current_partner.partner_clients.sort_by { |pc| pc.partner_client_messages.by_partner(@current_partner).last }.reverse!.uniq
+    @clients = @current_partner.partner_clients.sort_by do |pc|
+      pc.partner_client_messages.by_partner(@current_partner).last
+    end.reverse!.uniq
     render json: {
       data: @clients.map do |pc|
         partner_client_lead = pc.partner_client_leads.by_partner(@current_partner).first
@@ -32,6 +34,13 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   end
 
   def lead_classification
+    unless @client.active
+      @partner_client_lead = @client.partner_client_leads.create(partner: @current_partner,
+                                                                 lead_classification: '', conversation_summary: '', lead_score: 0)
+
+      return render json: PartnerClientLeadSerializer.new(@partner_client_lead).serialized_json, status: :ok
+    end
+
     @partner_client_lead = @client.partner_client_leads.by_partner(@current_partner).first
 
     last_message = @client.partner_client_messages.by_partner(@current_partner).last
@@ -52,7 +61,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
 
       @partner_client_lead = @client.partner_client_leads.create(partner: @current_partner,
-                                                                lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
+                                                                 lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
     elsif !@partner_client_lead.nil? && !last_message.nil? && last_message.created_at > @partner_client_lead.updated_at
 
       lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
@@ -69,7 +78,6 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
     render json: PartnerClientLeadSerializer.new(@partner_client_lead).serialized_json, status: :ok
   end
-
 
   def messages_resume
     pergunta = 'Faca um resumo de toda essa conversa em um paragrafo'
@@ -94,9 +102,11 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
     if messages_length >= 9500
       historico_conversa = [{ role: 'system', content: partner.partner_detail.message_content }]
-      historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{@partner_client_lead.conversation_summary}"}
+      historico_conversa << { role: 'system',
+                              content: "Resumo da conversa anterior: #{@partner_client_lead.conversation_summary}" }
 
-      client.partner_client_messages.by_partner(partner).where('created_at > ?', @partner_client_lead.updated_at).order(:created_at).each do |pcm|
+      client.partner_client_messages.by_partner(partner).where('created_at > ?',
+                                                               @partner_client_lead.updated_at).order(:created_at).each do |pcm|
         historico_conversa << { role: 'user', content: pcm.message }
         historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
       end
@@ -121,8 +131,11 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
           temperature: 0.7
         }
       )
-      token_count = @partner_client_lead.token_count.nil? ? response['usage']['total_tokens'].to_i : @partner_client_lead.token_count += response['usage']['total_tokens'].to_i
-      @partner_client_lead.update(token_count:)
+
+      token_cost = response['usage']['total_tokens'].to_i
+      montly_history = @partner.current_mothly_history
+      montly_history.increase_token_count(token_cost)
+      @partner_client_lead.increase_token_count(token_cost)
 
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e

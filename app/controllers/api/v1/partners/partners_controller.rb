@@ -48,7 +48,7 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
 
   def calendar_token_auth
     if @partner.update(calendar_token: partner_params[:calendar_token])
-      render json: { error: 'Conta conectada' }, status: 200
+      render json: { message: 'Conta conectada' }, status: 200
     else
       render json: { error: 'Usuário não existe' }, status: 401
     end

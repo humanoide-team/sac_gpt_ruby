@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_09_001656) do
+ActiveRecord::Schema.define(version: 2024_01_11_004919) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,6 +60,15 @@ ActiveRecord::Schema.define(version: 2024_01_09_001656) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "montly_usage_histories", force: :cascade do |t|
+    t.date "period"
+    t.integer "token_count", default: 0
+    t.bigint "partner_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_montly_usage_histories_on_partner_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -193,6 +202,7 @@ ActiveRecord::Schema.define(version: 2024_01_09_001656) do
     t.integer "galax_pay_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "max_token_count"
   end
 
   create_table "payment_subscriptions", force: :cascade do |t|
@@ -208,6 +218,7 @@ ActiveRecord::Schema.define(version: 2024_01_09_001656) do
     t.string "galax_pay_my_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "max_token_count", default: 0
     t.index ["credit_card_id"], name: "index_payment_subscriptions_on_credit_card_id"
     t.index ["partner_id"], name: "index_payment_subscriptions_on_partner_id"
     t.index ["payment_plan_id"], name: "index_payment_subscriptions_on_payment_plan_id"
@@ -237,6 +248,7 @@ ActiveRecord::Schema.define(version: 2024_01_09_001656) do
   end
 
   add_foreign_key "credit_cards", "partners"
+  add_foreign_key "montly_usage_histories", "partners"
   add_foreign_key "notifications", "partners"
   add_foreign_key "partner_client_conversation_infos", "partner_clients"
   add_foreign_key "partner_client_conversation_infos", "partners"

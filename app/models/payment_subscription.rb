@@ -33,13 +33,14 @@ class PaymentSubscription < ApplicationRecord
                                                                                 main_payment_method_id, partner, credit_card.galax_pay_my_id)
 
     if galax_pay_payment_subscription.nil?
-      errors.add(:base, 'Erro ao criar Inscricao')
+      errors.add(:base, 'Erro ao criar Inscricao verifique os daddos')
       throw :abort
     else
       self.galax_pay_id = galax_pay_payment_subscription['galaxPayId'].to_i
       self.status = galax_pay_payment_subscription['status']
       self.payment_link = galax_pay_payment_subscription['paymentLink']
       self.galax_pay_my_id = galax_pay_payment_subscription['myId']
+      self.max_token_count = payment_plan.max_token_count
     end
   end
 

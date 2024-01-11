@@ -4,4 +4,9 @@ class PartnerClientLead < ApplicationRecord
 
   scope :by_partner_id, ->(partner_id) { where(partner_id: partner_id) }
   scope :by_partner, ->(partner) { where(partner: partner) }
+
+  def increase_token_count(tokens)
+    self.token_count += tokens
+    save
+  end
 end

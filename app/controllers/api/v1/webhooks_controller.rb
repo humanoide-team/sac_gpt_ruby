@@ -9,7 +9,8 @@ class Api::V1::WebhooksController < ApiController
     puts permitted_params
     NodeApiClient.send_callback(permitted_params.to_h)
     puts '***************ENVIOU CALLBACK************************'
-    if @partner.nil? || @partner.partner_detail.nil?
+
+    if @partner.nil? || @partner.partner_detail.nil? || !@partner.active
       return render json: { status: 'OK', current_date: DateTime.now.to_s,
                             params: }
     end
@@ -137,8 +138,10 @@ class Api::V1::WebhooksController < ApiController
         }
       )
 
-      token_count = @partner_client_lead.token_count.nil? ? response['usage']['total_tokens'].to_i : @partner_client_lead.token_count += response['usage']['total_tokens'].to_i
-      @partner_client_lead.update(token_count:)
+      token_cost = response['usage']['total_tokens'].to_i
+      montly_history = @partner.current_mothly_history
+      montly_history.increase_token_count(token_cost)
+      @partner_client_lead.increase_token_count(token_cost)
 
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e

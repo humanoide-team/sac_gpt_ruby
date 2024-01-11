@@ -24,4 +24,19 @@ class PartnerMailer < ApplicationMailer
     @body = body
     mail(to: 'equipe.sacgpt@sacgpt.com.br', subject: subject, from: contact)
   end
+
+  def _send_exceed_tokens_quota(partner)
+    @partner = partner
+    mail(to: @partner.email, subject: 'Sua ultrapassou sua cota de tokens - SacGPT')
+  end
+
+  def _send_almost_exceed_tokens_quota(partner)
+    @partner = partner
+    mail(to: @partner.email, subject: 'Sua cota de tokens esta quase acabando - SacGPT')
+  end
+
+  def _send_half_tokens_quota(partner)
+    @partner = partner
+    mail(to: @partner.email, subject: 'Sua vc atiginiu metade da sua cota de tokens - SacGPT')
+  end
 end

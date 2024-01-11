@@ -20,6 +20,7 @@ class Partner < ApplicationRecord
   has_many :partner_client_leads, dependent: :destroy
   has_many :partner_client_conversation_infos, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  has_many :montly_usage_histories, dependent: :destroy
 
   validates :name, :service_number, :document, :contact_number, presence: true, on: :create
   validates :password_confirmation, presence: true, on: :create
@@ -89,5 +90,13 @@ class Partner < ApplicationRecord
 
   def service_number_is_updated?
     saved_change_to_service_number?
+  end
+
+  def current_mothly_history
+    date = Date.today
+
+    historie = montly_usage_histories.where(period: date.beginning_of_month..(date.end_of_month + 23.hours)).first
+    historie = montly_usage_histories.create(period: Date.today, token_count: 0) if historie.nil?
+    historie
   end
 end
