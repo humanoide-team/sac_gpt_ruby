@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_11_185107) do
+ActiveRecord::Schema.define(version: 2024_01_12_115218) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -227,6 +227,25 @@ ActiveRecord::Schema.define(version: 2024_01_11_185107) do
     t.index ["payment_plan_id"], name: "index_payment_subscriptions_on_payment_plan_id"
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
+    t.string "galax_pay_plan_my_id"
+    t.integer "plan_galax_pay_id"
+    t.integer "main_payment_method_id"
+    t.string "payment_link"
+    t.integer "value"
+    t.string "additional_info"
+    t.integer "status"
+    t.bigint "partner_id", null: false
+    t.bigint "credit_card_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.date "payday"
+    t.index ["credit_card_id"], name: "index_payments_on_credit_card_id"
+    t.index ["partner_id"], name: "index_payments_on_partner_id"
+  end
+
   create_table "schedules", force: :cascade do |t|
     t.integer "schedule_type"
     t.string "summary"
@@ -265,6 +284,8 @@ ActiveRecord::Schema.define(version: 2024_01_11_185107) do
   add_foreign_key "payment_subscriptions", "credit_cards"
   add_foreign_key "payment_subscriptions", "partners"
   add_foreign_key "payment_subscriptions", "payment_plans"
+  add_foreign_key "payments", "credit_cards"
+  add_foreign_key "payments", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"
 end

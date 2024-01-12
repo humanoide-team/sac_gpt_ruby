@@ -17,6 +17,7 @@ class Partner < ApplicationRecord
   has_many :partner_payments, dependent: :destroy
   has_many :credit_cards, dependent: :destroy
   has_many :payment_subscriptions, dependent: :destroy
+  has_many :payments, dependent: :destroy
   has_many :partner_client_leads, dependent: :destroy
   has_many :partner_client_conversation_infos, dependent: :destroy
   has_many :notifications, dependent: :destroy

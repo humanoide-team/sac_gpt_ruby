@@ -201,6 +201,44 @@ class GalaxPayClient
     end
   end
 
+  def self.create_payment(id, payday, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
+    # https://docs-celcash.celcoin.com.br/individual-charges/create/request
+    data = {
+      myId: "sac-gpt-payment-#{id}",
+      value:,
+      payday:,
+      mainPaymentMethodId:,
+      Customer: {
+        myId: customer.galax_pay_my_id,
+        name: customer.name,
+        document: customer.document,
+        email: [
+          customer.email
+        ]
+      },
+      PaymentMethodCreditCard: {
+        Card: {
+          myId: credit_card_my_id
+        }
+      }
+    }
+    body = data.to_json
+
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.post("#{BASE_URL}/charges", body:, headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      JSON.parse(response.body)['Charge']
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+    end
+  end
+
   def self.get_transactions_by_client(customerGalaxPayId, status, startAt, limit)
     # https://docs.galaxpay.com.br/transactions/list
 
