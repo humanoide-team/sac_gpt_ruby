@@ -28,7 +28,7 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
             answersCount: answers_count
           },
           usageStatistics: {
-            montlyTokensConsumed: montly_usage.max_token_count
+            montlyTokensConsumed: montly_usage.token_count
           },
           salesAnalysis: {}
         }
