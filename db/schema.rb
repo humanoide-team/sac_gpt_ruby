@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_12_115218) do
+ActiveRecord::Schema.define(version: 2024_01_15_130340) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,16 @@ ActiveRecord::Schema.define(version: 2024_01_12_115218) do
     t.string "galax_pay_my_id"
     t.boolean "default"
     t.index ["partner_id"], name: "index_credit_cards_on_partner_id"
+  end
+
+  create_table "extra_tokens", force: :cascade do |t|
+    t.integer "token_quantity"
+    t.bigint "partner_id", null: false
+    t.bigint "payment_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_extra_tokens_on_partner_id"
+    t.index ["payment_id"], name: "index_extra_tokens_on_payment_id"
   end
 
   create_table "faq_items", force: :cascade do |t|
@@ -270,6 +280,8 @@ ActiveRecord::Schema.define(version: 2024_01_12_115218) do
   end
 
   add_foreign_key "credit_cards", "partners"
+  add_foreign_key "extra_tokens", "partners"
+  add_foreign_key "extra_tokens", "payments"
   add_foreign_key "montly_usage_histories", "partners"
   add_foreign_key "notifications", "partners"
   add_foreign_key "partner_client_conversation_infos", "partner_clients"

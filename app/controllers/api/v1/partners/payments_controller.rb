@@ -11,13 +11,15 @@ class Api::V1::Partners::PaymentsController < ApiPartnerController
   end
 
   def create
-    @payment = Payment.new(payment_params.merge(partner: @current_partner))
+    @payment = Payment.new(payment_params.merge(partner: @current_partner,
+                                                extra_token_attributes: { token_quantity: payment_params[:token_quantity],
+                                                                          partner: @current_partner }).except(:token_quantity))
+
     if @payment.save
       if @payment.status != 'active'
-        @current_partner.update(active: false)
-        render json: { message: 'Falha em criar inscricao verifique os dados' }, status: :unprocessable_entity
+        render json: { message: 'Falha em criar pagamento verifique os dados' }, status: :unprocessable_entity
       else
-        @current_partner.update(active: true)
+        @current_partner.update(active: true) if @current_partner.active != true
         render json: PaymentSerializer.new(@payment).serialized_json, status: :created
       end
     else
@@ -26,7 +28,7 @@ class Api::V1::Partners::PaymentsController < ApiPartnerController
   end
 
   def payment_params
-    ActiveModelSerializers::Deserialization.jsonapi_parse(params, polymorphic: [:payment])
+    ActiveModelSerializers::Deserialization.jsonapi_parse(params, polymorphic: [:payment], permit: [:token_quantity])
   end
 
   def set_payment

@@ -4,11 +4,13 @@ class Payment < ApplicationRecord
   belongs_to :partner
   belongs_to :credit_card
 
+  has_one :extra_token
+
   before_create :create_galax_pay_payment
 
-  before_destroy :cancel_galax_pay_payment
-
   after_create :payment_confirmation_mail
+
+  accepts_nested_attributes_for :extra_token, reject_if: :all_blank
 
   enum main_payment_method_id: {
     creditcard: 0

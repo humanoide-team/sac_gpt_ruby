@@ -22,6 +22,7 @@ class Partner < ApplicationRecord
   has_many :partner_client_conversation_infos, dependent: :destroy
   has_many :notifications, dependent: :destroy
   has_many :montly_usage_histories, dependent: :destroy
+  has_many :extra_tokens, dependent: :destroy
 
   validates :name, :service_number, :document, :contact_number, presence: true, on: :create
   validates :password_confirmation, presence: true, on: :create
