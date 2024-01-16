@@ -38,7 +38,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
     unless @current_partner.active == true
       if @partner_client_lead.nil?
-        @partner_client_lead = @client.partner_client_leads.create(partner: @current_partner,
+        @partner_client_lead = LeadClassification.new(partner: @current_partner,
                                                                    lead_classification: nil, conversation_summary: nil, lead_score: nil)
       end
       return render json: PartnerClientLeadSerializer.new(@partner_client_lead).serialized_json, status: :ok
