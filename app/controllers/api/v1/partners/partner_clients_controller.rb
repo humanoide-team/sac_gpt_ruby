@@ -134,7 +134,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       )
 
       token_cost = response['usage']['total_tokens'].to_i
-      montly_history = @partner.current_mothly_history
+      montly_history = @current_partner.current_mothly_history
       montly_history.increase_token_count(token_cost)
       @partner_client_lead.increase_token_count(token_cost)
 
