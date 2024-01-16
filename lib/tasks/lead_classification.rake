@@ -16,6 +16,7 @@ namespace :lead_classification do
         historico_conversa = messages(current_partner, client)
 
         if @partner_client_lead.nil? && last_message.created_at < DateTime.now - 1.hour
+          @partner_client_lead = client.partner_client_leads.create(partner: current_partner)
 
           lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
 
@@ -27,8 +28,8 @@ namespace :lead_classification do
           lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
           lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
 
-          client.partner_client_leads.create(partner: current_partner,
-                                             lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
+          @partner_client_lead.update(lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
+
         elsif !@partner_client_lead.nil? && !last_message.nil? && last_message.created_at > @partner_client_lead.updated_at && last_message.created_at < DateTime.now - 1.hour
 
           lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
