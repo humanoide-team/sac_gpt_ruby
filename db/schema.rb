@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_11_185107) do
+ActiveRecord::Schema.define(version: 2024_01_16_000915) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,6 +43,16 @@ ActiveRecord::Schema.define(version: 2024_01_11_185107) do
     t.index ["partner_id"], name: "index_credit_cards_on_partner_id"
   end
 
+  create_table "extra_tokens", force: :cascade do |t|
+    t.integer "token_quantity"
+    t.bigint "partner_id", null: false
+    t.bigint "payment_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_extra_tokens_on_partner_id"
+    t.index ["payment_id"], name: "index_extra_tokens_on_payment_id"
+  end
+
   create_table "faq_items", force: :cascade do |t|
     t.string "title"
     t.string "body"
@@ -71,6 +81,9 @@ ActiveRecord::Schema.define(version: 2024_01_11_185107) do
     t.boolean "exceed_mail", default: false
     t.boolean "almost_exceed", default: false
     t.boolean "half_exceed", default: false
+    t.boolean "extra_token_half_exceed", default: false
+    t.boolean "extra_token_almost_exceed", default: false
+    t.boolean "exceed_extra_token_mail", default: false
     t.index ["partner_id"], name: "index_montly_usage_histories_on_partner_id"
   end
 
@@ -227,6 +240,25 @@ ActiveRecord::Schema.define(version: 2024_01_11_185107) do
     t.index ["payment_plan_id"], name: "index_payment_subscriptions_on_payment_plan_id"
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
+    t.string "galax_pay_plan_my_id"
+    t.integer "plan_galax_pay_id"
+    t.integer "main_payment_method_id"
+    t.string "payment_link"
+    t.integer "value"
+    t.string "additional_info"
+    t.integer "status"
+    t.bigint "partner_id", null: false
+    t.bigint "credit_card_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.date "payday"
+    t.index ["credit_card_id"], name: "index_payments_on_credit_card_id"
+    t.index ["partner_id"], name: "index_payments_on_partner_id"
+  end
+
   create_table "schedules", force: :cascade do |t|
     t.integer "schedule_type"
     t.string "summary"
@@ -251,6 +283,8 @@ ActiveRecord::Schema.define(version: 2024_01_11_185107) do
   end
 
   add_foreign_key "credit_cards", "partners"
+  add_foreign_key "extra_tokens", "partners"
+  add_foreign_key "extra_tokens", "payments"
   add_foreign_key "montly_usage_histories", "partners"
   add_foreign_key "notifications", "partners"
   add_foreign_key "partner_client_conversation_infos", "partner_clients"
@@ -265,6 +299,8 @@ ActiveRecord::Schema.define(version: 2024_01_11_185107) do
   add_foreign_key "payment_subscriptions", "credit_cards"
   add_foreign_key "payment_subscriptions", "partners"
   add_foreign_key "payment_subscriptions", "payment_plans"
+  add_foreign_key "payments", "credit_cards"
+  add_foreign_key "payments", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"
 end

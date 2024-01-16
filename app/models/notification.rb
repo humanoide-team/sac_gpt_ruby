@@ -8,5 +8,6 @@ class Notification < ApplicationRecord
     subscription_confirmation: 2,
     cancellation_plan: 3,
     alert_exchange_card: 4,
+    payment_confirmation: 5,
   }
 end
