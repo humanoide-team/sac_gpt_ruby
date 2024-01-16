@@ -34,7 +34,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   end
 
   def lead_classification
-    unless @client.active
+    unless @current_partner.active
       @partner_client_lead = @client.partner_client_leads.create(partner: @current_partner,
                                                                  lead_classification: '', conversation_summary: '', lead_score: 0)
 
