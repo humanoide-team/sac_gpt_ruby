@@ -1,4 +1,4 @@
-class Api::V1::Partners::ScheduleSettings < ApiPartnerController
+class Api::V1::Partners::ScheduleSettingsController < ApiPartnerController
   before_action :set_schedule_setting, only: %i[show update]
 
   def show
