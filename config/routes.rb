@@ -45,6 +45,8 @@ Rails.application.routes.draw do
 
         resources :payment_plans, only: %i[index show]
 
+        resources :schedule_settings, only: %i[show create update]
+
         resources :notifications, only: %i[index update]
 
         get 'payment_subscriptions/last_active_subscription', to: 'payment_subscriptions#last_active_subscription'

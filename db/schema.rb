@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_16_000915) do
+ActiveRecord::Schema.define(version: 2024_01_16_234000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -259,6 +259,18 @@ ActiveRecord::Schema.define(version: 2024_01_16_000915) do
     t.index ["partner_id"], name: "index_payments_on_partner_id"
   end
 
+  create_table "schedule_settings", force: :cascade do |t|
+    t.integer "duration_in_minutes"
+    t.string "week_days"
+    t.string "start_time"
+    t.string "end_time"
+    t.string "google_agenda_id"
+    t.bigint "partner_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_schedule_settings_on_partner_id"
+  end
+
   create_table "schedules", force: :cascade do |t|
     t.integer "schedule_type"
     t.string "summary"
@@ -301,6 +313,7 @@ ActiveRecord::Schema.define(version: 2024_01_16_000915) do
   add_foreign_key "payment_subscriptions", "payment_plans"
   add_foreign_key "payments", "credit_cards"
   add_foreign_key "payments", "partners"
+  add_foreign_key "schedule_settings", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"
 end

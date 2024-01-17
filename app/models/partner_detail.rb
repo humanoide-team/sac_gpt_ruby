@@ -1,3 +1,6 @@
+require 'google/apis/calendar_v3'
+require 'google/api_client/client_secrets'
+
 class PartnerDetail < ApplicationRecord
   belongs_to :partner
 
@@ -54,4 +57,50 @@ class PartnerDetail < ApplicationRecord
   def meeting_objective?
     company_objectives.include?('Agendar uma reunião')
   end
+
+  def get_events
+    return unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
+
+    return unless partner.schedule_setting.google_agenda_id
+
+    client = get_google_calendar_client(partner)
+
+    response = client.list_events(partner.schedule_setting.google_agenda_id)
+    response.items.each do |event|
+      start_time = event.start.date || event.start.date_time
+      puts "- #{event.summary} (#{start_time})"
+    end
+  end
+
+  def get_google_calendar_client(partner)
+    client = Google::Apis::CalendarV3::CalendarService.new
+    return unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
+
+    secrets = Google::APIClient::ClientSecrets.new({
+                                                     'web' => {
+                                                       'access_token' => partner.access_token,
+                                                       'refresh_token' => partner.refresh_token,
+                                                       'client_id' => ENV['GOOGLE_CLIENT_ID'],
+                                                       'client_secret' => ENV['GOOGLE_CLIENT_SECRET']
+                                                     }
+                                                   })
+    begin
+      client.authorization = secrets.to_authorization
+      client.authorization.grant_type = 'refresh_token'
+      unless partner.present?
+        client.authorization.refresh!
+        partner.update_attributes(
+          access_token: client.authorization.access_token,
+          refresh_token: client.authorization.refresh_token,
+          expires_at: client.authorization.expires_at.to_i
+        )
+      end
+    rescue StandardError => e
+      puts e
+      errors.add(:base, 'Your token has been expired. Please login again with google.')
+      throw :abort
+    end
+    client
+  end
+
 end
