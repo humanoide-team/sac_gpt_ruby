@@ -4,7 +4,7 @@ require 'google/api_client/client_secrets'
 class Schedule < ApplicationRecord
   belongs_to :partner
   belongs_to :partner_client
-  belongs_to :schedule_setting
+  belongs_to :schedule_setting, optional: true
 
   before_create :create_event
 

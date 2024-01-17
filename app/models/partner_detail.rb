@@ -61,7 +61,7 @@ class PartnerDetail < ApplicationRecord
   def get_events
     return unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
 
-    return unless partner.schedule_setting.google_agenda_id
+    return unless partner&.schedule_setting&.google_agenda_id
 
     client = get_google_calendar_client(partner)
 
@@ -104,3 +104,6 @@ class PartnerDetail < ApplicationRecord
   end
 
 end
+
+# Partner.where.not(access_token: nil).last.partner_detail.get_events
+# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2024-01-20T19:00:31.172Z", date_time_end: "2024-01-20T20:00:31.172Z", partner_id: 31, partner_client_id: 84)
