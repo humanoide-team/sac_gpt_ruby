@@ -1,4 +1,3 @@
-require 'openai'
 class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   before_action :set_client, only: %i[lead_classification messages_resume destroy]
 
@@ -55,13 +54,13 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       historico_conversa = messages(@current_partner, @client)
 
       lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
-      lead_classification = gerar_resposta(lead_classification_question, historico_conversa).gsub("\n", ' ').strip
+      lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
 
       conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
-      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa).gsub("\n", ' ').strip
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
 
       lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
-      lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
+      lead_score = gerar_resposta(lead_score_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
       @partner_client_lead.lead_classification = lead_classification
       @partner_client_lead.conversation_summary = conversation_summary
       @partner_client_lead.lead_score = lead_score.to_i
@@ -70,13 +69,13 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     elsif !@partner_client_lead.nil? && !last_message.nil? && last_message.created_at > @partner_client_lead.updated_at
 
       lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
-      lead_classification = gerar_resposta(lead_classification_question, historico_conversa).gsub("\n", ' ').strip
+      lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
 
       conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
-      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa).gsub("\n", ' ').strip
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
 
       lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
-      lead_score = gerar_resposta(lead_score_question, historico_conversa).gsub("\n", ' ').strip
+      lead_score = gerar_resposta(lead_score_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
 
       @partner_client_lead.update(lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
     end
@@ -87,7 +86,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   def messages_resume
     pergunta = 'Faca um resumo de toda essa conversa em um paragrafo'
     historico_conversa = messages(@current_partner, @client)
-    response = gerar_resposta(pergunta, historico_conversa).gsub("\n", ' ').strip
+    response = gerar_resposta(pergunta, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
     render json: {
       data: { body: response }
     }, status: :ok
@@ -120,24 +119,12 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     historico_conversa
   end
 
-  def gerar_resposta(pergunta, historico_conversa)
+  def gerar_resposta(pergunta, historico_conversa, model="gpt-4")
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
-      messages = historico_conversa + [{ role: 'user', content: pergunta }]
-      response = client.chat(
-        parameters: {
-          model: 'gpt-4',
-          messages:,
-          max_tokens: 1500,
-          n: 1,
-          stop: nil,
-          temperature: 0.7
-        }
-      )
-
-      token_cost = response['usage']['total_tokens'].to_i
+      response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
+      token_cost = model == 'gpt-4' ? response['usage']['total_tokens'].to_i : response['usage']['total_tokens'].to_i * 0.33
       montly_history = @current_partner.current_mothly_history
       montly_history.increase_token_count(token_cost)
       @partner_client_lead.increase_token_count(token_cost)

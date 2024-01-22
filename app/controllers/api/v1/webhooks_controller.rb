@@ -1,4 +1,3 @@
-require 'openai'
 require 'tiktoken_ruby'
 
 class Api::V1::WebhooksController < ApiController
@@ -94,7 +93,7 @@ class Api::V1::WebhooksController < ApiController
       end
     end
 
-    text_response = gerar_resposta(last_response.message, historico_conversa).gsub("\n", ' ').strip
+    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4').gsub("\n", ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], text_response, partner.instance_key)
@@ -121,24 +120,12 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def gerar_resposta(pergunta, historico_conversa)
+  def gerar_resposta(pergunta, historico_conversa, model="gpt-4")
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
-      messages = historico_conversa + [{ role: 'user', content: pergunta }]
-      response = client.chat(
-        parameters: {
-          model: 'gpt-4',
-          messages:,
-          max_tokens: 1500,
-          n: 1,
-          stop: nil,
-          temperature: 0.7
-        }
-      )
-
-      token_cost = response['usage']['total_tokens'].to_i
+      response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
+      token_cost = model == 'gpt-4' ? response['usage']['total_tokens'].to_i : response['usage']['total_tokens'].to_i * 0.33
       montly_history = @partner.current_mothly_history
       montly_history.increase_token_count(token_cost)
       @partner_client_lead.increase_token_count(token_cost)
@@ -153,7 +140,7 @@ class Api::V1::WebhooksController < ApiController
   end
 
   def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
-    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n",
+    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa, 'gpt-3.5-turbo').gsub("\n",
                                                                                                              ' ').strip
     if partner_client_conversation_info.nil?
       client.partner_client_conversation_infos.create(system_conversation_resume: resume, partner:)
