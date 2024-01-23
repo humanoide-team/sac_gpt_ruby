@@ -100,8 +100,23 @@ class Api::V1::WebhooksController < ApiController
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
   end
 
+  def identificar_email(response)
+    regex = /#Email informado: ([\w+\-.]+@[a-z\d\-.]+\.[a-z]+)#/
+    match_data = response.match(regex)
+
+    return response unless match_data
+
+    if partner_client.update(email: match_data[1])
+      'Obrigado por informar o email, gostaria de saber o horario de atendimento?'
+    else
+      'Nao foi possivel identificar o seu email'
+    end
+  end
+
   def identificar_agendamento(response)
     return response unless @partner.partner_detail.meeting_objective?
+
+    response = identificar_email(response)
 
     regex = %r{#Agendamento para o dia (\d{2}/\d{2}/\d{4}) às (\d{2}:\d{2})#}
     match_data = response.match(regex)

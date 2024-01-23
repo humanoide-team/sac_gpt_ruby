@@ -19,7 +19,8 @@ class PartnerDetail < ApplicationRecord
   def observations
     observation = ''
     if meeting_objective?
-      observation << "Caso o cliente solicite uma agendamento de reuniao informe o horario de atendimento da segunda a sexta das 9hrs as 12hrs e das 13hrs as 17hrs, caso o cliente escolha um dia e horario vc deve responder exatamente assim prenchendo as lacunas com o dia e horario escolhido pelo cliente considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/yyyy as hh:mm#"
+      observation << "Caso o cliente solicite uma agendamento de reuniao primeiro pergunte pelo email no qual o convite da reuniao deve ser enviado e se caso informado vc deve responder exatamente assim prenchendo a palavra EMAIL com o email informado:  #Email informado: EMAIL#,
+      apos o cliente informar o email se aceitar informe o horario de atendimento da segunda a sexta das 9hrs as 12hrs e das 13hrs as 17hrs, caso o cliente escolha um dia e horario vc deve responder exatamente assim prenchendo as lacunas com o dia e horario escolhido pelo cliente considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/yyyy as hh:mm#"
     end
     observation
   end
@@ -102,7 +103,6 @@ class PartnerDetail < ApplicationRecord
     end
     client
   end
-
 end
 
 # Partner.where.not(access_token: nil).last.partner_detail.get_events
