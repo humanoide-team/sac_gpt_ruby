@@ -9,6 +9,7 @@ class Schedule < ApplicationRecord
   before_create :create_event
 
   def create_event
+    puts "Iniciando criacao de evento"
     return if partner.access_token.nil?
 
     client = get_google_calendar_client(partner)
@@ -28,6 +29,8 @@ class Schedule < ApplicationRecord
   end
 
   def find_agenda(client)
+    puts "Buscando agenda"
+
     return if client.nil?
 
     desired_calendar_name = 'SacGpt Agenda'
@@ -36,6 +39,8 @@ class Schedule < ApplicationRecord
   end
 
   def create_agenda(client)
+    puts "Criando agenda"
+
     return if client.nil?
 
     calendar = get_agenda
@@ -59,6 +64,8 @@ class Schedule < ApplicationRecord
   end
 
   def get_google_calendar_client(partner)
+    puts "Montando Calendar client"
+
     client = Google::Apis::CalendarV3::CalendarService.new
     return unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
 
@@ -90,10 +97,14 @@ class Schedule < ApplicationRecord
   end
 
   def get_agenda
+    puts "Montando Agenda"
+
     Google::Apis::CalendarV3::Calendar.new(summary: 'SacGpt Agenda',time_zone: 'America/Sao_Paulo')
   end
 
   def get_event
+    puts "Montando Evento"
+
     Google::Apis::CalendarV3::Event.new(
       summary:,
       location: '',
