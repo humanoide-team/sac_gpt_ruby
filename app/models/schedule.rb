@@ -9,7 +9,7 @@ class Schedule < ApplicationRecord
   before_create :create_event
 
   def create_event
-    puts "Iniciando criacao de evento"
+    puts "#########################Iniciando criacao de evento########################"
     return if partner.access_token.nil?
 
     client = get_google_calendar_client(partner)
@@ -19,6 +19,7 @@ class Schedule < ApplicationRecord
     agenda ||= create_agenda(client)
 
     begin
+      puts "#########################Inserindo Evento na agenda########################"
       client.insert_event(agenda.id, event, send_notifications: true, conference_data_version: 1)
     rescue StandardError => e
       puts e
@@ -29,7 +30,7 @@ class Schedule < ApplicationRecord
   end
 
   def find_agenda(client)
-    puts "Buscando agenda"
+    puts "###################Buscando agenda#######################"
 
     return if client.nil?
 
@@ -39,7 +40,7 @@ class Schedule < ApplicationRecord
   end
 
   def create_agenda(client)
-    puts "Criando agenda"
+    puts "##########################Criando agenda##########################"
 
     return if client.nil?
 
@@ -64,7 +65,7 @@ class Schedule < ApplicationRecord
   end
 
   def get_google_calendar_client(partner)
-    puts "Montando Calendar client"
+    puts "##########################Montando Calendar client##############################"
 
     client = Google::Apis::CalendarV3::CalendarService.new
     return unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
@@ -97,13 +98,13 @@ class Schedule < ApplicationRecord
   end
 
   def get_agenda
-    puts "Montando Agenda"
+    puts "###########################3Montando Agenda#############################"
 
     Google::Apis::CalendarV3::Calendar.new(summary: 'SacGpt Agenda',time_zone: 'America/Sao_Paulo')
   end
 
   def get_event
-    puts "Montando Evento"
+    puts "########################3Montando Evento###########################"
 
     Google::Apis::CalendarV3::Event.new(
       summary:,
