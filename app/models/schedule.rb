@@ -90,10 +90,7 @@ class Schedule < ApplicationRecord
   end
 
   def get_agenda
-    Google::Apis::CalendarV3::Calendar.new({
-                                             summary: 'SacGpt Agenda',
-                                             time_zone: 'America/Sao_Paulo'
-                                           })
+    Google::Apis::CalendarV3::Calendar.new(summary: 'SacGpt Agenda',time_zone: 'America/Sao_Paulo')
   end
 
   def get_event
