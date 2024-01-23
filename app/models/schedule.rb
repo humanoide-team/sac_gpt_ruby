@@ -20,7 +20,8 @@ class Schedule < ApplicationRecord
 
     begin
       puts "#########################Inserindo Evento na agenda########################"
-      client.insert_event(agenda.id, event, send_notifications: true, conference_data_version: 1)
+      resposta = client.insert_event(agenda.id, event, send_notifications: true, conference_data_version: 1)
+      puts resposta
     rescue StandardError => e
       puts e
       errors.add(:base, 'Fail to create Event.')
