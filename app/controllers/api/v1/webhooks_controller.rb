@@ -106,7 +106,7 @@ class Api::V1::WebhooksController < ApiController
 
     return response unless match_data
 
-    if partner_client.update(email: match_data[1])
+    if @client.update(email: match_data[1])
       'Obrigado por informar o email, gostaria de saber o horario de atendimento?'
     else
       'Nao foi possivel identificar o seu email'
