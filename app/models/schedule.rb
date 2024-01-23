@@ -45,7 +45,7 @@ class Schedule < ApplicationRecord
       if partner.schedule_setting
         partner.schedule_setting.update(google_agenda_id: agenda.id)
       else
-        setting = partner.schedule_setting.create(google_agenda_id: agenda.id)
+        setting = partner.create_schedule_setting(google_agenda_id: agenda.id)
         self.schedule_setting = setting
       end
     rescue StandardError => e
