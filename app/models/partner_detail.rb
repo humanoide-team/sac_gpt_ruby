@@ -19,8 +19,8 @@ class PartnerDetail < ApplicationRecord
   def observations
     observation = ''
     if meeting_objective?
-      observation << "Caso o cliente solicite uma agendamento de reuniao primeiro pergunte pelo email no qual o convite da reuniao deve ser enviado e se caso informado vc deve responder exatamente assim prenchendo a palavra EMAIL com o email informado:  #Email informado: EMAIL#,
-      apos o cliente informar o email se aceitar informe o horario de atendimento da segunda a sexta das 9hrs as 12hrs e das 13hrs as 17hrs, caso o cliente escolha um dia e horario vc deve responder exatamente assim prenchendo as lacunas com o dia e horario escolhido pelo cliente considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/yyyy as hh:mm#"
+      observation << "Caso o cliente solicite um agendamento de reunião, primeiro pergunte pelo e-mail no qual o convite da reunião deve ser enviado e se caso informado, você deve responder exatamente assim substituindo a palavra EMAIL com o e-mail informado: #E-mail informado: EMAIL#.
+      Após o cliente informar o e-mail e se aceitar, informe o horário de atendimento de segunda a sexta das 9h às 12h e das 13h às 17h. Caso o cliente escolha um dia e horário, você deve responder exatamente assim, preenchendo as lacunas com o dia e horário escolhidos pelo cliente, considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/aaaa às hh:mm#."
     end
     observation
   end
