@@ -52,7 +52,7 @@ class Schedule < ApplicationRecord
         partner.schedule_setting.update(google_agenda_id: agenda.id)
       else
         setting = partner.create_schedule_setting(google_agenda_id: agenda.id)
-        self.schedule_setting = setting
+        self.schedule_setting_id = setting.id
       end
     rescue StandardError => e
       puts e
@@ -98,7 +98,7 @@ class Schedule < ApplicationRecord
   end
 
   def get_agenda
-    puts "###########################3Montando Agenda#############################"
+    puts "###########################Montando Agenda#############################"
 
     Google::Apis::CalendarV3::Calendar.new(summary: 'SacGpt Agenda',time_zone: 'America/Sao_Paulo')
   end
@@ -154,5 +154,5 @@ class Schedule < ApplicationRecord
   end
 end
 
-# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T19:00:31.172Z", date_time_end: "2023-10-30T20:00:31.172Z", partner_id: 30, partner_client_id: 84)
+# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T19:00:31.172Z", date_time_end: "2023-10-30T20:00:31.172Z", partner_id: 40, partner_client_id: 130)
 # Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T20:00:31.172Z", date_time_end: "2023-10-30T21:00:31.172Z", partner_id: 26, partner_client_id: 1)
