@@ -17,7 +17,7 @@ class Schedule < ApplicationRecord
 
     begin
       puts '#########################Inserindo Evento na agenda########################'
-      resposta = client.insert_event(partner.schedule_setting, event, send_notifications: true, conference_data_version: 1)
+      resposta = client.insert_event(partner.schedule_setting.google_agenda_id, event, send_notifications: true, conference_data_version: 1)
       puts resposta
     rescue StandardError => e
       puts e
