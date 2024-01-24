@@ -20,7 +20,7 @@ class PartnerDetail < ApplicationRecord
     observation = ''
     if meeting_objective? && !partner.schedule_setting.nil?
       observation << "Caso o cliente solicite um agendamento de reunião, primeiro pergunte pelo e-mail no qual o convite da reunião deve ser enviado e se caso informado, você deve responder exatamente assim substituindo a palavra EMAIL com o e-mail informado: #E-mail informado: EMAIL#.
-      Após o cliente informar o e-mail e se aceitar, informe o horário de atendimento que acontece nos dias da semana #{partner.schedule_setting.weekDays} das #{partner.schedule_setting.startTime} ate às #{partner.schedule_setting.endTime} com duracao de #{partner.schedule_setting.durationInMinutes} minutos.
+      Após o cliente informar o e-mail e se aceitar, informe o horário de atendimento que acontece nos dias da semana #{partner.schedule_setting.week_days} das #{partner.schedule_setting.start_time} ate às #{partner.schedule_setting.end_time} com duracao de #{partner.schedule_setting.duration_in_minutes} minutos.
       #{get_events}
       Caso o cliente escolha um dia e horário, você deve responder exatamente assim, preenchendo as lacunas com o dia e horário escolhidos pelo cliente, considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/aaaa às hh:mm#."
     end
