@@ -66,7 +66,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       @partner_client_lead.lead_score = lead_score.to_i
       @partner_client_lead.save
 
-    elsif !@partner_client_lead.nil? && !last_message.nil? && last_message.created_at > @partner_client_lead.updated_at
+    elsif !@partner_client_lead.nil? && !last_message.nil? && last_message.created_at + 10.minutes > @partner_client_lead.updated_at
 
       lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
       lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip

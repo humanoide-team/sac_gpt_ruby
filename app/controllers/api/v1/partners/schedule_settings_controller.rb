@@ -1,7 +1,7 @@
 class Api::V1::Partners::ScheduleSettingsController < ApiPartnerController
-  before_action :set_schedule_setting, only: %i[show update]
+  before_action :set_schedule_setting, only: %i[my_settings update]
 
-  def show
+  def my_settings
     render json: ScheduleSettingSerializer.new(@schedule_setting).serialized_json, status: :ok
   end
 
@@ -30,6 +30,6 @@ class Api::V1::Partners::ScheduleSettingsController < ApiPartnerController
   end
 
   def set_schedule_setting
-    @schedule_setting = ScheduleSetting.find(params[:id])
+    @schedule_setting = @current_partner.schedule_setting
   end
 end

@@ -45,7 +45,9 @@ Rails.application.routes.draw do
 
         resources :payment_plans, only: %i[index show]
 
-        resources :schedule_settings, only: %i[show create update]
+        resources :schedule_settings, only: %i[create update]
+
+        get 'schedule_settings/my_settings', to: 'schedule_settings#my_settings'
 
         resources :notifications, only: %i[index update]
 
