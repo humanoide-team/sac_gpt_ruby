@@ -18,9 +18,11 @@ class PartnerDetail < ApplicationRecord
 
   def observations
     observation = ''
-    if meeting_objective?
+    if meeting_objective? && !partner.schedule_setting.nil?
       observation << "Caso o cliente solicite um agendamento de reunião, primeiro pergunte pelo e-mail no qual o convite da reunião deve ser enviado e se caso informado, você deve responder exatamente assim substituindo a palavra EMAIL com o e-mail informado: #E-mail informado: EMAIL#.
-      Após o cliente informar o e-mail e se aceitar, informe o horário de atendimento de segunda a sexta das 9h às 12h e das 13h às 17h. Caso o cliente escolha um dia e horário, você deve responder exatamente assim, preenchendo as lacunas com o dia e horário escolhidos pelo cliente, considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/aaaa às hh:mm#."
+      Após o cliente informar o e-mail e se aceitar, informe o horário de atendimento que acontece nos dias da semana #{partner.schedule_setting.weekDays} das #{partner.schedule_setting.startTime} ate às #{partner.schedule_setting.endTime} com duracao de #{partner.schedule_setting.durationInMinutes} minutos.
+      #{get_events}
+      Caso o cliente escolha um dia e horário, você deve responder exatamente assim, preenchendo as lacunas com o dia e horário escolhidos pelo cliente, considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/aaaa às hh:mm#."
     end
     observation
   end
@@ -67,9 +69,12 @@ class PartnerDetail < ApplicationRecord
     client = get_google_calendar_client(partner)
 
     response = client.list_events(partner.schedule_setting.google_agenda_id)
-    response.items.each do |event|
-      start_time = event.start.date || event.start.date_time
-      puts "- #{event.summary} (#{start_time})"
+
+    if response.items.empty?
+      ''
+    else
+      date_times = response.items.map{ |event| event.start.date_time }
+      "Esses são os horários já reservados #{date_times.join(', ')}. Caso o cliente escolha um desses dias e horários, peça para escolher um outro horário."
     end
   end
 

@@ -114,8 +114,6 @@ class Api::V1::WebhooksController < ApiController
   end
 
   def identificar_agendamento(response)
-    return response unless @partner.partner_detail.meeting_objective?
-
     response = identificar_email(response)
 
     regex = %r{#Agendamento para o dia (\d{2}/\d{2}/\d{4}) às (\d{2}:\d{2})#}
@@ -123,10 +121,14 @@ class Api::V1::WebhooksController < ApiController
 
     return response unless match_data
 
+    if !@partner.partner_detail.meeting_objective? || @partner.schedule_setting.nil?
+      return 'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
+    end
+
     data_hora_string = "#{match_data[1]} #{match_data[2]}"
     data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
     schedule = Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{@client.name}", date_time_start: data_hora + 3.hours,
-                    date_time_end: data_hora + 4.hours, partner_id: @partner.id, partner_client_id: @client.id)
+                               date_time_end: data_hora + 4.hours, partner_id: @partner.id, partner_client_id: @client.id)
 
     if schedule
       "Agendamento para o dia #{match_data[1]} as #{match_data[2]}"
@@ -135,7 +137,7 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def gerar_resposta(pergunta, historico_conversa, model="gpt-4")
+  def gerar_resposta(pergunta, historico_conversa, model = 'gpt-4')
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
@@ -156,7 +158,7 @@ class Api::V1::WebhooksController < ApiController
 
   def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
     resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa, 'gpt-3.5-turbo').gsub("\n",
-                                                                                                             ' ').strip
+                                                                                                                              ' ').strip
     if partner_client_conversation_info.nil?
       client.partner_client_conversation_infos.create(system_conversation_resume: resume, partner:)
     else
@@ -171,7 +173,7 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def num_tokens_from_messages(messages, model="gpt-4")
+  def num_tokens_from_messages(messages, model = 'gpt-4')
     encoding = Tiktoken.encoding_for_model(model)
     num_tokens = 0
     messages.each do |message|
