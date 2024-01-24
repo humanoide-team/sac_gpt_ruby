@@ -44,12 +44,12 @@ class Schedule < ApplicationRecord
     begin
       client.authorization = secrets.to_authorization
       client.authorization.grant_type = 'refresh_token'
-      unless partner.present?
+      if partner.expires_at.nil? || DateTime.now >= partner.expires_at
         client.authorization.refresh!
         partner.update_attributes(
           access_token: client.authorization.access_token,
           refresh_token: client.authorization.refresh_token,
-          expires_at: client.authorization.expires_at.to_i
+          expires_at: client.authorization.expires_at
         )
       end
     rescue StandardError => e

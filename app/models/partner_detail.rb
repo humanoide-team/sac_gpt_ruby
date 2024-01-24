@@ -113,7 +113,7 @@ class PartnerDetail < ApplicationRecord
     if response.items.empty?
       ''
     else
-      date_times = response.items.map{ |event| event.start.date_time }
+      date_times = response.items.map { |event| event.start.date_time }
       "Esses são os horários já reservados #{date_times.join(', ')}. Caso o cliente escolha um desses dias e horários, peça para escolher um outro horário."
     end
   end
@@ -133,12 +133,12 @@ class PartnerDetail < ApplicationRecord
     begin
       client.authorization = secrets.to_authorization
       client.authorization.grant_type = 'refresh_token'
-      unless partner.present?
+      if partner.expires_at.nil? || DateTime.now >= partner.expires_at
         client.authorization.refresh!
         partner.update_attributes(
           access_token: client.authorization.access_token,
           refresh_token: client.authorization.refresh_token,
-          expires_at: client.authorization.expires_at.to_i
+          expires_at: client.authorization.expires_at
         )
       end
     rescue StandardError => e
@@ -149,6 +149,3 @@ class PartnerDetail < ApplicationRecord
     client
   end
 end
-
-# Partner.where.not(access_token: nil).last.partner_detail.get_events
-# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2024-01-20T19:00:31.172Z", date_time_end: "2024-01-20T20:00:31.172Z", partner_id: 31, partner_client_id: 84)
