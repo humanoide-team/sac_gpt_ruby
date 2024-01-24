@@ -101,7 +101,7 @@ class Api::V1::WebhooksController < ApiController
   end
 
   def identificar_email(response)
-    regex = /#Email informado: ([\w+\-.]+@[a-z\d\-.]+\.[a-z]+)#/
+    regex = /#E-mail informado: ([\w+\-.]+@[a-z\d\-.]+\.[a-z]+)#/
     match_data = response.match(regex)
 
     return response unless match_data
