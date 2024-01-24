@@ -13,14 +13,11 @@ class Schedule < ApplicationRecord
     return if partner.access_token.nil?
 
     client = get_google_calendar_client(partner)
-    agenda = find_agenda(client)
     event = get_event
-
-    agenda ||= create_agenda(client)
 
     begin
       puts '#########################Inserindo Evento na agenda########################'
-      resposta = client.insert_event(agenda.id, event, send_notifications: true, conference_data_version: 1)
+      resposta = client.insert_event(partner.schedule_setting, event, send_notifications: true, conference_data_version: 1)
       puts resposta
     rescue StandardError => e
       puts e
@@ -28,35 +25,6 @@ class Schedule < ApplicationRecord
       throw :abort
     end
     puts 'Sucess Event created'
-  end
-
-  def find_agenda(client)
-    puts '###################Buscando agenda#######################'
-
-    return if client.nil?
-
-    desired_calendar_name = 'SacGpt Agenda'
-    calendar_list = client.list_calendar_lists
-    calendar_list.items.find { |calendar| calendar.summary == desired_calendar_name }
-  end
-
-  def create_agenda(client)
-    puts '##########################Criando agenda##########################'
-
-    return if client.nil?
-
-    calendar = get_agenda
-    begin
-      agenda = client.insert_calendar(calendar)
-      partner.schedule_setting.update(google_agenda_id: agenda.id)
-    rescue StandardError => e
-      puts e
-      errors.add(:base, 'Fail to create Agenda.')
-      throw :abort
-    end
-
-    puts 'Sucess Agenda created'
-    calendar
   end
 
   def get_google_calendar_client(partner)
@@ -90,12 +58,6 @@ class Schedule < ApplicationRecord
       throw :abort
     end
     client
-  end
-
-  def get_agenda
-    puts '###########################Montando Agenda#############################'
-
-    Google::Apis::CalendarV3::Calendar.new(summary: 'SacGpt Agenda', time_zone: 'America/Sao_Paulo')
   end
 
   def get_event

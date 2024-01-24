@@ -61,10 +61,50 @@ class PartnerDetail < ApplicationRecord
     company_objectives.include?('Agendar uma reunião')
   end
 
-  def get_events
-    return unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
+  def find_agenda(client)
+    puts '###################Buscando agenda#######################'
 
-    return unless partner&.schedule_setting&.google_agenda_id
+    return if client.nil?
+
+    desired_calendar_name = 'SacGpt Agenda'
+    calendar_list = client.list_calendar_lists
+    calendar_list.items.find { |calendar| calendar.summary == desired_calendar_name }
+  end
+
+  def get_agenda
+    puts '###########################Montando Agenda#############################'
+
+    Google::Apis::CalendarV3::Calendar.new(summary: 'SacGpt Agenda', time_zone: 'America/Sao_Paulo')
+  end
+
+  def create_agenda(client)
+    puts '##########################Criando agenda##########################'
+
+    return if client.nil?
+
+    calendar = get_agenda
+    begin
+      client.insert_calendar(calendar)
+    rescue StandardError => e
+      puts e
+      errors.add(:base, 'Fail to create Agenda.')
+      throw :abort
+    end
+
+    puts 'Sucess Agenda created'
+    calendar
+  end
+
+  def get_events
+    return '' unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
+
+    if partner.schedule_setting.google_agenda_id.nil?
+      client = get_google_calendar_client(partner)
+      agenda = find_agenda(client)
+      agenda ||= create_agenda(client)
+
+      partner.schedule_setting.update(google_agenda_id: agenda.id)
+    end
 
     client = get_google_calendar_client(partner)
 
