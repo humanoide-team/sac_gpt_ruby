@@ -46,7 +46,7 @@ class Schedule < ApplicationRecord
       client.authorization.grant_type = 'refresh_token'
       if partner.expires_at.nil? || DateTime.now >= partner.expires_at
         client.authorization.refresh!
-        partner.update_attributes(
+        partner.update(
           access_token: client.authorization.access_token,
           refresh_token: client.authorization.refresh_token,
           expires_at: client.authorization.expires_at
