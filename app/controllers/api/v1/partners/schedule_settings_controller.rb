@@ -6,9 +6,7 @@ class Api::V1::Partners::ScheduleSettingsController < ApiPartnerController
   end
 
   def create
-    @schedule_setting = @current_partner.schedule_setting.new(schedule_setting_params)
-
-    if @schedule_setting.save
+    if @current_partner.create_schedule_setting(schedule_setting_params)
       render json: ScheduleSettingSerializer.new(@schedule_setting).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@schedule_setting.errors), status: :unprocessable_entity

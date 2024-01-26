@@ -66,7 +66,7 @@ class PartnerDetail < ApplicationRecord
 
     return if client.nil?
 
-    desired_calendar_name = 'SacGpt Agenda'
+    desired_calendar_name = 'SacGPT agenda'
     calendar_list = client.list_calendar_lists
     calendar_list.items.find { |calendar| calendar.summary == desired_calendar_name }
   end
