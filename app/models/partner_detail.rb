@@ -102,7 +102,7 @@ class PartnerDetail < ApplicationRecord
       client = get_google_calendar_client(partner)
       agenda = find_agenda(client)
       agenda ||= create_agenda(client)
-
+      puts agenda
       partner.schedule_setting.update(google_agenda_id: agenda.id)
     end
 
