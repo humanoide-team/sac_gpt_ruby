@@ -84,20 +84,19 @@ class PartnerDetail < ApplicationRecord
 
     calendar = get_agenda
     begin
-      client.insert_calendar(calendar)
+      agenda = client.insert_calendar(calendar)
     rescue StandardError => e
       puts e
       errors.add(:base, 'Fail to create Agenda.')
       throw :abort
     end
-
     puts 'Sucess Agenda created'
-    calendar
+    agenda
   end
 
   def get_events
     return '' unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
-    
+
     client = get_google_calendar_client(partner)
     agenda = find_agenda(client)
 
