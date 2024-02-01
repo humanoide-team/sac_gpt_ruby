@@ -102,7 +102,6 @@ class PartnerDetail < ApplicationRecord
 
     if agenda.nil? || partner.schedule_setting.google_agenda_id.nil? || agenda.id != partner.schedule_setting.google_agenda_id
       agenda = create_agenda(client)
-      puts agenda.id
       partner.schedule_setting.update(google_agenda_id: agenda.id)
     end
 
