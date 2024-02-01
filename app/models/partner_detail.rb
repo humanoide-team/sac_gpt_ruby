@@ -97,16 +97,15 @@ class PartnerDetail < ApplicationRecord
 
   def get_events
     return '' unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
+    
+    client = get_google_calendar_client(partner)
+    agenda = find_agenda(client)
 
-    if partner.schedule_setting.google_agenda_id.nil?
-      client = get_google_calendar_client(partner)
-      agenda = find_agenda(client)
-      agenda ||= create_agenda(client)
+    if agenda.nil? || partner.schedule_setting.google_agenda_id.nil? || agenda.id != partner.schedule_setting.google_agenda_id
+      agenda = create_agenda(client)
       puts agenda.id
       partner.schedule_setting.update(google_agenda_id: agenda.id)
     end
-
-    client = get_google_calendar_client(partner)
 
     response = client.list_events(partner.schedule_setting.google_agenda_id)
 
