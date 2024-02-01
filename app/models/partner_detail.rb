@@ -74,7 +74,7 @@ class PartnerDetail < ApplicationRecord
   def get_agenda
     puts '###########################Montando Agenda#############################'
 
-    Google::Apis::CalendarV3::Calendar.new(summary: 'SacGpt Agenda', time_zone: 'America/Sao_Paulo')
+    Google::Apis::CalendarV3::Calendar.new(summary: 'SacGPT agenda', time_zone: 'America/Sao_Paulo')
   end
 
   def create_agenda(client)
