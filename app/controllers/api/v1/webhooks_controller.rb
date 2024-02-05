@@ -60,18 +60,35 @@ class Api::V1::WebhooksController < ApiController
 
     partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
-    historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+    partner_detail_prompt = @partner.partner_detail.message_content
+
+    if client.partner_client_messages.by_partner(partner).size > 1
+      partner_detail_prompt = generate_prompt_resume(partner_detail_prompt)
+
+    end
+
+    historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
+
+    unless @partner.partner_detail.observations.empty?
+      historico_conversa << { role: 'system', content: @partner.partner_detail.observations }
+    end
 
     if partner_client_conversation_info.nil?
 
       messages = client.partner_client_messages.by_partner(partner)
 
       generate_message_history(messages, historico_conversa)
+
       if num_tokens_from_messages(historico_conversa) >= 1000
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
         partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
-        historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+        historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
+
+        unless @partner.partner_detail.observation.empty?
+          historico_conversa << { role: 'system', content: @partner.partner_detail.observations }
+        end
+
         historico_conversa << { role: 'system',
                                 content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}" }
       end
@@ -87,7 +104,13 @@ class Api::V1::WebhooksController < ApiController
       if num_tokens_from_messages(historico_conversa) >= 1000
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
 
-        historico_conversa = [{ role: 'system', content: @partner.partner_detail.message_content }]
+        historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
+
+        unless @partner.partner_detail.observation.empty?
+  
+          historico_conversa << { role: 'system', content: @partner.partner_detail.observations }
+        end
+
         historico_conversa << { role: 'system',
                                 content: "Resumo da conversa anterior: #{partner_client_conversation_info.system_conversation_resume}" }
       end
@@ -154,6 +177,17 @@ class Api::V1::WebhooksController < ApiController
       sleep(40)
       'Desculpe, não entendi a sua pergunta.'
     end
+  end
+
+  def generate_prompt_resume(partner_detail_prompt)
+    if @partner.partner_detail.details_resume.nil? || @partner.partner_detail.details_resume_date > @partner.partner_detail.updated_at
+      partner_detail_prompt = [{ role: 'system', content: partner_detail_prompt }]
+
+      resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', partner_detail_prompt, 'gpt-3.5-turbo').gsub("\n",
+                                                                                                                                          ' ').strip
+      @partner.partner_detail.update(details_resume: resume, details_resume_date: DateTime.now)
+    end
+    @partner.partner_detail.details_resume
   end
 
   def generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)

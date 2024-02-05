@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_01_16_234000) do
+ActiveRecord::Schema.define(version: 2024_02_01_203411) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -167,6 +167,8 @@ ActiveRecord::Schema.define(version: 2024_01_16_234000) do
     t.string "target_audience"
     t.string "tone_voice"
     t.string "preferential_language"
+    t.string "details_resume"
+    t.datetime "details_resume_date"
     t.index ["partner_id"], name: "index_partner_details_on_partner_id"
   end
 
