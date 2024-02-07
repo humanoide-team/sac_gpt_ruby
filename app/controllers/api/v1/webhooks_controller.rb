@@ -62,10 +62,10 @@ class Api::V1::WebhooksController < ApiController
 
     partner_detail_prompt = @partner.partner_detail.message_content
 
-    if client.partner_client_messages.by_partner(partner).size > 1
-      partner_detail_prompt = generate_prompt_resume(partner_detail_prompt)
-
-    end
+    # if client.partner_client_messages.by_partner(partner).size > 1
+    #   byebug
+    #   partner_detail_prompt = generate_prompt_resume(partner_detail_prompt)
+    # end
 
     historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
 
@@ -85,7 +85,7 @@ class Api::V1::WebhooksController < ApiController
 
         historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
 
-        unless @partner.partner_detail.observation.empty?
+        unless @partner.partner_detail.observations.empty?
           historico_conversa << { role: 'system', content: @partner.partner_detail.observations }
         end
 
@@ -106,8 +106,8 @@ class Api::V1::WebhooksController < ApiController
 
         historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
 
-        unless @partner.partner_detail.observation.empty?
-  
+        unless @partner.partner_detail.observations.empty?
+
           historico_conversa << { role: 'system', content: @partner.partner_detail.observations }
         end
 
@@ -116,7 +116,7 @@ class Api::V1::WebhooksController < ApiController
       end
     end
 
-    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4').gsub("\n", ' ').strip
+    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], text_response, partner.instance_key)
@@ -160,16 +160,22 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def gerar_resposta(pergunta, historico_conversa, model = 'gpt-4')
+  def gerar_resposta(pergunta, historico_conversa, model = 'gpt-3.5-turbo')
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
+      byebug
       response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
       token_cost = model == 'gpt-4' ? response['usage']['total_tokens'].to_i : response['usage']['total_tokens'].to_i * 0.33
       montly_history = @partner.current_mothly_history
       montly_history.increase_token_count(token_cost)
       @partner_client_lead.increase_token_count(token_cost)
-
+      puts pergunta
+      puts response['usage']
+      puts "PARCIAL: #{token_cost}"
+      puts "TOTAL: #{@partner_client_lead.token_count}"
+      puts response['choices'][0]['message']['content'].strip
+      byebug
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e
       puts e
@@ -184,7 +190,7 @@ class Api::V1::WebhooksController < ApiController
       partner_detail_prompt = [{ role: 'system', content: partner_detail_prompt }]
 
       resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', partner_detail_prompt, 'gpt-3.5-turbo').gsub("\n",
-                                                                                                                                          ' ').strip
+                                                                                                                                                                                         ' ').strip
       @partner.partner_detail.update(details_resume: resume, details_resume_date: DateTime.now)
     end
     @partner.partner_detail.details_resume
@@ -207,7 +213,7 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def num_tokens_from_messages(messages, model = 'gpt-4')
+  def num_tokens_from_messages(messages, model = 'gpt-3.5-turbo')
     encoding = Tiktoken.encoding_for_model(model)
     num_tokens = 0
     messages.each do |message|

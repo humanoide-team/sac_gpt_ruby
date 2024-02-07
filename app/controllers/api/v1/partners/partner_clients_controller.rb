@@ -38,7 +38,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     unless @current_partner.active == true
       if @partner_client_lead.nil?
         @partner_client_lead = LeadClassification.new(partner: @current_partner,
-                                                                   lead_classification: nil, conversation_summary: nil, lead_score: nil)
+                                                      lead_classification: nil, conversation_summary: nil, lead_score: nil)
       end
       return render json: PartnerClientLeadSerializer.new(@partner_client_lead).serialized_json, status: :ok
     end
@@ -54,10 +54,14 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       historico_conversa = messages(@current_partner, @client)
 
       lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
-      lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
+      lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub(
+        "\n", ' '
+      ).strip
 
       conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
-      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub(
+        "\n", ' '
+      ).strip
 
       lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
       lead_score = gerar_resposta(lead_score_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
@@ -69,10 +73,14 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     elsif !@partner_client_lead.nil? && !last_message.nil? && last_message.created_at + 10.minutes > @partner_client_lead.updated_at
 
       lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
-      lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
+      lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub(
+        "\n", ' '
+      ).strip
 
       conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
-      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub(
+        "\n", ' '
+      ).strip
 
       lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
       lead_score = gerar_resposta(lead_score_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
@@ -119,7 +127,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     historico_conversa
   end
 
-  def gerar_resposta(pergunta, historico_conversa, model="gpt-4")
+  def gerar_resposta(pergunta, historico_conversa, model = 'gpt-3.5-turbo')
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
