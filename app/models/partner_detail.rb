@@ -19,10 +19,7 @@ class PartnerDetail < ApplicationRecord
   def observations
     observation = ''
     if meeting_objective? && !partner.schedule_setting.nil?
-      observation << "Caso o cliente solicite um agendamento de reunião, primeiro pergunte pelo e-mail no qual o convite da reunião deve ser enviado e se caso informado, você deve responder exatamente assim substituindo a palavra EMAIL com o e-mail informado: #E-mail informado: EMAIL#.
-      Após o cliente informar o e-mail e se aceitar, informe o horário de atendimento que acontece nos dias da semana #{partner.schedule_setting.week_days} das #{partner.schedule_setting.start_time} ate às #{partner.schedule_setting.end_time} com duracao de #{partner.schedule_setting.duration_in_minutes} minutos.
-      #{get_events}
-      Caso o cliente escolha um dia e horário, você deve responder exatamente assim, preenchendo as lacunas com o dia e horário escolhidos pelo cliente, considerando hoje como sendo #{date_today}: #Agendamento para o dia dd/mm/aaaa às hh:mm#."
+      observation << "Ao receber uma solicitação de agendamento, inicie com: 'Por favor, informe seu e-mail para o envio do convite da reunião.' Se o e-mail for fornecido, prossiga com: '#E-mail informado: EMAIL#. Obrigado.' Caso contrário, lembre: 'Precisamos do seu e-mail para continuar.' Com o e-mail confirmado, informe: 'Atendemos de #{partner.schedule_setting.week_days}, das #{partner.schedule_setting.start_time} às #{partner.schedule_setting.end_time}, sessões de #{partner.schedule_setting.duration_in_minutes} min. Qual horário prefere?' Utilize #{get_events} para mostrar opções de agendamento. Se não escolherem imediatamente, reitere: 'Por favor, escolha um horário disponível para confirmarmos. Quando um horário for escolhido, finalize com: '#Agendamento para o dia dd/mm/aaaa às hh:mm#. Aguardamos você. Se necessário, não hesite em repetir um passo ou informação para clarificação ou para garantir a completude do processo."
     end
     observation
   end
