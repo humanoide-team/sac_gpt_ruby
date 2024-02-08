@@ -130,7 +130,7 @@ class Api::V1::WebhooksController < ApiController
     return response unless match_data
 
     if @client.update(email: match_data[1])
-      'Obrigado por informar o email, gostaria de saber o horario de atendimento?'
+      response
     else
       'Nao foi possivel identificar o seu email'
     end
@@ -154,7 +154,7 @@ class Api::V1::WebhooksController < ApiController
                                date_time_end: data_hora + @partner.schedule_setting.duration_in_minutes.minutes + 3.hours, partner_id: @partner.id, partner_client_id: @client.id)
 
     if schedule
-      "Agendamento para o dia #{match_data[1]} as #{match_data[2]}"
+      response
     else
       'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
