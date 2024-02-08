@@ -116,7 +116,7 @@ class Api::V1::WebhooksController < ApiController
       end
     end
 
-    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
+    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-0125-preview').gsub("\n", ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], text_response, partner.instance_key)
