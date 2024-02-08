@@ -89,7 +89,7 @@ namespace :lead_classification do
 
     begin
       response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
-      token_cost = model == 'gpt-4' ? response['usage']['total_tokens'].to_i : response['usage']['total_tokens'].to_i * 0.33
+      token_cost = calculate_token(response['usage'], model).round
       montly_history = @partner.current_mothly_history
       montly_history.increase_token_count(token_cost)
       @partner_client_lead.increase_token_count(token_cost)
@@ -98,6 +98,23 @@ namespace :lead_classification do
     rescue StandardError => e
       puts e
       puts response
+    end
+  end
+
+  def calculate_token(usage, model)
+    input = usage['prompt_tokens']
+    output = usage['completion_tokens']
+    case model
+    when 'gpt-3.5-turbo'
+      tokens_input = input * 0.01667
+      tokens_output  = output * 0.050
+      tokens_input + tokens_output
+    when 'gpt-4-0125-preview'
+      tokens_input = input * 0.333
+      tokens_output  = output * 0.666
+      tokens_input + tokens_output
+    else
+      input + output
     end
   end
 end

@@ -79,7 +79,7 @@ class Api::V1::WebhooksController < ApiController
 
       generate_message_history(messages, historico_conversa)
 
-      if num_tokens_from_messages(historico_conversa) >= 1000
+      if num_tokens_from_messages(historico_conversa) >= 1500
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
         partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
@@ -101,7 +101,7 @@ class Api::V1::WebhooksController < ApiController
                                                                           partner_client_conversation_info.updated_at).order(:created_at)
 
       generate_message_history(messages, historico_conversa)
-      if num_tokens_from_messages(historico_conversa) >= 1000
+      if num_tokens_from_messages(historico_conversa) >= 1500
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
 
         historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
@@ -116,7 +116,8 @@ class Api::V1::WebhooksController < ApiController
       end
     end
 
-    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-0125-preview').gsub("\n", ' ').strip
+    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-0125-preview').gsub("\n",
+                                                                                                         ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], text_response, partner.instance_key)
@@ -147,7 +148,7 @@ class Api::V1::WebhooksController < ApiController
     if !@partner.partner_detail.meeting_objective? || @partner.schedule_setting.nil?
       return 'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
-
+    byebug
     data_hora_string = "#{match_data[1]} #{match_data[2]}"
     data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
     schedule = Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{@client.name}", date_time_start: data_hora + 3.hours,
@@ -165,11 +166,13 @@ class Api::V1::WebhooksController < ApiController
 
     begin
       response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
-      token_cost = model == 'gpt-4' ? response['usage']['total_tokens'].to_i : response['usage']['total_tokens'].to_i * 0.33
+      token_cost = calculate_token(response['usage'], model).round
       montly_history = @partner.current_mothly_history
       montly_history.increase_token_count(token_cost)
       @partner_client_lead.increase_token_count(token_cost)
-
+      puts token_cost
+      puts @partner_client_lead.token_count
+      byebug
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e
       puts e
@@ -204,6 +207,28 @@ class Api::V1::WebhooksController < ApiController
     messages.each do |pcm|
       historico_conversa << { role: 'user', content: pcm.message }
       historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
+    end
+  end
+
+  def calculate_token(usage, model)
+    input = usage['prompt_tokens']
+    output = usage['completion_tokens']
+    puts model
+    puts input
+    puts output
+    case model
+    when 'gpt-3.5-turbo'
+      byebug
+      tokens_input = input * 0.01667
+      tokens_output  = output * 0.050
+      tokens_input + tokens_output
+    when 'gpt-4-0125-preview'
+      byebug
+      tokens_input = input * 0.333
+      tokens_output  = output * 0.666
+      tokens_input + tokens_output
+    else
+      input + output
     end
   end
 
