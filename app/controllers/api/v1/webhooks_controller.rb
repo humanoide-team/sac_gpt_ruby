@@ -164,18 +164,12 @@ class Api::V1::WebhooksController < ApiController
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      byebug
       response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
       token_cost = model == 'gpt-4' ? response['usage']['total_tokens'].to_i : response['usage']['total_tokens'].to_i * 0.33
       montly_history = @partner.current_mothly_history
       montly_history.increase_token_count(token_cost)
       @partner_client_lead.increase_token_count(token_cost)
-      puts pergunta
-      puts response['usage']
-      puts "PARCIAL: #{token_cost}"
-      puts "TOTAL: #{@partner_client_lead.token_count}"
-      puts response['choices'][0]['message']['content'].strip
-      byebug
+
       response['choices'][0]['message']['content'].strip
     rescue StandardError => e
       puts e
