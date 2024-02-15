@@ -63,7 +63,6 @@ class Api::V1::WebhooksController < ApiController
     partner_detail_prompt = @partner.partner_detail.message_content
 
     # if client.partner_client_messages.by_partner(partner).size > 1
-    #   byebug
     #   partner_detail_prompt = generate_prompt_resume(partner_detail_prompt)
     # end
 
@@ -148,7 +147,6 @@ class Api::V1::WebhooksController < ApiController
     if !@partner.partner_detail.meeting_objective? || @partner.schedule_setting.nil?
       return 'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
-    byebug
     data_hora_string = "#{match_data[1]} #{match_data[2]}"
     data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
     schedule = Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{@client.name}", date_time_start: data_hora + 3.hours,
@@ -165,15 +163,16 @@ class Api::V1::WebhooksController < ApiController
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
-      token_cost = calculate_token(response['usage'], model).round
-      montly_history = @partner.current_mothly_history
-      montly_history.increase_token_count(token_cost)
-      @partner_client_lead.increase_token_count(token_cost)
-      puts token_cost
-      puts @partner_client_lead.token_count
-      byebug
-      response['choices'][0]['message']['content'].strip
+      response = MistralAiClient.text_generation(pergunta, historico_conversa, model)
+      if response != 'Falha em gerar resposta'
+        token_cost = calculate_token(response['usage'], model).round
+        montly_history = @partner.current_mothly_history
+        montly_history.increase_token_count(token_cost)
+        @partner_client_lead.increase_token_count(token_cost)
+        response['choices'][0]['message']['content'].strip
+      else
+        'Desculpe, não entendi a sua pergunta.'
+      end
     rescue StandardError => e
       puts e
       puts response
@@ -213,17 +212,12 @@ class Api::V1::WebhooksController < ApiController
   def calculate_token(usage, model)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
-    puts model
-    puts input
-    puts output
     case model
     when 'gpt-3.5-turbo'
-      byebug
       tokens_input = input * 0.01667
       tokens_output  = output * 0.050
       tokens_input + tokens_output
     when 'gpt-4-0125-preview'
-      byebug
       tokens_input = input * 0.333
       tokens_output  = output * 0.666
       tokens_input + tokens_output
