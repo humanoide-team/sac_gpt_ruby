@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_02_01_203411) do
+ActiveRecord::Schema.define(version: 2024_02_21_202743) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,18 @@ ActiveRecord::Schema.define(version: 2024_02_01_203411) do
     t.datetime "remember_created_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "conversation_threads", force: :cascade do |t|
+    t.string "open_ai_thread_id"
+    t.bigint "partner_id", null: false
+    t.bigint "partner_client_id", null: false
+    t.bigint "partner_assistent_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_assistent_id"], name: "index_conversation_threads_on_partner_assistent_id"
+    t.index ["partner_client_id"], name: "index_conversation_threads_on_partner_client_id"
+    t.index ["partner_id"], name: "index_conversation_threads_on_partner_id"
   end
 
   create_table "credit_cards", force: :cascade do |t|
@@ -99,6 +111,14 @@ ActiveRecord::Schema.define(version: 2024_02_01_203411) do
     t.index ["partner_id"], name: "index_notifications_on_partner_id"
   end
 
+  create_table "partner_assistents", force: :cascade do |t|
+    t.string "open_ai_assistent_id"
+    t.bigint "partner_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_partner_assistents_on_partner_id"
+  end
+
   create_table "partner_client_conversation_infos", force: :cascade do |t|
     t.bigint "partner_id", null: false
     t.bigint "partner_client_id", null: false
@@ -130,6 +150,10 @@ ActiveRecord::Schema.define(version: 2024_02_01_203411) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "webhook_uuid"
+    t.bigint "conversation_thread_id"
+    t.string "open_ai_message_id"
+    t.string "open_ai_last_run_id"
+    t.index ["conversation_thread_id"], name: "index_partner_client_messages_on_conversation_thread_id"
     t.index ["partner_client_id"], name: "index_partner_client_messages_on_partner_client_id"
     t.index ["partner_id"], name: "index_partner_client_messages_on_partner_id"
   end
@@ -140,6 +164,8 @@ ActiveRecord::Schema.define(version: 2024_02_01_203411) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "email"
+    t.bigint "partner_id"
+    t.index ["partner_id"], name: "index_partner_clients_on_partner_id"
   end
 
   create_table "partner_details", force: :cascade do |t|
@@ -261,6 +287,16 @@ ActiveRecord::Schema.define(version: 2024_02_01_203411) do
     t.index ["partner_id"], name: "index_payments_on_partner_id"
   end
 
+  create_table "prompt_files", force: :cascade do |t|
+    t.string "open_ai_file_id"
+    t.bigint "partner_detail_id", null: false
+    t.bigint "partner_assistent_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_assistent_id"], name: "index_prompt_files_on_partner_assistent_id"
+    t.index ["partner_detail_id"], name: "index_prompt_files_on_partner_detail_id"
+  end
+
   create_table "schedule_settings", force: :cascade do |t|
     t.integer "duration_in_minutes"
     t.string "week_days"
@@ -296,17 +332,23 @@ ActiveRecord::Schema.define(version: 2024_02_01_203411) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "conversation_threads", "partner_assistents"
+  add_foreign_key "conversation_threads", "partner_clients"
+  add_foreign_key "conversation_threads", "partners"
   add_foreign_key "credit_cards", "partners"
   add_foreign_key "extra_tokens", "partners"
   add_foreign_key "extra_tokens", "payments"
   add_foreign_key "montly_usage_histories", "partners"
   add_foreign_key "notifications", "partners"
+  add_foreign_key "partner_assistents", "partners"
   add_foreign_key "partner_client_conversation_infos", "partner_clients"
   add_foreign_key "partner_client_conversation_infos", "partners"
   add_foreign_key "partner_client_leads", "partner_clients"
   add_foreign_key "partner_client_leads", "partners"
+  add_foreign_key "partner_client_messages", "conversation_threads"
   add_foreign_key "partner_client_messages", "partner_clients"
   add_foreign_key "partner_client_messages", "partners"
+  add_foreign_key "partner_clients", "partners"
   add_foreign_key "partner_details", "partners"
   add_foreign_key "partner_payments", "credit_cards"
   add_foreign_key "partner_payments", "partners"
@@ -315,6 +357,8 @@ ActiveRecord::Schema.define(version: 2024_02_01_203411) do
   add_foreign_key "payment_subscriptions", "payment_plans"
   add_foreign_key "payments", "credit_cards"
   add_foreign_key "payments", "partners"
+  add_foreign_key "prompt_files", "partner_assistents"
+  add_foreign_key "prompt_files", "partner_details"
   add_foreign_key "schedule_settings", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"

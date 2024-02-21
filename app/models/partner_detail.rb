@@ -4,6 +4,9 @@ require 'google/api_client/client_secrets'
 class PartnerDetail < ApplicationRecord
   belongs_to :partner
 
+  after_create :partner_assistent_create
+  after_update :update_assitent_file
+
   def message_content
     "Você é #{name_attendant}, atendente da #{company_name} especializado em #{company_niche} na região de #{served_region}.
     Alinhe sua comunicação com  #{target_audience} da empresa, utilizando o tom de voz #{tone_voice}.
@@ -141,5 +144,18 @@ class PartnerDetail < ApplicationRecord
       throw :abort
     end
     client
+  end
+
+  def partner_assistent_create
+    partner.create_partner_assitent
+  end
+
+  def create_prompt_file
+    assistent = partner.partner_assistent
+    create_prompt_file(partner_assistent: assistent)
+  end
+
+  def update_assitent_file
+    partner.update_assitent_file
   end
 end
