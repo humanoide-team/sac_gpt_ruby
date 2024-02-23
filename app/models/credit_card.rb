@@ -7,7 +7,7 @@ class CreditCard < ApplicationRecord
   before_create :set_all_credit_card_default_false
 
   after_create :change_subscription_payment_method
-  has_one :payment_subscription
+  has_one :payment_subscription, dependent: :destroy
 
   attr_accessor :card_number, :card_holder_name, :card_cvv
 

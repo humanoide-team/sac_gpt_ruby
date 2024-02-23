@@ -1,6 +1,7 @@
 class PartnerAssistent < ApplicationRecord
   belongs_to :partner
-  has_one :prompt_file
+  has_one :prompt_file, dependent: :destroy
+  has_one :conversation_thread, dependent: :destroy
 
   before_create :create_open_ai_assistent
   after_create :update_assitent_file
@@ -11,14 +12,15 @@ class PartnerAssistent < ApplicationRecord
     company_niche = partner.partner_detail.company_niche
     instructions = "Você é #{name_attendant}, atendente da #{company_name} especializado em #{company_niche}"
 
-    response = OpenAiClient.create_assistent(instructions, name)
+    response = OpenAiClient.create_assistent(instructions, name_attendant)
     self.open_ai_assistent_id = response['id']
   end
 
   def update_assitent_file
     delete_assitent_file unless prompt_file.nil?
 
-    file = partner.partner_detail.create_prompt_file(self)
+    file = self.create_prompt_file(partner_detail: partner.partner_detail)
+
     OpenAiClient.create_assistent_file(open_ai_assistent_id, file.open_ai_file_id)
   end
 

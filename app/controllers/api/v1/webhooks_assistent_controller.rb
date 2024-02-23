@@ -67,14 +67,14 @@ class Api::V1::WebhooksAssistentController < ApiController
   end
 
   def gerar_resposta(pcm, _model = 'gpt-3.5-turbo')
-    return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
+    return 'Desculpe, não entendi a sua pergunta.' unless pcm.message.is_a?(String) && !pcm.message.empty?
 
     begin
-      conversation_thread = if @client.thread_conversation.nil?
+      conversation_thread = if @client.conversation_thread.nil?
                               ConversationThread.create(partner_client: @client, partner: @partner,
                                                         partner_assistent: @partner.partner_assistent)
                             else
-                              @client.thread_conversation
+                              @client.conversation_thread
                             end
 
       conversation_thread.create_message(pcm)

@@ -41,9 +41,10 @@ class OpenAiClient
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts JSON.parse(response.body)
     end
   end
 
@@ -58,7 +59,7 @@ class OpenAiClient
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
     end
@@ -69,20 +70,22 @@ class OpenAiClient
 
     body = {
       file_id: file_id,
-    }
+    }.to_json
 
     headers = {
       'Authorization': "Bearer #{OPEN_AI_KEY}",
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'application/json',
+      'OpenAI-Beta': 'assistants=v1'
     }
 
-    response = HTTParty.post("#{BASE_URL}/assistants/#{assistant_id}/files", body:, headers:)
+    response = HTTParty.post("#{BASE_URL}/v1/assistants/#{assistant_id}/files", body:, headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 
@@ -91,14 +94,15 @@ class OpenAiClient
 
     headers = {
       'Authorization': "Bearer #{OPEN_AI_KEY}",
+      'Content-Type': 'application/json',
       'OpenAI-Beta:': 'assistants=v1'
     }
 
-    response = HTTParty.post("#{BASE_URL}/assistants/#{assistant_id}/files/#{file_id}", body:, headers:)
+    response = HTTParty.post("#{BASE_URL}/v1/assistants/#{assistant_id}/files/#{file_id}", body:, headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
     end
@@ -113,7 +117,7 @@ class OpenAiClient
         { "type": 'code_interpreter' },
         { "type": 'retrieval' }
       ],
-      model: 'gpt-4'
+      model: 'gpt-4-turbo-preview'
     }
 
     body = data.to_json
@@ -128,9 +132,10 @@ class OpenAiClient
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 
@@ -147,7 +152,7 @@ class OpenAiClient
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
     end
@@ -168,7 +173,7 @@ class OpenAiClient
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
     end
@@ -192,7 +197,7 @@ class OpenAiClient
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
-      response.body
+      JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
     end

@@ -5,22 +5,20 @@ class PromptFile < ApplicationRecord
   before_create :create_open_ai_file
   before_destroy :delete_open_ai_file
 
-  def create_open_ai_file(assistent)
+  def create_open_ai_file
     dados = []
     dados << { instructions: partner_detail.message_content }
 
-    dados << { instructions: @partner.partner_detail.observations } unless partner_detail.observations.empty?
-    new_file = File.open('dados.jsonl', 'w')
+    dados << { instructions: partner_detail.observations } unless partner_detail.observations.empty?
 
-    new_file do |file|
-      dados.each do |obj|
-        file.puts(obj.to_json)
-      end
-    end
+    file_path = "./#{partner_assistent.id}_dados.jsonl"
+    
+    File.write(file_path, dados.to_json)
+    new_file = File.new(file_path, 'rb')
 
     response = OpenAiClient.upload_file(new_file)
     self.open_ai_file_id = response['id']
-    self.partner_assistent_id = assistent.id
+    File.delete(file_path)
   end
 
   def delete_open_ai_file

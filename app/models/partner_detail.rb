@@ -4,7 +4,7 @@ require 'google/api_client/client_secrets'
 class PartnerDetail < ApplicationRecord
   belongs_to :partner
 
-  after_create :partner_assistent_create
+  after_create :create_open_ai_partner_assistent
   after_update :update_assitent_file
 
   def message_content
@@ -146,16 +146,11 @@ class PartnerDetail < ApplicationRecord
     client
   end
 
-  def partner_assistent_create
-    partner.create_partner_assitent
-  end
-
-  def create_prompt_file
-    assistent = partner.partner_assistent
-    create_prompt_file(partner_assistent: assistent)
+  def create_open_ai_partner_assistent
+    partner.create_partner_assistent
   end
 
   def update_assitent_file
-    partner.update_assitent_file
+    partner.partner_assistent.update_assitent_file
   end
 end

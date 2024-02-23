@@ -2,6 +2,5 @@ class AddFieldConversationThreadIdToPartnerClientMessage < ActiveRecord::Migrati
   def change
     add_reference :partner_client_messages, :conversation_thread, null: true, foreign_key: true
     add_column :partner_client_messages, :open_ai_message_id, :string
-    add_column :partner_client_messages, :open_ai_last_run_id, :string
   end
 end

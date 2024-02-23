@@ -4,7 +4,7 @@ class Payment < ApplicationRecord
   belongs_to :partner
   belongs_to :credit_card
 
-  has_one :extra_token
+  has_one :extra_token, dependent: :destroy
 
   before_create :create_galax_pay_payment
 

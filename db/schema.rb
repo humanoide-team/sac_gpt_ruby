@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2024_02_21_202743) do
     t.bigint "partner_id", null: false
     t.bigint "partner_client_id", null: false
     t.bigint "partner_assistent_id", null: false
+    t.string "open_ai_last_run_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["partner_assistent_id"], name: "index_conversation_threads_on_partner_assistent_id"
@@ -152,7 +153,6 @@ ActiveRecord::Schema.define(version: 2024_02_21_202743) do
     t.string "webhook_uuid"
     t.bigint "conversation_thread_id"
     t.string "open_ai_message_id"
-    t.string "open_ai_last_run_id"
     t.index ["conversation_thread_id"], name: "index_partner_client_messages_on_conversation_thread_id"
     t.index ["partner_client_id"], name: "index_partner_client_messages_on_partner_client_id"
     t.index ["partner_id"], name: "index_partner_client_messages_on_partner_id"

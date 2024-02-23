@@ -5,6 +5,7 @@ class CreateConversationThreads < ActiveRecord::Migration[6.1]
       t.references :partner, null: false, foreign_key: true
       t.references :partner_client, null: false, foreign_key: true
       t.references :partner_assistent, null: false, foreign_key: true
+      t.string :open_ai_last_run_id
 
       t.timestamps
     end
