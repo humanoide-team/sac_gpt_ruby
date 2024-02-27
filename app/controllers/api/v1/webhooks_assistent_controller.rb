@@ -61,12 +61,13 @@ class Api::V1::WebhooksAssistentController < ApiController
     text_response = gerar_resposta(last_response, 'gpt-4-0125-preview').gsub("\n", ' ').strip
 
     text_response = identificar_agendamento(text_response)
+
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], text_response, partner.instance_key)
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
   end
 
-  def gerar_resposta(pcm, _model = 'gpt-3.5-turbo')
+  def gerar_resposta(pcm, model = 'gpt-3.5-turbo')
     return 'Desculpe, não entendi a sua pergunta.' unless pcm.message.is_a?(String) && !pcm.message.empty?
 
     begin
@@ -79,12 +80,49 @@ class Api::V1::WebhooksAssistentController < ApiController
 
       conversation_thread.create_message(pcm)
       conversation_thread.run_thread
-      conversation_thread.retrive_automatic_response.strip
+      sleep(10)
+      run = conversation_thread.retrieve_run
+      response = 'Desculpe, não entendi a sua pergunta.'
+      if run['status'] == 'completed'
+        response = conversation_thread.retrive_automatic_response.strip
+        token_usage(run['usage'])
+      else
+        sleep(5)
+        run = conversation_thread.retrieve_run
+        if run['status'] == 'completed'
+          conversation_thread.retrive_automatic_response.strip
+          token_usage(run['usage'])
+        end
+      end
+      response
     rescue StandardError => e
       puts e
-      puts response
       sleep(40)
       'Desculpe, não entendi a sua pergunta.'
+    end
+  end
+
+  def token_usage(usage)
+    token_cost = calculate_token(usage, 'gpt-4-turbo-preview').round
+    montly_history = @partner.current_mothly_history
+    montly_history.increase_token_count(token_cost)
+    @partner_client_lead.increase_token_count(token_cost)
+  end
+
+  def calculate_token(usage, model)
+    input = usage['prompt_tokens']
+    output = usage['completion_tokens']
+    case model
+    when 'gpt-3.5-turbo'
+      tokens_input = input * 0.01667
+      tokens_output  = output * 0.050
+      tokens_input + tokens_output
+    when 'gpt-4-0125-preview' || 'gpt-4-turbo-preview'
+      tokens_input = input * 0.333
+      tokens_output  = output * 0.666
+      tokens_input + tokens_output
+    else
+      input + output
     end
   end
 

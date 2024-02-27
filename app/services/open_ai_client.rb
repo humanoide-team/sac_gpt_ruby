@@ -203,6 +203,24 @@ class OpenAiClient
     end
   end
 
+  def self.retrieve_run(thread_id, run_id)
+    # https://platform.openai.com/docs/api-reference/runs/getRun
+
+    headers = {
+      'Authorization': "Bearer #{OPEN_AI_KEY}",
+      'OpenAI-Beta': 'assistants=v1'
+    }
+
+    response = HTTParty.post("#{BASE_URL}/v1/threads/#{thread_id}/runs/#{run_id}", headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      puts JSON.parse(response.body)
+      JSON.parse(response.body)
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+    end
+  end
+
   def self.thread_messages(thread_id )
     # https://platform.openai.com/docs/api-reference/runs/createRun
 

@@ -88,7 +88,7 @@ namespace :lead_classification do
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      response = MistralAiClient.text_generation(pergunta, historico_conversa, model)
+      response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage'], model).round
         montly_history = @current_partner.current_mothly_history

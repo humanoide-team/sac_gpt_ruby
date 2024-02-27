@@ -25,19 +25,12 @@ class ConversationThread < ApplicationRecord
     update(open_ai_last_run_id: response['id'])
   end
 
+  def retrieve_run
+    OpenAiClient.retrieve_run(open_ai_thread_id, open_ai_last_run_id)
+  end
+
   def retrive_automatic_response
     response = OpenAiClient.thread_messages(open_ai_thread_id)
-    byebug
-    if response['data'][0]['role'] == 'assistant'
-      response['data'][0]['content'][0]['text']['value']
-    else
-      sleep(10)
-      response = OpenAiClient.thread_messages(open_ai_thread_id)
-      if response['data'][0]['role'] == 'assistant'
-        response['data'][0]['content'][0]['text']['value']
-      else
-        'Desculpe, não entendi a sua pergunta.'
-      end
-    end
+    response['data'][0]['content'][0]['text']['value']
   end
 end
