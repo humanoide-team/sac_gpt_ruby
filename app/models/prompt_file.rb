@@ -12,7 +12,7 @@ class PromptFile < ApplicationRecord
     dados << { instructions: partner_detail.observations } unless partner_detail.observations.empty?
 
     file_path = "./#{partner_assistent.id}_dados.jsonl"
-    
+
     File.write(file_path, dados.to_json)
     new_file = File.new(file_path, 'rb')
 

@@ -95,16 +95,17 @@ class OpenAiClient
     headers = {
       'Authorization': "Bearer #{OPEN_AI_KEY}",
       'Content-Type': 'application/json',
-      'OpenAI-Beta:': 'assistants=v1'
+      'OpenAI-Beta': 'assistants=v1'
     }
 
-    response = HTTParty.post("#{BASE_URL}/v1/assistants/#{assistant_id}/files/#{file_id}", body:, headers:)
+    response = HTTParty.delete("#{BASE_URL}/v1/assistants/#{assistant_id}/files/#{file_id}", headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 
@@ -208,10 +209,11 @@ class OpenAiClient
 
     headers = {
       'Authorization': "Bearer #{OPEN_AI_KEY}",
+      'Content-Type': 'application/json',
       'OpenAI-Beta': 'assistants=v1'
     }
 
-    response = HTTParty.post("#{BASE_URL}/v1/threads/#{thread_id}/runs/#{run_id}", headers:)
+    response = HTTParty.get("#{BASE_URL}/v1/threads/#{thread_id}/runs/#{run_id}", headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       puts JSON.parse(response.body)

@@ -80,20 +80,20 @@ class Api::V1::WebhooksAssistentController < ApiController
 
       conversation_thread.create_message(pcm)
       conversation_thread.run_thread
-      sleep(10)
-      run = conversation_thread.retrieve_run
+      run = ''
+      times = 0
       response = 'Desculpe, não entendi a sua pergunta.'
-      if run['status'] == 'completed'
-        response = conversation_thread.retrive_automatic_response.strip
-        token_usage(run['usage'])
-      else
+
+      while (run['status'] != 'completed' && run['status'] != 'failed') && times < 10
         sleep(5)
         run = conversation_thread.retrieve_run
-        if run['status'] == 'completed'
-          conversation_thread.retrive_automatic_response.strip
-          token_usage(run['usage'])
-        end
+        response = conversation_thread.retrive_automatic_response.strip if run['status'] == 'completed'
+        times += 1
+        puts run['status']
+        puts times
       end
+
+      token_usage(run['usage'])
       response
     rescue StandardError => e
       puts e
