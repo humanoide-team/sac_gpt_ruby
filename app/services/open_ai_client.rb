@@ -156,6 +156,7 @@ class OpenAiClient
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 
@@ -177,6 +178,7 @@ class OpenAiClient
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 
@@ -201,6 +203,7 @@ class OpenAiClient
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 
@@ -220,6 +223,7 @@ class OpenAiClient
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 
@@ -238,6 +242,7 @@ class OpenAiClient
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
     end
   end
 end
