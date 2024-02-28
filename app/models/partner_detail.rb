@@ -5,7 +5,7 @@ class PartnerDetail < ApplicationRecord
   belongs_to :partner
 
   after_create :create_open_ai_partner_assistent
-  after_update :update_assitent_file
+  after_update :update_assistent_file
 
   def message_content
     "Você é #{name_attendant}, atendente da #{company_name} especializado em #{company_niche} na região de #{served_region}.
@@ -150,7 +150,7 @@ class PartnerDetail < ApplicationRecord
     partner.create_partner_assistent
   end
 
-  def update_assitent_file
-    partner.partner_assistent.update_assitent_file
+  def update_assistent_file
+    partner.partner_assistent.update_assistent_file
   end
 end

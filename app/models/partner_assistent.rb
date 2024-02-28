@@ -4,7 +4,7 @@ class PartnerAssistent < ApplicationRecord
   has_one :conversation_thread, dependent: :destroy
 
   before_create :create_open_ai_assistent
-  after_create :update_assitent_file
+  after_create :update_assistent_file
 
   def create_open_ai_assistent
     name_attendant = partner.partner_detail.name_attendant
