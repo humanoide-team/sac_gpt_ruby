@@ -162,7 +162,7 @@ class OpenAiClient
 
   def self.create_message(thread_id, message)
     # https://platform.openai.com/docs/api-reference/messages/createMessage
-
+    puts message
     headers = {
       'Authorization': "Bearer #{OPEN_AI_KEY}",
       'Content-Type': 'application/json',
@@ -246,3 +246,4 @@ class OpenAiClient
     end
   end
 end
+# eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJZ2MwTUFZNkJrVkciLCJleHAiOiIyMDI0LTAyLTE1VDEzOjIxOjE3LjE3NFoiLCJwdXIiOm51bGx9fQ==--07ecb4c0b75ed2584c3205174eeb2de872328caa
