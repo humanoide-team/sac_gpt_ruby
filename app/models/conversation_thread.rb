@@ -2,7 +2,7 @@ class ConversationThread < ApplicationRecord
   belongs_to :partner
   belongs_to :partner_client
   belongs_to :partner_assistent
-  has_many :partner_client_messages
+  has_many :partner_client_messages, dependent: :destroy
 
   before_create :create_open_ai_thread
 

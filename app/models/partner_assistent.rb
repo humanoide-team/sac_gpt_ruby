@@ -17,14 +17,14 @@ class PartnerAssistent < ApplicationRecord
   end
 
   def update_assistent_file
-    delete_assitent_file unless prompt_file.nil?
+    delete_assistent_file unless prompt_file.nil?
 
     file = self.create_prompt_file(partner_detail: partner.partner_detail)
 
     OpenAiClient.create_assistent_file(open_ai_assistent_id, file.open_ai_file_id)
   end
 
-  def delete_assitent_file
+  def delete_assistent_file
     OpenAiClient.delete_assistent_file(open_ai_assistent_id, prompt_file.open_ai_file_id)
     prompt_file.destroy!
   end
