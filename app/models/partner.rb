@@ -26,7 +26,7 @@ class Partner < ApplicationRecord
   has_many :schedules, dependent: :destroy
   has_one :schedule_setting, dependent: :destroy
 
-  validates :name, :service_number, :document, :contact_number, presence: true, on: :create
+  validates :name, :document, :contact_number, presence: true, on: :create
   validates :password_confirmation, presence: true, on: :create
 
   accepts_nested_attributes_for :partner_detail, reject_if: :all_blank
