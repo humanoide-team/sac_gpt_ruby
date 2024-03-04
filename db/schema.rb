@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_02_29_173235) do
+ActiveRecord::Schema.define(version: 2024_03_04_154639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -294,6 +294,7 @@ ActiveRecord::Schema.define(version: 2024_02_29_173235) do
     t.bigint "partner_assistent_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "file_name"
     t.index ["partner_assistent_id"], name: "index_prompt_files_on_partner_assistent_id"
     t.index ["partner_detail_id"], name: "index_prompt_files_on_partner_detail_id"
   end

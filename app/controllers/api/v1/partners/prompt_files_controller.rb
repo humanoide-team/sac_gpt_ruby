@@ -16,7 +16,7 @@ class Api::V1::Partners::PromptFilesController < ApiPartnerController
     end
 
     @prompt_file = PromptFile.new(partner_detail:, partner_assistent:,
-                                  open_ai_file_id: prompt_file_params[:open_ai_file_id])
+                                  open_ai_file_id: prompt_file_params[:open_ai_file_id], file_name: prompt_file_params[:file_name])
 
     if @prompt_file.save
       render json: PromptFileSerializer.new(@prompt_file).serialized_json, status: :created
