@@ -140,6 +140,37 @@ class OpenAiClient
     end
   end
 
+  def self.update_assistent(assistant_id, instructions, name)
+    # https://platform.openai.com/docs/api-reference/assistants/createAssistant
+    data = {
+      instructions:,
+      name:,
+      tools: [
+        { "type": 'code_interpreter' },
+        { "type": 'retrieval' }
+      ],
+      model: 'gpt-4-turbo-preview'
+    }
+
+    body = data.to_json
+
+    headers = {
+      'Authorization': "Bearer #{OPEN_AI_KEY}",
+      'Content-Type': 'application/json',
+      'OpenAI-Beta': 'assistants=v1'
+    }
+
+    response = HTTParty.post("#{BASE_URL}/v1/assistants/#{assistant_id}", body:, headers:)
+    if response.code == 200
+      puts 'Requisição bem-sucedida!'
+      puts JSON.parse(response.body)
+      JSON.parse(response.body)
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+      puts response.body
+    end
+  end
+
   def self.create_thread
     # https://platform.openai.com/docs/api-reference/threads/createThread
 

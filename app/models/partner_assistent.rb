@@ -1,27 +1,31 @@
 class PartnerAssistent < ApplicationRecord
   belongs_to :partner
-  has_one :prompt_file, dependent: :destroy
+  has_many :prompt_files, dependent: :destroy
   has_one :conversation_thread, dependent: :destroy
 
   before_create :create_open_ai_assistent
-  after_create :update_assistent_file
 
   def create_open_ai_assistent
     name_attendant = partner.partner_detail.name_attendant
-    company_name = partner.partner_detail.company_name
-    company_niche = partner.partner_detail.company_niche
-    instructions = "Você é #{name_attendant}, atendente da #{company_name} especializado em #{company_niche}"
+    prompt_instructions = partner.partner_detail.message_content
+    observation_instructions = partner.partner_detail.observations
+    instructions = "#{prompt_instructions} #{observation_instructions}"
 
     response = OpenAiClient.create_assistent(instructions, name_attendant)
     self.open_ai_assistent_id = response['id']
   end
 
-  def update_assistent_file
-    delete_assistent_file unless prompt_file.nil?
+  def update_assistent
+    name_attendant = partner.partner_detail.name_attendant
+    prompt_instructions = partner.partner_detail.message_content
+    observation_instructions = partner.partner_detail.observations
+    instructions = "#{prompt_instructions} #{observation_instructions}"
 
-    file = self.create_prompt_file(partner_detail: partner.partner_detail)
+    OpenAiClient.update_assistent(open_ai_assistent_id, instructions, name_attendant)
+  end
 
-    OpenAiClient.create_assistent_file(open_ai_assistent_id, file.open_ai_file_id)
+  def update_assistent_file(open_ai_file_id)
+    OpenAiClient.create_assistent_file(open_ai_assistent_id, open_ai_file_id)
   end
 
   def delete_assistent_file
