@@ -89,8 +89,6 @@ class Api::V1::WebhooksAssistentController < ApiController
         run = conversation_thread.retrieve_run
         response = conversation_thread.retrive_automatic_response.strip if run['status'] == 'completed'
         times += 1
-        puts run['status']
-        puts times
       end
 
       token_usage(run['usage'])
@@ -117,7 +115,7 @@ class Api::V1::WebhooksAssistentController < ApiController
       tokens_input = input * 0.01667
       tokens_output  = output * 0.050
       tokens_input + tokens_output
-    when 'gpt-4-0125-preview' || 'gpt-4-turbo-preview'
+    when 'gpt-4-turbo-preview'
       tokens_input = input * 0.333
       tokens_output  = output * 0.666
       tokens_input + tokens_output

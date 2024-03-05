@@ -10,7 +10,7 @@ class Schedule < ApplicationRecord
 
   def create_event
     puts '#########################Iniciando criacao de evento########################'
-    return if partner.access_token.nil?
+    throw :abort if partner.access_token.nil?
 
     client = get_google_calendar_client(partner)
     event = get_event
@@ -31,7 +31,7 @@ class Schedule < ApplicationRecord
     puts '##########################Montando Calendar client##############################'
 
     client = Google::Apis::CalendarV3::CalendarService.new
-    return unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
+    throw :abort unless partner.present? && partner.access_token.present? && partner.refresh_token.present?
 
     secrets = Google::APIClient::ClientSecrets.new({
                                                      'web' => {
