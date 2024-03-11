@@ -6,6 +6,7 @@ class PartnerClient < ApplicationRecord
   has_many :partner_client_leads, dependent: :destroy
   has_many :partner_client_conversation_infos, dependent: :destroy
   has_many :schedules, dependent: :destroy
+  has_many :token_usages, dependent: :destroy
 end
 
 # rails g model PartnerAssistent open_ai_assistent_id:string partner:references

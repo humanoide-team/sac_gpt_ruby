@@ -16,10 +16,10 @@ class Api::V1::WebhooksController < ApiController
 
     puts '********************RESPONDENDO****************************'
 
-    @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'])
+    @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'], partner_id: @partner.id)
     if @client.nil?
       @client = PartnerClient.create(phone: params['body']['key']['remoteJid'],
-                                     name: params['body']['pushName'])
+                                     name: params['body']['pushName'], partner_id: @partner.id)
     end
     @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
     pergunta_usuario = if params['body'] && params['body']['message']
@@ -78,7 +78,7 @@ class Api::V1::WebhooksController < ApiController
 
       generate_message_history(messages, historico_conversa)
 
-      if num_tokens_from_messages(historico_conversa) >= 1500
+      if num_tokens_from_messages(historico_conversa) >= 1000
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
         partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
@@ -100,7 +100,8 @@ class Api::V1::WebhooksController < ApiController
                                                                           partner_client_conversation_info.updated_at).order(:created_at)
 
       generate_message_history(messages, historico_conversa)
-      if num_tokens_from_messages(historico_conversa) >= 1500
+
+      if num_tokens_from_messages(historico_conversa) >= 1000
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
 
         historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
@@ -115,7 +116,7 @@ class Api::V1::WebhooksController < ApiController
       end
     end
 
-    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-0125-preview').gsub("\n",
+    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-turbo-preview').gsub("\n",
                                                                                                          ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
@@ -212,12 +213,13 @@ class Api::V1::WebhooksController < ApiController
   def calculate_token(usage, model)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
+    create_token_usage(usage, model)
     case model
     when 'gpt-3.5-turbo'
       tokens_input = input * 0.01667
       tokens_output  = output * 0.050
       tokens_input + tokens_output
-    when 'gpt-4-0125-preview'
+    when 'gpt-4-turbo-preview'
       tokens_input = input * 0.333
       tokens_output  = output * 0.666
       tokens_input + tokens_output
@@ -226,7 +228,15 @@ class Api::V1::WebhooksController < ApiController
     end
   end
 
-  def num_tokens_from_messages(messages, model = 'gpt-3.5-turbo')
+  def create_token_usage(usage, model)
+    input = usage['prompt_tokens']
+    output = usage['completion_tokens']
+    total = usage['total_tokens']
+
+    TokenUsage.create(partner_client: @client, model:, prompt_tokens: input, completion_tokens: output, total_tokens: total)
+  end
+
+  def num_tokens_from_messages(messages, model = 'gpt-4-turbo-preview')
     encoding = Tiktoken.encoding_for_model(model)
     num_tokens = 0
     messages.each do |message|
@@ -240,3 +250,15 @@ class Api::V1::WebhooksController < ApiController
     num_tokens
   end
 end
+
+
+usages = TokenUsage.where(partner_client_id: 135, model: 'gpt-4-turbo-preview')
+usages = TokenUsage.where(partner_client_id: 135, model: 'gpt-3.5-turbo')
+
+prompt_tokens = usages.sum(:prompt_tokens)
+completion_tokens = usages.sum(:completion_tokens)
+total_tokens = usages.sum(:total_tokens)
+
+result = { prompt_tokens: prompt_tokens, completion_tokens: completion_tokens, total_tokens: total_tokens }
+
+puts result

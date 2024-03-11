@@ -113,7 +113,7 @@ namespace :lead_classification do
       tokens_input = input * 0.01667
       tokens_output  = output * 0.050
       tokens_input + tokens_output
-    when 'gpt-4-0125-preview'
+    when 'gpt-4-turbo-preview'
       tokens_input = input * 0.333
       tokens_output  = output * 0.666
       tokens_input + tokens_output

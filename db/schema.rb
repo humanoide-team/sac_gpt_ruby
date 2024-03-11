@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_03_04_154639) do
+ActiveRecord::Schema.define(version: 2024_03_07_214323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -326,6 +326,17 @@ ActiveRecord::Schema.define(version: 2024_03_04_154639) do
     t.index ["partner_id"], name: "index_schedules_on_partner_id"
   end
 
+  create_table "token_usages", force: :cascade do |t|
+    t.bigint "partner_client_id", null: false
+    t.string "model"
+    t.integer "prompt_tokens", default: 0
+    t.integer "completion_tokens", default: 0
+    t.integer "total_tokens", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_client_id"], name: "index_token_usages_on_partner_client_id"
+  end
+
   create_table "waiting_list_clients", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -364,4 +375,5 @@ ActiveRecord::Schema.define(version: 2024_03_04_154639) do
   add_foreign_key "schedule_settings", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"
+  add_foreign_key "token_usages", "partner_clients"
 end

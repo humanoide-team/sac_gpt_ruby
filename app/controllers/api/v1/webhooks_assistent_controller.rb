@@ -58,7 +58,7 @@ class Api::V1::WebhooksAssistentController < ApiController
     last_response = client.partner_client_messages.by_partner(partner).order(:created_at).last
     return if !last_response.nil? && last_response.created_at > partner_client_message.created_at
 
-    text_response = gerar_resposta(last_response, 'gpt-4-0125-preview').gsub("\n", ' ').strip
+    text_response = gerar_resposta(last_response, 'gpt-4-turbo-preview').gsub("\n", ' ').strip
 
     text_response = identificar_agendamento(text_response)
 
@@ -67,7 +67,7 @@ class Api::V1::WebhooksAssistentController < ApiController
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
   end
 
-  def gerar_resposta(pcm, model = 'gpt-3.5-turbo')
+  def gerar_resposta(pcm, _model = 'gpt-3.5-turbo')
     return 'Desculpe, não entendi a sua pergunta.' unless pcm.message.is_a?(String) && !pcm.message.empty?
 
     begin
