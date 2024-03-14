@@ -1,4 +1,4 @@
-class ChangeColumnCompanyObjectives < ActiveRecord::Migration[6.1]
+class ChangeColumnToneVoice < ActiveRecord::Migration[6.1]
   def up
     execute <<-SQL
       ALTER TABLE partner_details

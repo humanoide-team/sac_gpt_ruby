@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_03_07_214323) do
+ActiveRecord::Schema.define(version: 2024_03_14_212430) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -191,7 +191,7 @@ ActiveRecord::Schema.define(version: 2024_03_07_214323) do
     t.string "marketing_channels"
     t.string "key_differentials"
     t.string "target_audience"
-    t.string "tone_voice"
+    t.string "tone_voice", default: [], array: true
     t.string "preferential_language"
     t.string "details_resume"
     t.datetime "details_resume_date"
@@ -248,6 +248,8 @@ ActiveRecord::Schema.define(version: 2024_03_07_214323) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "max_token_count"
+    t.boolean "disable", default: false
+    t.integer "cost_per_thousand_toukens"
   end
 
   create_table "payment_subscriptions", force: :cascade do |t|
@@ -308,6 +310,7 @@ ActiveRecord::Schema.define(version: 2024_03_07_214323) do
     t.bigint "partner_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "interval_minutes"
     t.index ["partner_id"], name: "index_schedule_settings_on_partner_id"
   end
 
