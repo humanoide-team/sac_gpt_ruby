@@ -117,7 +117,7 @@ class Api::V1::WebhooksController < ApiController
     end
 
     text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-turbo-preview').gsub("\n",
-                                                                                                         ' ').strip
+                                                                                                          ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(params['body']['key']['remoteJid'], text_response, partner.instance_key)
@@ -148,10 +148,11 @@ class Api::V1::WebhooksController < ApiController
     if !@partner.partner_detail.meeting_objective? || @partner.schedule_setting.nil?
       return 'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
+
     data_hora_string = "#{match_data[1]} #{match_data[2]}"
     data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
     schedule = Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{@client.name}", date_time_start: data_hora + 3.hours,
-                               date_time_end: data_hora + @partner.schedule_setting.duration_in_minutes.minutes + 3.hours, partner_id: @partner.id, partner_client_id: @client.id)
+                               date_time_end: data_hora + @partner.schedule_setting.duration_in_minutes.minutes + @partner.schedule_setting.interval_minutes.minutes + 3.hours, partner_id: @partner.id, partner_client_id: @client.id)
 
     if schedule
       response
@@ -233,7 +234,8 @@ class Api::V1::WebhooksController < ApiController
     output = usage['completion_tokens']
     total = usage['total_tokens']
 
-    TokenUsage.create(partner_client: @client, model:, prompt_tokens: input, completion_tokens: output, total_tokens: total)
+    TokenUsage.create(partner_client: @client, model:, prompt_tokens: input, completion_tokens: output,
+                      total_tokens: total)
   end
 
   def num_tokens_from_messages(messages, model = 'gpt-4-turbo-preview')
@@ -251,7 +253,6 @@ class Api::V1::WebhooksController < ApiController
   end
 end
 
-
 usages = TokenUsage.where(partner_client_id: 135, model: 'gpt-4-turbo-preview')
 usages = TokenUsage.where(partner_client_id: 135, model: 'gpt-3.5-turbo')
 
@@ -259,6 +260,6 @@ prompt_tokens = usages.sum(:prompt_tokens)
 completion_tokens = usages.sum(:completion_tokens)
 total_tokens = usages.sum(:total_tokens)
 
-result = { prompt_tokens: prompt_tokens, completion_tokens: completion_tokens, total_tokens: total_tokens }
+result = { prompt_tokens:, completion_tokens:, total_tokens: }
 
 puts result

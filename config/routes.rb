@@ -65,7 +65,7 @@ Rails.application.routes.draw do
         post 'support/send_mail', to: 'support#send_mail'
 
         get 'partner_reports', to: 'partner_reports#index'
-
+        get 'montly_usage_history', to: 'montly_usage_history#index'
       end
     end
   end
