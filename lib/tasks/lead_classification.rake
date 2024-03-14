@@ -91,7 +91,7 @@ namespace :lead_classification do
       response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage'], model).round
-        montly_history = @current_partner.current_mothly_history
+        montly_history = @partner.current_mothly_history
         montly_history.increase_token_count(token_cost)
         @partner_client_lead.increase_token_count(token_cost)
 
@@ -108,6 +108,7 @@ namespace :lead_classification do
   def calculate_token(usage, model)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
+    create_token_usage(usage, model)
     case model
     when 'gpt-3.5-turbo'
       tokens_input = input * 0.01667
@@ -121,4 +122,13 @@ namespace :lead_classification do
       input + output
     end
   end
+
+  def create_token_usage(usage, model)
+    input = usage['prompt_tokens']
+    output = usage['completion_tokens']
+    total = usage['total_tokens']
+
+    TokenUsage.create(partner_client: @client, model:, prompt_tokens: input, completion_tokens: output, total_tokens: total)
+  end
+
 end

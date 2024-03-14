@@ -152,6 +152,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   def calculate_token(usage, model)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
+    create_token_usage(usage, model)
     case model
     when 'gpt-3.5-turbo'
       tokens_input = input * 0.01667
@@ -164,6 +165,14 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     else
       input + output
     end
+  end
+
+  def create_token_usage(usage, model)
+    input = usage['prompt_tokens']
+    output = usage['completion_tokens']
+    total = usage['total_tokens']
+
+    TokenUsage.create(partner_client: @client, model:, prompt_tokens: input, completion_tokens: output, total_tokens: total)
   end
 
   def set_client
