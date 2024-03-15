@@ -17,7 +17,6 @@ class Partner < ApplicationRecord
   has_many :partner_payments, dependent: :destroy
   has_many :credit_cards, dependent: :destroy
   has_many :payment_subscriptions, dependent: :destroy
-  has_one :payment_plan, through: :payment_subscriptions
   has_many :payments, dependent: :destroy
   has_many :partner_client_leads, dependent: :destroy
   has_many :partner_client_conversation_infos, dependent: :destroy
@@ -105,5 +104,9 @@ class Partner < ApplicationRecord
     historie = montly_usage_histories.where(period: date.beginning_of_month..(date.end_of_month + 23.hours)).first
     historie = montly_usage_histories.create(period: Date.today, token_count: 0) if historie.nil?
     historie
+  end
+
+  def current_plan
+    payment_subscriptions.where(status: :active).first
   end
 end
