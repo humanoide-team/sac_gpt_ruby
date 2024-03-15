@@ -248,7 +248,7 @@ class GalaxPayClient
       'Authorization': "Bearer #{token}",
       'Content-Type': 'application/json'
     }
-    response = HTTParty.get("#{BASE_URL}/transactions?status=#{status}&customerGalaxPayIds=#{customerGalaxPayId}&startAt=#{startAt}&limit=#{limit}", headers:)
+    response = HTTParty.get("#{BASE_URL}/transactions?status=#{status}&customerGalaxPayIds=#{customerGalaxPayId}&startAt=#{startAt}&limit=#{limit}&order=createdAt.desc", headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Transactions']
@@ -266,7 +266,7 @@ class GalaxPayClient
       'Authorization': "Bearer #{token}",
       'Content-Type': 'application/json'
     }
-    response = HTTParty.get("#{BASE_URL}/transactions?status=#{status}&startAt=#{startAt}&limit=#{limit}", headers:)
+    response = HTTParty.get("#{BASE_URL}/transactions?status=#{status}&startAt=#{startAt}&limit=#{limit}&order=createdAt.desc", headers:)
     if response.code == 200
       puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Transactions']
