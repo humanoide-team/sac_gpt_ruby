@@ -22,7 +22,7 @@ class Api::V1::Partners::MontlyUsageHistoryController < ApiPartnerController
           remainingTokens: remaining_tokens,
           averageSpentPerDay: average_spent_per_day,
           totalMonthlySpendingForecast: average_spent_per_day * month_days,
-          tokensSpentPerConversation: montly_tokens_consumed / month_clients
+          tokensSpentPerConversation: month_clients.zero? ? 0 : montly_tokens_consumed / month_clients 
         }
       }
     }, status: :ok
