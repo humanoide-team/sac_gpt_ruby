@@ -107,6 +107,6 @@ class Partner < ApplicationRecord
   end
 
   def current_plan
-    payment_subscriptions.where(status: :active).first
+    payment_subscriptions.where(status: :active).first&.payment_plan
   end
 end
