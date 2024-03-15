@@ -7,10 +7,11 @@ class Api::V1::Partners::MontlyUsageHistoryController < ApiPartnerController
       return render json: { errors: 'Partner nao tem assinatura de plano' },
                     status: :unprocessable_entity
     end
+
     current_extra_token = @current_partner.extra_tokens.sum(:token_quantity)
-    montly_tokens_consumed = @current_partner.current_mothly_history.token_count + current_extra_token
+    montly_tokens_consumed = @current_partner.current_mothly_history.token_count
     average_spent_per_day = montly_tokens_consumed / day
-    remaining_tokens = tokens_plan - montly_tokens_consumed
+    remaining_tokens = (tokens_plan + current_extra_token) - montly_tokens_consumed
     month_days = DateTime.now.end_of_month.day
     month_clients = @current_partner.partner_clients.where(created_at: DateTime.now.beginning_of_month...DateTime.now.end_of_month).count
     render json: {
