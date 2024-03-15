@@ -12,7 +12,7 @@ class Api::V1::Partners::MontlyUsageHistoryController < ApiPartnerController
     average_spent_per_day = montly_tokens_consumed / day
     remaining_tokens = tokens_plan - montly_tokens_consumed
     month_days = DateTime.now.end_of_month.day
-    month_clients = @current_partner.partner_clients.where(created_at: DateTime.now.beginning_of_month...DateTime.now.end_of_month)
+    month_clients = @current_partner.partner_clients.where(created_at: DateTime.now.beginning_of_month...DateTime.now.end_of_month).count
     render json: {
       data: {
         id: @current_partner.id,
