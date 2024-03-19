@@ -23,7 +23,7 @@ class PartnerDetail < ApplicationRecord
       observation << "Ao receber uma solicitação de agendamento, inicie com: 'Por favor, informe seu e-mail para o envio do convite da reunião.', se o e-mail for fornecido, responda exatamente com: '#E-mail informado: EMAIL#. Obrigado!' substituindo a palavra EMAIL pelo email fornecido." +
                      "Caso o cliente se recuse a enviar ou pergunte a necessidade responda: 'Precisamos do seu e-mail para prosseguir com o agendamento!'." +
                      "Com o e-mail enviado pelo cliente, informe os horarios de atendimento: 'Atendemos de #{partner.schedule_setting.week_days}, das #{partner.schedule_setting.start_time} às #{partner.schedule_setting.end_time}, sessões de #{partner.schedule_setting.duration_in_minutes} min. Qual horário prefere?'." +
-                     "Esses sao os dias e horarios ocupados: #{get_events}, caso o cliente queira marcar em algum desses dias peça que ele escolha outro dia ou horario." +
+                     "#{get_events}" +
                      "Se não escolherem imediatamente, reitere: 'Por favor, escolha um horário disponível para confirmarmos." +
                      "Quando um horário for escolhido, responda exatamente com: '#Agendamento para o dia dd/mm/aaaa às hh:mm#. Aguardamos você!' subistituindo dd/mm/aaaa e hh:mm com a data e o horario pelo cliente, se atente no formato de data e hora do exemplo." +
                      'Se necessário, não hesite em repetir um passo ou informação para clarificação ou para garantir a completude do processo.'
@@ -112,7 +112,7 @@ class PartnerDetail < ApplicationRecord
     response = client.list_events(partner.schedule_setting.google_agenda_id)
 
     if response.items.empty?
-      ''
+      "Considere o dia de hoje como sendo #{date_today}"
     else
       date_times = response.items.map { |event| event.start.date_time }
       "Esses são os horários já reservados #{date_times.join(', ')}. Caso o cliente escolha um desses dias e horários, peça para escolher um outro horário. Considere o dia de hoje como sendo #{date_today}"
