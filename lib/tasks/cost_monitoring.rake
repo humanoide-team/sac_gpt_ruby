@@ -6,11 +6,19 @@ namespace :cost_monitoring do
     partners.each do |current_partner|
       current_subscription = current_partner.payment_subscriptions.where(status: :active).first
 
+      next if current_subscription.nil?
+
       current_mothly_history = current_partner.current_mothly_history
 
       current_extra_token = current_partner.extra_tokens.sum(:token_quantity)
 
       total_mothly_token = current_subscription.max_token_count + current_extra_token
+
+      next if current_subscription.max_token_count.nil? || current_subscription.max_token_count.zero?
+
+      next if current_subscription.max_token_count.nil? || current_subscription.max_token_count.zero?
+
+      next if current_mothly_history.token_count.zero?
 
       if current_mothly_history.token_count > current_subscription.max_token_count && current_partner.active && current_extra_token.zero?
         current_partner.update(active: false)
