@@ -157,4 +157,8 @@ class PartnerDetail < ApplicationRecord
   def update_assistent
     partner.partner_assistent.update_assistent
   end
+
+  def connected_with_google
+    partner.access_token.present? && partner.refresh_token.present?
+  end
 end
