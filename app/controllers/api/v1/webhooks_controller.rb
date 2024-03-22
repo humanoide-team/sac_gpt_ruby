@@ -78,7 +78,7 @@ class Api::V1::WebhooksController < ApiController
 
       generate_message_history(messages, historico_conversa)
 
-      if num_tokens_from_messages(historico_conversa) >= 1000
+      if num_tokens_from_messages(historico_conversa) >= 1500
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
         partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
@@ -101,7 +101,7 @@ class Api::V1::WebhooksController < ApiController
 
       generate_message_history(messages, historico_conversa)
 
-      if num_tokens_from_messages(historico_conversa) >= 1000
+      if num_tokens_from_messages(historico_conversa) >= 1500
         generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
 
         historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
@@ -252,14 +252,3 @@ class Api::V1::WebhooksController < ApiController
     num_tokens
   end
 end
-
-usages = TokenUsage.where(partner_client_id: 135, model: 'gpt-4-turbo-preview')
-usages = TokenUsage.where(partner_client_id: 135, model: 'gpt-3.5-turbo')
-
-prompt_tokens = usages.sum(:prompt_tokens)
-completion_tokens = usages.sum(:completion_tokens)
-total_tokens = usages.sum(:total_tokens)
-
-result = { prompt_tokens:, completion_tokens:, total_tokens: }
-
-puts result
