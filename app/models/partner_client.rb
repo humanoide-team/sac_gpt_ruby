@@ -9,12 +9,3 @@ class PartnerClient < ApplicationRecord
   has_many :token_usages, dependent: :destroy
 end
 
-# rails g model PartnerAssistent open_ai_assistent_id:string partner:references
-
-# rails g model PromptFile open_ai_file_id:string partner_detail:references partner_assistent:references
-
-# rails g model ConversationThread open_ai_thread_id:string partner:references partner_client:references partner_assistent:references
-
-# rails g migration addFieldPartnerIdToPartnerClient partner:references
-
-# rails g migration addFieldConversationThreadIdToPartnerClientMessage conversation_thread:references

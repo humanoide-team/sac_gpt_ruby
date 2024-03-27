@@ -21,6 +21,9 @@ class Api::V1::WebhooksController < ApiController
       @client = PartnerClient.create(phone: params['body']['key']['remoteJid'],
                                      name: params['body']['pushName'], partner_id: @partner.id)
     end
+
+    return render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if @client.blocked
+
     @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
     pergunta_usuario = if params['body'] && params['body']['message']
                          message = params['body']['message']
@@ -55,6 +58,13 @@ class Api::V1::WebhooksController < ApiController
 
   def aguardar_e_enviar_resposta(partner, client, partner_client_message, tempo_espera = 8)
     sleep(tempo_espera)
+    lasts_messages = client.partner_client_messages.by_partner(partner).where(automatic_response: nil, created_at: (DateTime.now - 2.minute)...DateTime.now).count
+
+    if lasts_messages >= 10
+      client.update(blocked: true)
+      return
+    end
+
     last_response = client.partner_client_messages.by_partner(partner).order(:created_at).last
     return if !last_response.nil? && last_response.created_at > partner_client_message.created_at
 
