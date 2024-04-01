@@ -58,7 +58,7 @@ class Api::V1::WebhooksController < ApiController
 
   def aguardar_e_enviar_resposta(partner, client, partner_client_message, tempo_espera = 8)
     sleep(tempo_espera)
-    lasts_messages = client.partner_client_messages.by_partner(partner).where(automatic_response: nil, created_at: (DateTime.now - 2.minute)...DateTime.now).count
+    lasts_messages = client.partner_client_messages.by_partner(partner).where(automatic_response: nil, created_at: (DateTime.now - 1.minute)...DateTime.now).count
 
     if lasts_messages >= 10
       client.update(blocked: true)
