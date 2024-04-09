@@ -40,6 +40,8 @@ class Api::V1::WebhooksController < ApiController
                          ' '
                        end
 
+    return render json: { status: 'OK', current_date: DateTime.now.to_s, params: } if pergunta_usuario.nil? || pergunta_usuario.empty?
+
     @partner_client_lead = @client.partner_client_leads.by_partner(@partner).first
 
     if @partner_client_lead.nil?
