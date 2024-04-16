@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_03_26_222658) do
+ActiveRecord::Schema.define(version: 2024_04_16_140234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -197,6 +197,10 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
     t.string "details_resume"
     t.datetime "details_resume_date"
     t.string "catalog_link"
+    t.string "twitter_x_link"
+    t.string "youtube_link"
+    t.string "facebook_link"
+    t.string "instagram_link"
     t.index ["partner_id"], name: "index_partner_details_on_partner_id"
   end
 
