@@ -19,4 +19,8 @@ class Api::V1::Admins::AuthenticationController < ApiAdminController
       render json: { error: command.errors }, status: :unauthorized
     end
   end
+
+  def current_admin
+    @current_admin ||= current_user
+  end
 end

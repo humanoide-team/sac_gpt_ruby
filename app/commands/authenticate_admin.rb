@@ -12,7 +12,7 @@ class AuthenticateAdmin
   end
 
   def call
-    JsonWebToken.encode({admin_id: admin.id, exp: @expires_at, model_name: 'Manager'}) if admin
+    JsonWebToken.encode({admin_id: admin.id, exp: @expires_at, model_name: 'Admin'}) if admin
   end
 
   private
