@@ -12,7 +12,7 @@ class AuthenticatePartner
   end
 
   def call
-    JsonWebToken.encode({partner_id: partner.id, exp: @expires_at, model_name: 'Manager'}) if partner
+    JsonWebToken.encode({partner_id: partner.id, exp: @expires_at, model_name: 'Partner'}) if partner
   end
 
   private

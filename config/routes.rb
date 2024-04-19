@@ -67,6 +67,16 @@ Rails.application.routes.draw do
         get 'partner_reports', to: 'partner_reports#index'
         get 'montly_usage_history', to: 'montly_usage_history#index'
       end
+
+      namespace :affiliates do
+        post 'authenticate', to: 'authentication#authenticate'
+        get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
+        post 'recover_password', to: 'authentication#send_recover_password_mail'
+        patch 'recover_password/:id', to: 'authentication#recover_password'
+
+        resources :affiliates, only: %i[show create destroy update]
+        patch 'affiliates/recover_password', to: 'affiliates#recover_password'
+      end
     end
   end
 end
