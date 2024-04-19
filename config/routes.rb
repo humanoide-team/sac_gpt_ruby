@@ -74,7 +74,7 @@ Rails.application.routes.draw do
         post 'recover_password', to: 'authentication#send_recover_password_mail'
         patch 'recover_password/:id', to: 'authentication#recover_password'
 
-        resources :affiliates, only: %i[show create destroy update]
+        resources :affiliates, only: %i[index show create destroy update]
         patch 'affiliates/recover_password', to: 'affiliates#recover_password'
       end
     end

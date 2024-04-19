@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_16_140234) do
+ActiveRecord::Schema.define(version: 2024_04_19_213256) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,18 @@ ActiveRecord::Schema.define(version: 2024_04_16_140234) do
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "affiliates", force: :cascade do |t|
+    t.string "name"
+    t.string "contact_number"
+    t.string "service_number"
+    t.string "email"
+    t.string "password"
+    t.string "document"
+    t.boolean "active", default: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -239,6 +251,8 @@ ActiveRecord::Schema.define(version: 2024_04_16_140234) do
     t.string "access_token"
     t.datetime "expires_at"
     t.string "refresh_token"
+    t.bigint "affiliate_id"
+    t.index ["affiliate_id"], name: "index_partners_on_affiliate_id"
   end
 
   create_table "payment_plans", force: :cascade do |t|
@@ -373,6 +387,7 @@ ActiveRecord::Schema.define(version: 2024_04_16_140234) do
   add_foreign_key "partner_details", "partners"
   add_foreign_key "partner_payments", "credit_cards"
   add_foreign_key "partner_payments", "partners"
+  add_foreign_key "partners", "affiliates"
   add_foreign_key "payment_subscriptions", "credit_cards"
   add_foreign_key "payment_subscriptions", "partners"
   add_foreign_key "payment_subscriptions", "payment_plans"
