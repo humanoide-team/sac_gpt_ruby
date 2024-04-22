@@ -25,7 +25,7 @@ class Partner < ApplicationRecord
   has_many :extra_tokens, dependent: :destroy
   has_many :schedules, dependent: :destroy
   has_one :schedule_setting, dependent: :destroy
-  has_one :thread_conversation, dependent: :destroy
+  has_one :conversation_thread_, dependent: :destroy
   has_one :partner_assistent, dependent: :destroy
 
   validates :name, :document, :contact_number, presence: true, on: :create
