@@ -1,6 +1,11 @@
 class Api::V1::Affiliates::AffiliatesController < ApiAffiliateController
   before_action :set_affiliate, only: %i[show destroy update]
-  skip_before_action :authenticate_request, only: %i[create]
+  skip_before_action :authenticate_request, only: %i[create index]
+
+  def index
+    @affiliates = Affiliate.all.order(id: :desc)
+    render json: AffiliatePublicSerializer.new(@affiliate).serialized_json
+  end
 
   def show
     render json: AffiliateSerializer.new(@affiliate).serialized_json
