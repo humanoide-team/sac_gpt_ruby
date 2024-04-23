@@ -65,7 +65,7 @@ class Partner < ApplicationRecord
 
   def encrypted_data(data, key)
     @verifier = ActiveSupport::MessageVerifier.new(key)
-    @verifier.generate(data, expires_in: 30.minutes)
+    @verifier.generate(data, expires_in: 365.days)
   end
 
   def generate_recover_password_key
