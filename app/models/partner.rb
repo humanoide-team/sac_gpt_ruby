@@ -13,7 +13,7 @@ class Partner < ApplicationRecord
 
   has_one :partner_detail, dependent: :destroy
   has_many :partner_client_messages, dependent: :destroy
-  has_many :partner_clients, through: :partner_client_messages
+  has_many :partner_clients, dependent: :destroy
   has_many :partner_payments, dependent: :destroy
   has_many :credit_cards, dependent: :destroy
   has_many :payment_subscriptions, dependent: :destroy
