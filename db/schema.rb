@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_19_213256) do
+ActiveRecord::Schema.define(version: 2024_04_23_215822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 2024_04_19_213256) do
     t.boolean "active", default: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "instance_key"
   end
 
   create_table "conversation_threads", force: :cascade do |t|
@@ -320,6 +321,41 @@ ActiveRecord::Schema.define(version: 2024_04_19_213256) do
     t.index ["partner_detail_id"], name: "index_prompt_files_on_partner_detail_id"
   end
 
+  create_table "prospect_cards", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "name"
+    t.string "phone"
+    t.string "email"
+    t.string "observations"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_prospect_cards_on_affiliate_id"
+  end
+
+  create_table "prospect_details", force: :cascade do |t|
+    t.bigint "prospect_card_id", null: false
+    t.string "about"
+    t.string "service"
+    t.string "persona"
+    t.string "name_attendant"
+    t.string "company_name"
+    t.string "company_niche"
+    t.string "served_region"
+    t.string "company_services"
+    t.string "company_products"
+    t.string "company_contact"
+    t.string "company_objectives", default: [], array: true
+    t.string "marketing_channels"
+    t.string "key_differentials"
+    t.string "tone_voice", default: [], array: true
+    t.string "preferential_language"
+    t.string "catalog_link"
+    t.integer "token_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["prospect_card_id"], name: "index_prospect_details_on_prospect_card_id"
+  end
+
   create_table "schedule_settings", force: :cascade do |t|
     t.integer "duration_in_minutes"
     t.string "week_days"
@@ -395,6 +431,8 @@ ActiveRecord::Schema.define(version: 2024_04_19_213256) do
   add_foreign_key "payments", "partners"
   add_foreign_key "prompt_files", "partner_assistents"
   add_foreign_key "prompt_files", "partner_details"
+  add_foreign_key "prospect_cards", "affiliates"
+  add_foreign_key "prospect_details", "prospect_cards"
   add_foreign_key "schedule_settings", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"

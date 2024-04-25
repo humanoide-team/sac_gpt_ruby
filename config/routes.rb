@@ -76,6 +76,9 @@ Rails.application.routes.draw do
 
         resources :affiliates, only: %i[index show create destroy update]
         patch 'affiliates/recover_password', to: 'affiliates#recover_password'
+
+        resources :prospect_cards, only: %i[index show create destroy update]
+        resources :prospect_details, only: %i[show create destroy update]
       end
     end
   end
