@@ -109,4 +109,13 @@ class Partner < ApplicationRecord
   def current_plan
     payment_subscriptions.where(status: :active).first&.payment_plan
   end
+
+  def send_connection_fail_mail
+    PartnerMailer._send_connection_fail_mail(self).deliver
+    notifications.create(
+      title: 'A sua conta precisa de sua atenção!',
+      description: 'Parece haver um problema com a sua conexao com o aplicatiovo do Whats App, precisamos que vc conecte novamente ao seu aparelho!',
+      notification_type: :connection_fail
+    )
+  end
 end

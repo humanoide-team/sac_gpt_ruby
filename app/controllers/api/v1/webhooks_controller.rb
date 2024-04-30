@@ -16,6 +16,13 @@ class Api::V1::WebhooksController < ApiController
 
     puts '********************RESPONDENDO****************************'
 
+    @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
+
+    if @partner.remote_jid == params['body']['key']['remoteJid']
+
+      return render json: { status: 'OK', current_date: DateTime.now.to_s, params: }
+    end
+
     @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'], partner_id: @partner.id)
     if @client.nil?
       @client = PartnerClient.create(phone: params['body']['key']['remoteJid'],

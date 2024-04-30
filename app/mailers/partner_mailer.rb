@@ -54,4 +54,9 @@ class PartnerMailer < ApplicationMailer
     @partner = partner
     mail(to: @partner.email, subject: 'Aviso: 50% da cota extra de tokens atingida - SacGpt!')
   end
+
+  def _send_connection_fail_mail(partner)
+    @partner = partner
+    mail(to: @partner.email, subject: 'A sua conta precisa de sua atenção!')
+  end
 end
