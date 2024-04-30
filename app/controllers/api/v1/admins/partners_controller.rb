@@ -13,12 +13,17 @@ class Api::V1::Admins::PartnersController < ApiAdminController
   def create
     @partner = Partner.new(partner_params)
 
+    if params[:affiliate_id] && !Affiliate.exists?(params[:affiliate_id])
+      return render json: { error: "Affiliate ID does not exist" }, status: :unprocessable_entity
+    end
+
     if @partner.save
       render json: PartnerAdminSerializer.new(@partner).serialized_json, status: :created
     else
       render json: ErrorSerializer.serialize(@partner.errors), status: :unprocessable_entity
     end
   end
+
 
   def destroy
     if @partner.destroy
