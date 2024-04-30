@@ -1,6 +1,14 @@
 class Affiliate < ApplicationRecord
   has_many :prospect_cards, dependent: :destroy
 
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable, :timeoutable
+
+  attr_accessor :current_password, :auth_token, :expires_at
+
+  extend FriendlyId
+  friendly_id :name_slug, use: :slugged
+
   validates :name, :document, :contact_number, presence: true, on: :create
   validates :password_confirmation, presence: true, on: :create
 
@@ -15,6 +23,10 @@ class Affiliate < ApplicationRecord
 
   def password_recovery_mail
     AffiliateMailer._send_password_recovery_mail(self, generate_recover_password_key).deliver
+  end
+
+  def service_number_is_updated?
+    saved_change_to_service_number?
   end
 
   def name_slug

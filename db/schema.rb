@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_23_215822) do
+ActiveRecord::Schema.define(version: 2024_04_30_201735) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,6 +40,12 @@ ActiveRecord::Schema.define(version: 2024_04_23_215822) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "instance_key"
+    t.datetime "deleted_at"
+    t.string "slug"
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token", default: "", null: false
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
   end
 
   create_table "conversation_threads", force: :cascade do |t|
@@ -253,6 +259,9 @@ ActiveRecord::Schema.define(version: 2024_04_23_215822) do
     t.datetime "expires_at"
     t.string "refresh_token"
     t.bigint "affiliate_id"
+    t.boolean "wpp_connected", default: true
+    t.datetime "last_callback_receive"
+    t.string "remote_jid"
     t.index ["affiliate_id"], name: "index_partners_on_affiliate_id"
   end
 
