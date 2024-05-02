@@ -3,8 +3,9 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
   def index
     @clients = @current_partner.partner_clients.sort_by do |pc|
-      pc.partner_client_messages.by_partner(@current_partner).last
-    end.reverse!.uniq
+      last_message = pc.partner_client_messages.by_partner(@current_partner).last
+      last_message ? last_message.created_at : Time.at(0)
+    end.reverse.uniq
     render json: {
       data: @clients.map do |pc|
         partner_client_lead = pc.partner_client_leads.by_partner(@current_partner).first
