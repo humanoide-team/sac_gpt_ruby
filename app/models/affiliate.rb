@@ -1,5 +1,6 @@
 class Affiliate < ApplicationRecord
   has_many :prospect_cards, dependent: :destroy
+  has_one :affiliate_bank_detail, dependent: :destroy
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
