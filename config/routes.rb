@@ -80,6 +80,7 @@ Rails.application.routes.draw do
         get 'affiliate_bank_details/:id', to: 'affiliate_bank_details#show'
         post 'affiliate_bank_details/:id', to: 'affiliate_bank_details#create'
         put 'affiliate_bank_details/:id', to: 'affiliate_bank_details#update'
+        get 'partners/:id', to: 'partners#show'
 
 
         resources :affiliates, only: %i[index show create destroy update]
