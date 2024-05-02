@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_04_30_201735) do
+ActiveRecord::Schema.define(version: 2024_05_02_191853) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,45 @@ ActiveRecord::Schema.define(version: 2024_04_30_201735) do
     t.datetime "remember_created_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "affiliate_client_leads", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "affiliate_client_id", null: false
+    t.text "conversation_summary"
+    t.text "lead_classification"
+    t.integer "lead_score"
+    t.integer "token_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_client_id"], name: "index_affiliate_client_leads_on_affiliate_client_id"
+    t.index ["affiliate_id"], name: "index_affiliate_client_leads_on_affiliate_id"
+  end
+
+  create_table "affiliate_client_messages", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "affiliate_client_id", null: false
+    t.bigint "conversation_thread_id"
+    t.text "message"
+    t.text "automatic_response"
+    t.string "webhook_uuid"
+    t.string "open_ai_message_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_client_id"], name: "index_affiliate_client_messages_on_affiliate_client_id"
+    t.index ["affiliate_id"], name: "index_affiliate_client_messages_on_affiliate_id"
+    t.index ["conversation_thread_id"], name: "index_affiliate_client_messages_on_conversation_thread_id"
+  end
+
+  create_table "affiliate_clients", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "name"
+    t.string "phone"
+    t.string "email"
+    t.boolean "blocked", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_clients_on_affiliate_id"
   end
 
   create_table "affiliates", force: :cascade do |t|
@@ -46,6 +85,30 @@ ActiveRecord::Schema.define(version: 2024_04_30_201735) do
     t.string "reset_password_token", default: "", null: false
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
+  end
+
+  create_table "bot_configurations", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "about"
+    t.string "service"
+    t.string "persona"
+    t.string "name_attendant"
+    t.string "company_name"
+    t.string "company_niche"
+    t.string "served_region"
+    t.string "company_services"
+    t.string "company_products"
+    t.string "company_contact"
+    t.string "company_objectives", default: [], array: true
+    t.string "marketing_channels"
+    t.string "key_differentials"
+    t.string "tone_voice", default: [], array: true
+    t.string "preferential_language"
+    t.string "catalog_link"
+    t.integer "token_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_bot_configurations_on_affiliate_id"
   end
 
   create_table "conversation_threads", force: :cascade do |t|
@@ -338,6 +401,7 @@ ActiveRecord::Schema.define(version: 2024_04_30_201735) do
     t.string "observations"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "test_active"
     t.index ["affiliate_id"], name: "index_prospect_cards_on_affiliate_id"
   end
 
@@ -412,6 +476,13 @@ ActiveRecord::Schema.define(version: 2024_04_30_201735) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "affiliate_client_leads", "affiliate_clients"
+  add_foreign_key "affiliate_client_leads", "affiliates"
+  add_foreign_key "affiliate_client_messages", "affiliate_clients"
+  add_foreign_key "affiliate_client_messages", "affiliates"
+  add_foreign_key "affiliate_client_messages", "conversation_threads"
+  add_foreign_key "affiliate_clients", "affiliates"
+  add_foreign_key "bot_configurations", "affiliates"
   add_foreign_key "conversation_threads", "partner_assistents"
   add_foreign_key "conversation_threads", "partner_clients"
   add_foreign_key "conversation_threads", "partners"
