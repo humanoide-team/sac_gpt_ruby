@@ -1,0 +1,2 @@
+class AffiliateClientLead < ApplicationRecord
+end
