@@ -53,4 +53,10 @@ class Affiliate < ApplicationRecord
     token = encrypted_data(id.to_s, generate_key)
     update_attribute(:instance_key, token)
   end
+
+  def generate_unique_url
+    host = 'http://localhost:3000'
+    affiliate_id = self.id
+    "#{host}/api/v1/partners/partners/?affiliate_id=#{affiliate_id}"
+  end
 end
