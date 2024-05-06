@@ -29,6 +29,19 @@ ActiveRecord::Schema.define(version: 2024_05_02_191853) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "affiliate_bank_details", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "responsible"
+    t.string "document_number"
+    t.string "bank_code"
+    t.string "agency"
+    t.string "account"
+    t.integer "account_type", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_bank_details_on_affiliate_id"
+  end
+
   create_table "affiliate_client_leads", force: :cascade do |t|
     t.bigint "affiliate_id", null: false
     t.bigint "affiliate_client_id", null: false
@@ -476,6 +489,7 @@ ActiveRecord::Schema.define(version: 2024_05_02_191853) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "affiliate_bank_details", "affiliates"
   add_foreign_key "affiliate_client_leads", "affiliate_clients"
   add_foreign_key "affiliate_client_leads", "affiliates"
   add_foreign_key "affiliate_client_messages", "affiliate_clients"

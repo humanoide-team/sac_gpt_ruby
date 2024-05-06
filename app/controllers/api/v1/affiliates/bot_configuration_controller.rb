@@ -1,9 +1,8 @@
 class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
-  skip_before_action :authenticate_request, only: %i[copy_from_prospect]
 
 
   def copy_from_prospect
-    prospect_card = ProspectCard.includes(:prospect_detail).find_by(id: params[:prospect_card_id])
+    prospect_card = ProspectCard.includes(:prospect_detail).find_by(id: params[:id])
     if prospect_card.nil?
       render json: { error: "Prospect card not found" }, status: :not_found
       return
@@ -24,15 +23,28 @@ class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
     end
   end
 
+
   private
 
   def bot_config_params(prospect_detail)
-    deserialized_data = ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [
-      :about, :service, :persona, :name_attendant, :company_name, :company_niche,
-      :served_region, :company_services, :company_products, :company_contact,
-      :company_objectives, :marketing_channels, :key_differentials,
-      :tone_voice, :preferential_language, :catalog_link
-    ])
-    deserialized_data.merge(token_count: 0)
+    {
+      about: prospect_detail.about,
+      service: prospect_detail.service,
+      persona: prospect_detail.persona,
+      name_attendant: prospect_detail.name_attendant,
+      company_name: prospect_detail.company_name,
+      company_niche: prospect_detail.company_niche,
+      served_region: prospect_detail.served_region,
+      company_services: prospect_detail.company_services,
+      company_products: prospect_detail.company_products,
+      company_contact: prospect_detail.company_contact,
+      company_objectives: prospect_detail.company_objectives,
+      marketing_channels: prospect_detail.marketing_channels,
+      key_differentials: prospect_detail.key_differentials,
+      tone_voice: prospect_detail.tone_voice,
+      preferential_language: prospect_detail.preferential_language,
+      catalog_link: prospect_detail.catalog_link,
+      token_count: 0
+    }
   end
 end

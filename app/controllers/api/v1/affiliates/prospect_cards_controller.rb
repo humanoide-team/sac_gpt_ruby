@@ -1,4 +1,4 @@
-class Api::V1::Affiliates::ProspectCardsController < ApiPartnerController
+class Api::V1::Affiliates::ProspectCardsController < ApiAffiliateController
   before_action :set_prospect_card, only: %i[index show destroy update]
 
   def index

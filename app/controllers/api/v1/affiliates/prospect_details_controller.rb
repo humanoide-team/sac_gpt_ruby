@@ -1,4 +1,4 @@
-class Api::V1::Affiliates::ProspectDetailsController < ApiPartnerController
+class Api::V1::Affiliates::ProspectDetailsController < ApiAffiliateController
   before_action :set_prospect_detail, only: %i[show destroy update]
 
   def show
