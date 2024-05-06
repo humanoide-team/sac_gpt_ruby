@@ -1,3 +1,3 @@
 class ProspectDetail < ApplicationRecord
-  belongs_to :affiliate
+  belongs_to :prospect_card
 end
