@@ -68,10 +68,6 @@ Rails.application.routes.draw do
         get 'montly_usage_history', to: 'montly_usage_history#index'
       end
 
-
-
-
-
       namespace :affiliates do
         post 'authenticate', to: 'authentication#authenticate'
         get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
