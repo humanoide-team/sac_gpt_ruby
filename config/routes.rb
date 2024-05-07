@@ -68,11 +68,28 @@ Rails.application.routes.draw do
         get 'montly_usage_history', to: 'montly_usage_history#index'
       end
 
+
+
+
+
       namespace :affiliates do
         post 'authenticate', to: 'authentication#authenticate'
         get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
         post 'recover_password', to: 'authentication#send_recover_password_mail'
         patch 'recover_password/:id', to: 'authentication#recover_password'
+
+        #BANK DETAILS
+        get 'affiliate_bank_details/:id', to: 'affiliate_bank_details#show'
+        post 'affiliate_bank_details/:id', to: 'affiliate_bank_details#create'
+        put 'affiliate_bank_details/:id', to: 'affiliate_bank_details#update'
+
+        #AFFILIATES
+        get 'partners/:id', to: 'partners#show'
+
+        #BOT CONFIGURATIONS
+        post 'bot_configurations/:id', to: 'bot_configuration#copy_from_prospect'
+
+
 
         resources :affiliates, only: %i[index show create destroy update]
         patch 'affiliates/recover_password', to: 'affiliates#recover_password'

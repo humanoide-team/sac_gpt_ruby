@@ -1,9 +1,6 @@
 class Affiliate < ApplicationRecord
   has_many :prospect_cards, dependent: :destroy
-  has_one :bot_configuration, dependent: :destroy
-  has_many :affiliate_client_messages, dependent: :destroy
-  has_many :affiliate_clients, dependent: :destroy
-  has_many :affiliate_client_leads, dependent: :destroy
+  has_one :affiliate_bank_detail, dependent: :destroy
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
@@ -56,4 +53,11 @@ class Affiliate < ApplicationRecord
     token = encrypted_data(id.to_s, generate_key)
     update_attribute(:instance_key, token)
   end
+
+  def generate_unique_url
+    host = ENV['WEB_PAGE']
+    affiliate_id = self.id
+    "#{host}cadastro/?affiliate_id=#{affiliate_id}"
+  end
+
 end

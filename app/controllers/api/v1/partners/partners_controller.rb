@@ -8,6 +8,8 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
 
   def create
     @partner = Partner.new(partner_params)
+    @partner.affiliate_id = params[:affiliate_id] if params[:affiliate_id].present?
+
 
     if @partner.save
       options = {
