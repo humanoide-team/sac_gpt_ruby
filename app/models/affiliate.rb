@@ -1,9 +1,10 @@
 class Affiliate < ApplicationRecord
   has_many :prospect_cards, dependent: :destroy
   has_one :bot_configuration, dependent: :destroy
-  has_many :partner_client_messages, dependent: :destroy
-  has_many :partner_clients, dependent: :destroy
-  
+  has_many :affiliate_client_messages, dependent: :destroy
+  has_many :affiliate_clients, dependent: :destroy
+  has_many :affiliate_client_leads, dependent: :destroy
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
 
