@@ -83,11 +83,11 @@ Rails.application.routes.draw do
         post 'affiliate_bank_details/:id', to: 'affiliate_bank_details#create'
         put 'affiliate_bank_details/:id', to: 'affiliate_bank_details#update'
 
-        #AFFILIATES
+        #PARTNERS
         get 'partners/:id', to: 'partners#show'
 
         #BOT CONFIGURATIONS
-        post 'bot_configurations/:id', to: 'bot_configuration#copy_from_prospect'
+        post 'bot_configurations/set_prospect_card/:id', to: 'bot_configuration#copy_from_prospect'
 
 
 
