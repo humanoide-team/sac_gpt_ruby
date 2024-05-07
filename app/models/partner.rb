@@ -11,6 +11,7 @@ class Partner < ApplicationRecord
   extend FriendlyId
   friendly_id :name_slug, use: :slugged
 
+  belongs_to :affiliate
   has_one :partner_detail, dependent: :destroy
   has_many :partner_client_messages, dependent: :destroy
   has_many :partner_clients, dependent: :destroy
