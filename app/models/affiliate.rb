@@ -55,8 +55,9 @@ class Affiliate < ApplicationRecord
   end
 
   def generate_unique_url
-    host = 'http://localhost:3000'
+    host = ENV['WEB_PAGE']
     affiliate_id = self.id
-    "#{host}/api/v1/partners/partners/?affiliate_id=#{affiliate_id}"
+    "#{host}cadastro/?affiliate_id=#{affiliate_id}"
   end
+
 end
