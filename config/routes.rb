@@ -77,6 +77,12 @@ Rails.application.routes.draw do
         get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
         post 'recover_password', to: 'authentication#send_recover_password_mail'
         patch 'recover_password/:id', to: 'authentication#recover_password'
+        get 'affiliate_clients/lead_classification/:id', to: 'affiliate_clients#lead_classification'
+        get 'affiliate_clients_messages/list_by_client/:client_id', to: 'affiliate_client_messages#list_by_client'
+        get 'affiliate_clients_messages', to: 'affiliate_client_messages#index'
+
+        resources :affiliate_clients, only: %i[index destroy]
+
 
         #BANK DETAILS
         get 'affiliate_bank_details/:id', to: 'affiliate_bank_details#show'
@@ -88,6 +94,7 @@ Rails.application.routes.draw do
 
         #BOT CONFIGURATIONS
         post 'bot_configurations/set_prospect_card/:id', to: 'bot_configuration#copy_from_prospect'
+
 
 
 
