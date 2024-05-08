@@ -4,7 +4,7 @@ class Api::V1::Affiliates::AffiliatesController < ApiAffiliateController
 
   def index
     @affiliates = Affiliate.all.order(id: :desc)
-    render json: AffiliatePublicSerializer.new(@affiliate).serialized_json
+    render json: AffiliatePublicSerializer.new(@affiliates).serialized_json
   end
 
   def show
