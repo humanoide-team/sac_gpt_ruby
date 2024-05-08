@@ -1,6 +1,5 @@
 class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
 
-
   def copy_from_prospect
     prospect_card = ProspectCard.includes(:prospect_detail).find_by(id: params[:id])
     if prospect_card.nil?
