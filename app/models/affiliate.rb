@@ -1,14 +1,13 @@
 class Affiliate < ApplicationRecord
+  acts_as_paranoid
+
   has_many :prospect_cards, dependent: :destroy
   has_many :affiliate_client_leads, dependent: :destroy
   has_many :affiliate_client_messages, dependent: :destroy
   has_many :affiliate_clients, dependent: :destroy
-
-
+  has_many :partners, dependent: :nullify
   has_one :affiliate_bank_detail, dependent: :destroy
   has_one :bot_configuration, dependent: :destroy
-
-
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
@@ -68,4 +67,9 @@ class Affiliate < ApplicationRecord
     "#{host}cadastro/?affiliate_id=#{affiliate_id}"
   end
 
+  def list_transactions(status, start_at, limit)
+    galax_pay_ids = partners.map(&:galax_pay_id).compact.join(',')
+
+    GalaxPayClient.get_transactions_by_client(galax_pay_ids, status, start_at, limit)
+  end
 end
