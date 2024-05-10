@@ -3,6 +3,7 @@ class Affiliate < ApplicationRecord
   has_many :affiliate_client_leads, dependent: :destroy
   has_many :affiliate_client_messages, dependent: :destroy
   has_many :affiliate_clients, dependent: :destroy
+  has_one :partner, dependent: :destroy
 
 
   has_one :affiliate_bank_detail, dependent: :destroy
