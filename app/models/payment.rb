@@ -10,6 +10,8 @@ class Payment < ApplicationRecord
 
   after_create :payment_confirmation_mail
 
+  after_create :create_affiliate_revenue
+
   accepts_nested_attributes_for :extra_token, reject_if: :all_blank
 
   enum main_payment_method_id: {
@@ -41,7 +43,6 @@ class Payment < ApplicationRecord
       self.plan_galax_pay_id = galax_pay_payment['planGalaxPayId']
       self.payment_link = galax_pay_payment['paymentLink']
       self.status = galax_pay_payment['status']
-      puts galax_pay_payment
     end
   end
 
@@ -49,11 +50,17 @@ class Payment < ApplicationRecord
     PaymentMailer._send_payment_confirmation_mail(self, partner, credit_card).deliver
     partner.notifications.create(
       title: 'Confirmação de Pagamento',
-      description: "Seu pagamento foi confirmado!",
+      description: 'Seu pagamento foi confirmado!',
       notification_type: :payment_confirmation,
       metadata: {
         payment: id
       }
     )
+  end
+
+  def create_affiliate_revenue
+    return if partner.affiliate.nil?
+
+    Revenue.create(payment: self, partner:, affiliate: partner.affiliate, value: value * (partner.affiliate.revenue_percentage / 100.0))
   end
 end

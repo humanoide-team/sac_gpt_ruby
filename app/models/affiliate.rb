@@ -1,14 +1,14 @@
 class Affiliate < ApplicationRecord
+  acts_as_paranoid
+
   has_many :prospect_cards, dependent: :destroy
   has_many :affiliate_client_leads, dependent: :destroy
   has_many :affiliate_client_messages, dependent: :destroy
   has_many :affiliate_clients, dependent: :destroy
-
+  has_many :revenues, dependent: :destroy
 
   has_one :affiliate_bank_detail, dependent: :destroy
   has_one :bot_configuration, dependent: :destroy
-
-
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
@@ -64,8 +64,7 @@ class Affiliate < ApplicationRecord
 
   def generate_unique_url
     host = ENV['WEB_PAGE']
-    affiliate_id = self.id
+    affiliate_id = id
     "#{host}cadastro/?affiliate_id=#{affiliate_id}"
   end
-
 end

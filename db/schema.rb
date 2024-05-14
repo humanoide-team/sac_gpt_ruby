@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_10_160934) do
+ActiveRecord::Schema.define(version: 2024_05_14_232010) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -95,9 +95,10 @@ ActiveRecord::Schema.define(version: 2024_05_10_160934) do
     t.datetime "deleted_at"
     t.string "slug"
     t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token", default: "", null: false
+    t.string "reset_password_token", default: ""
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
+    t.integer "revenue_percentage", default: 10
   end
 
   create_table "bot_configurations", force: :cascade do |t|
@@ -415,6 +416,8 @@ ActiveRecord::Schema.define(version: 2024_05_10_160934) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "test_active"
+    t.string "company_name"
+    t.integer "status", default: 0
     t.index ["affiliate_id"], name: "index_prospect_cards_on_affiliate_id"
   end
 
@@ -440,6 +443,18 @@ ActiveRecord::Schema.define(version: 2024_05_10_160934) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["prospect_card_id"], name: "index_prospect_details_on_prospect_card_id"
+  end
+
+  create_table "revenues", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "payment_id", null: false
+    t.bigint "partner_id", null: false
+    t.integer "value", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_revenues_on_affiliate_id"
+    t.index ["partner_id"], name: "index_revenues_on_partner_id"
+    t.index ["payment_id"], name: "index_revenues_on_payment_id"
   end
 
   create_table "schedule_settings", force: :cascade do |t|
@@ -527,6 +542,9 @@ ActiveRecord::Schema.define(version: 2024_05_10_160934) do
   add_foreign_key "prompt_files", "partner_details"
   add_foreign_key "prospect_cards", "affiliates"
   add_foreign_key "prospect_details", "prospect_cards"
+  add_foreign_key "revenues", "affiliates"
+  add_foreign_key "revenues", "partners"
+  add_foreign_key "revenues", "payments"
   add_foreign_key "schedule_settings", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"
