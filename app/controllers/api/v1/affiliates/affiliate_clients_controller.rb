@@ -59,8 +59,34 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
         "\n", ' '
       ).strip
 
+      conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub(
+        "\n", ' '
+      ).strip
+
+      lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
+      lead_score = gerar_resposta(lead_score_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
+
       @affiliate_client_lead.lead_classification = lead_classification
+      @affiliate_client_lead.conversation_summary = conversation_summary
+      @affiliate_client_lead.lead_score = lead_score.to_i
       @affiliate_client_lead.save
+
+    elsif !@affiliate_client_lead.nil? && last_message.nil? && last_message.created_at + 10.minutes > @affiliate_client_lead.updated_at
+      lead_classification_question = 'Com base na interação, classifique o interesse do lead em uma escala de 1 a 5, sendo 1 o menor interesse e 5 o maior interesse. Considere fatores como engajamento, perguntas feitas e intenção de compra e fale por que da nota.'
+      lead_classification = gerar_resposta(lead_classification_question, historico_conversa, 'gpt-3.5-turbo').gsub(
+        "\n", ' '
+      ).strip
+
+      conversation_summary_question = 'Faca um resumo de toda essa conversa em um paragrafo'
+      conversation_summary = gerar_resposta(conversation_summary_question, historico_conversa, 'gpt-3.5-turbo').gsub(
+        "\n", ' '
+      ).strip
+
+      lead_score_question = "#{lead_classification}, Qual foi a nota dada ao lead. Responda com apenas o digito e nada mais"
+      lead_score = gerar_resposta(lead_score_question, historico_conversa, 'gpt-3.5-turbo').gsub("\n", ' ').strip
+
+      @affiliate_client_lead.update(lead_classification:, conversation_summary:, lead_score: lead_score.to_i)
     end
 
     render json: AffiliateClientLeadSerializer.new(@affiliate_client_lead).serialized_json, status: :ok
