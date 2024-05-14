@@ -13,6 +13,13 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
       }
     end
 
+    client_messages = @current_partner.partner_client_messages.order(created_at: :desc).limit(5).distinct.map do |pcm|
+      {
+        client: PartnerClientSerializer.new(pcm.partner_client),
+        clientLastMessage: pcm.message,
+      }
+    end
+
     # Attendant Performance
     answers_count = @current_partner.partner_client_messages.count
 
@@ -33,6 +40,7 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
             montlyTokensConsumed: montly_usage.token_count,
             monthlyTokensLeft: montly_tokens_left
           },
+          clientMessages: client_messages,
           salesAnalysis: {}
         }
       }

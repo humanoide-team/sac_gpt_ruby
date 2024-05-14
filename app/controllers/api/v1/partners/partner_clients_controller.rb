@@ -2,10 +2,21 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
   before_action :set_client, only: %i[lead_classification messages_resume destroy]
 
   def index
-    @clients = @current_partner.partner_clients.sort_by do |pc|
+    month = params[:month].to_i
+
+    if month > 0 && month <= 12
+      @clients = @current_partner.partner_clients.joins(:partner_client_messages)
+                                 .where("EXTRACT(MONTH FROM partner_client_messages.created_at) = ?", month)
+                                 .distinct
+    else
+      @clients = @current_partner.partner_clients
+    end
+
+    @clients = @clients.sort_by do |pc|
       last_message = pc.partner_client_messages.by_partner(@current_partner).last
       last_message ? last_message.created_at : Time.at(0)
     end.reverse.uniq
+
     render json: {
       data: @clients.map do |pc|
         partner_client_lead = pc.partner_client_leads.by_partner(@current_partner).first
@@ -16,7 +27,8 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
             name: pc.name,
             phone: pc.phone,
             lastMessage: pc.partner_client_messages.by_partner(@current_partner).last&.created_at,
-            leadScore: !partner_client_lead.nil? ? partner_client_lead.lead_score : nil,
+            leadScore: partner_client_lead&.lead_score,
+            messagesCount: pc.partner_client_messages.by_partner(@current_partner).count,
             createdAt: pc.created_at,
             updatedAt: pc.updated_at
           }
@@ -24,6 +36,8 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       end
     }, status: :ok
   end
+
+
 
   def destroy
     if @client.destroy
