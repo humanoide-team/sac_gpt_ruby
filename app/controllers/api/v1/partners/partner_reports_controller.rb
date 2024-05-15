@@ -13,12 +13,17 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
       }
     end
 
-    client_messages = @current_partner.partner_client_messages.order(created_at: :desc).limit(5).distinct.map do |pcm|
+    client_messages = @current_partner.partner_client_messages
+                                      .select('DISTINCT ON (partner_client_id) *')
+                                      .order('partner_client_id, created_at DESC')
+                                      .limit(5)
+                                      .map do |pcm|
       {
         client: PartnerClientSerializer.new(pcm.partner_client),
         clientLastMessage: pcm.message,
       }
     end
+
 
     # Attendant Performance
     answers_count = @current_partner.partner_client_messages.count
