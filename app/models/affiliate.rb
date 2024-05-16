@@ -1,6 +1,7 @@
 class Affiliate < ApplicationRecord
   acts_as_paranoid
 
+  has_many :partners, dependent: :nullify
   has_many :prospect_cards, dependent: :destroy
   has_many :affiliate_client_leads, dependent: :destroy
   has_many :affiliate_client_messages, dependent: :destroy
