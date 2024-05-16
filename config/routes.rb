@@ -84,7 +84,7 @@ Rails.application.routes.draw do
         put 'affiliate_bank_details/:id', to: 'affiliate_bank_details#update'
 
         # PARTNERS
-        get 'partners/:id', to: 'partners#show'
+        resources :partners, only: %i[index]
 
         # BOT CONFIGURATIONS
         post 'bot_configurations/set_prospect_card/:id', to: 'bot_configuration#copy_from_prospect'
