@@ -111,6 +111,10 @@ class Partner < ApplicationRecord
     payment_subscriptions.where(status: :active).first&.payment_plan
   end
 
+  def current_plan_canceled?
+    payment_subscriptions.where(status: :canceled).exists?
+  end
+
   def send_connection_fail_mail
     PartnerMailer._send_connection_fail_mail(self).deliver
     notifications.create(
@@ -118,5 +122,21 @@ class Partner < ApplicationRecord
       description: 'Parece haver um problema com a sua conexao com o aplicatiovo do Whats App, precisamos que vc conecte novamente ao seu aparelho!',
       notification_type: :connection_fail
     )
+  end
+
+  def details_filled?
+    name.present? && email.present? && contact_number.present? && document.present?
+  end
+
+  def customer_status
+    if active? && current_plan.present?
+      'Cliente Ativo'
+    elsif current_plan.nil? && details_filled?
+      'Dados Preenchidos'
+    elsif current_plan_canceled?
+      'Cliente Inativo'
+    else
+      'Status Desconhecido'
+    end
   end
 end

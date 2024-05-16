@@ -3,10 +3,14 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
   def index
     month = params[:month].to_i
+    year = params[:year].present? ? params[:year].to_i : Date.current.year
 
     if month > 0 && month <= 12
+      start_date = Date.new(year, month, 1)
+      end_date = start_date.end_of_month
+
       @clients = @current_partner.partner_clients.joins(:partner_client_messages)
-                                 .where("EXTRACT(MONTH FROM partner_client_messages.created_at) = ?", month)
+                                 .where(partner_client_messages: { created_at: start_date..end_date })
                                  .distinct
     else
       @clients = @current_partner.partner_clients
