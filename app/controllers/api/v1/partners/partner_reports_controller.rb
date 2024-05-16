@@ -1,11 +1,12 @@
 class Api::V1::Partners::PartnerReportsController < ApiPartnerController
   def index
     # Overview
+    current_extra_token = @current_partner.extra_tokens.sum(:token_quantity)
     partner_leads = @current_partner.partner_client_leads
     montly_usage = @current_partner.current_mothly_history
     lead_count = partner_leads.count
     token_limit = @current_partner.current_plan&.max_token_count || 0
-    montly_tokens_left = token_limit - montly_usage.token_count
+    montly_tokens_left = (token_limit + current_extra_token) - montly_usage.token_count
     client_scores = partner_leads.order(lead_score: :desc).limit(10).map do |pl|
       {
         client: PartnerClientSerializer.new(pl.partner_client),
