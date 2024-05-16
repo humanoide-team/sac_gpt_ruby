@@ -9,8 +9,8 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       start_date = Date.new(year, month, 1)
       end_date = start_date.end_of_month
 
-      @clients = @current_partner.partner_clients.joins(:partner_client_messages)
-                                 .where(partner_client_messages: { created_at: start_date..end_date })
+      @clients = @current_partner.partner_clients
+                                 .where({ created_at: start_date..end_date })
                                  .distinct
     else
       @clients = @current_partner.partner_clients
