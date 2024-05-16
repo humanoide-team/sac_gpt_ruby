@@ -1,5 +1,5 @@
 class Api::V1::Affiliates::ProspectCardsController < ApiAffiliateController
-  before_action :set_prospect_card, only: %i[index show destroy update]
+  before_action :set_prospect_card, only: %i[show destroy update]
 
   def index
     @prospect_cards = @current_affiliate.propect_cards

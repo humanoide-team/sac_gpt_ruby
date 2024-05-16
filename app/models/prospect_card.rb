@@ -5,6 +5,6 @@ class ProspectCard < ApplicationRecord
   accepts_nested_attributes_for :prospect_detail, reject_if: :all_blank
 
   def partner_linked
-    !affiliate.partner&.find_by(email: email).nil?
+    !affiliate.partners&.find_by(email: email).nil?
   end
 end
