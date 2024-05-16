@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_14_232010) do
+ActiveRecord::Schema.define(version: 2024_05_16_003506) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -417,7 +417,7 @@ ActiveRecord::Schema.define(version: 2024_05_14_232010) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "test_active"
     t.string "company_name"
-    t.integer "status", default: 0
+    t.string "status", default: "0"
     t.index ["affiliate_id"], name: "index_prospect_cards_on_affiliate_id"
   end
 

@@ -2,7 +2,7 @@ class Api::V1::Affiliates::ProspectCardsController < ApiAffiliateController
   before_action :set_prospect_card, only: %i[show destroy update]
 
   def index
-    @prospect_cards = @current_affiliate.propect_cards
+    @prospect_cards = @current_affiliate.prospect_cards
     render json: ProspectCardSerializer.new(@prospect_cards).serialized_json, status: :ok
   end
 
