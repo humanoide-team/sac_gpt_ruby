@@ -14,7 +14,8 @@ class PartnerSerializer
   end
 
   attribute :monthlyTokensLeft do |partner|
-    token_limit = partner.current_plan&.max_token_count || 0
+    current_extra_token = partner.extra_tokens.sum(:token_quantity)
+    token_limit = partner.current_plan&.max_token_count || 0 + current_extra_token
     token_limit - partner.current_mothly_history.token_count
   end
 
