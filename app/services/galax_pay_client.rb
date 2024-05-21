@@ -55,15 +55,19 @@ class GalaxPayClient
       'Authorization': "Bearer #{token}",
       'Content-Type': 'application/json'
     }
-    response = HTTParty.post("#{BASE_URL}/cards/#{galax_pay_id}/galaxPayId", body:, headers:)
-    if response.code == 200
+    response = HTTParty.post("#{BASE_URL}/cards/#{galax_pay_id}/galaxPayId", body: body, headers: headers)
+
+    case response.code
+    when 200
       puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Card']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "#{response.body}"
+      puts "Resposta do corpo: #{response.body}"
+      nil
     end
   end
+
 
   def self.create_payment_plan(id, name, periodicity, quantity, additionalInfo, plan_price_payment, plan_price_value)
     # https://docs.galaxpay.com.br/plans/create
@@ -98,21 +102,26 @@ class GalaxPayClient
     end
   end
 
-  def self.create_payment_subscription(id, planMyId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
+  def self.create_payment_subscription(id, planMyId, galaxPayId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
     # https://docs.galaxpay.com.br/subscriptions/create-with-plan
     data = {
       myId: "sac-gpt-payment-subscription-#{id}",
       planMyId:,
+      galaxPayId:,
       firstPayDayDate:,
       additionalInfo:,
       mainPaymentMethodId:,
       Customer: {
           myId: customer.galax_pay_my_id,
+          galaxPayId: customer.galax_pay_id,
           name: customer.name,
           document: customer.document,
-          email: [
+          emails: [
             customer.email
-          ]
+          ],
+          phones: [
+            customer.phone
+          ],
       },
       PaymentMethodCreditCard: {
         Card: {
@@ -201,20 +210,25 @@ class GalaxPayClient
     end
   end
 
-  def self.create_payment(id, payday, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
+  def self.create_payment(id, payday, payedOutsideGalaxPay, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
     # https://docs-celcash.celcoin.com.br/individual-charges/create/request
     data = {
       myId: "sac-gpt-payment-#{id}",
       value:,
+      additionalInfo:,
       payday:,
+      payedOutsideGalaxPay:,
       mainPaymentMethodId:,
       Customer: {
         myId: customer.galax_pay_my_id,
         name: customer.name,
         document: customer.document,
-        email: [
+        emails: [
           customer.email
-        ]
+        ],
+        phones: [
+          customer.phone
+        ],
       },
       PaymentMethodCreditCard: {
         Card: {
