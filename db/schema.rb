@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_20_134232) do
+ActiveRecord::Schema.define(version: 2024_05_21_235612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -448,14 +448,15 @@ ActiveRecord::Schema.define(version: 2024_05_20_134232) do
 
   create_table "revenues", force: :cascade do |t|
     t.bigint "affiliate_id", null: false
-    t.bigint "payment_id", null: false
     t.bigint "partner_id", null: false
     t.integer "value", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "partner_transaction_type"
+    t.bigint "partner_transaction_id"
     t.index ["affiliate_id"], name: "index_revenues_on_affiliate_id"
     t.index ["partner_id"], name: "index_revenues_on_partner_id"
-    t.index ["payment_id"], name: "index_revenues_on_payment_id"
+    t.index ["partner_transaction_type", "partner_transaction_id"], name: "index_revenues_on_partner_transaction"
   end
 
   create_table "schedule_settings", force: :cascade do |t|
@@ -545,7 +546,6 @@ ActiveRecord::Schema.define(version: 2024_05_20_134232) do
   add_foreign_key "prospect_details", "prospect_cards"
   add_foreign_key "revenues", "affiliates"
   add_foreign_key "revenues", "partners"
-  add_foreign_key "revenues", "payments"
   add_foreign_key "schedule_settings", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"

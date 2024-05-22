@@ -12,7 +12,6 @@ class Api::V1::Affiliates::RevenuesController < ApiAffiliateController
     closing = @current_affiliate.revenues.where(created_at: closing_start..closing_end).sum(:value)
     financial = @current_affiliate.revenues.where(created_at: financial_start..financial_end).sum(:value)
 
-    # JSON
     render json: {
       data: {
         id: @current_affiliate.id,

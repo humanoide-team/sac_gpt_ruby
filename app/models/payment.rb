@@ -3,8 +3,8 @@ require 'securerandom'
 class Payment < ApplicationRecord
   belongs_to :partner
   belongs_to :credit_card
-
   has_one :extra_token, dependent: :destroy
+  has_many :revenue, as: :partner_transaction, dependent: :delete_all
 
   before_create :create_galax_pay_payment
 
@@ -61,6 +61,6 @@ class Payment < ApplicationRecord
   def create_affiliate_revenue
     return if partner.affiliate.nil?
 
-    Revenue.create(payment: self, partner:, affiliate: partner.affiliate, value: value * (partner.affiliate.revenue_percentage / 100.0))
+    Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate, value: value * (partner.affiliate.revenue_percentage / 100.0))
   end
 end
