@@ -14,7 +14,7 @@ class Api::V1::Affiliates::DashboardController < ApiAffiliateController
     news_propect = @current_affiliate.prospect_cards.where(status: 'prospec').count
     closed_propect = @current_affiliate.prospect_cards.where(status: 'closure').count
     all_propect = @current_affiliate.prospect_cards.count
-    propect_success = @current_affiliate.propect_card.select { |pc| pc.partner_linked }.count
+    propect_success = @current_affiliate.prospect_cards.select { |pc| pc.partner_linked }.count
 
     token_count = @current_affiliate&.bot_configuration&.token_count || 0
     render json: {
