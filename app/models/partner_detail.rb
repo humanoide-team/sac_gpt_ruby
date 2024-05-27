@@ -104,8 +104,10 @@ class PartnerDetail < ApplicationRecord
     client = get_google_calendar_client(partner)
     agenda = find_agenda(client)
 
-    if agenda.nil? || partner.schedule_setting.google_agenda_id.nil? || agenda.id != partner.schedule_setting.google_agenda_id
+    if agenda.nil?
       agenda = create_agenda(client)
+      partner.schedule_setting.update(google_agenda_id: agenda.id)
+    elsif partner.schedule_setting.google_agenda_id.nil? || agenda.id != partner.schedule_setting.google_agenda_id
       partner.schedule_setting.update(google_agenda_id: agenda.id)
     end
 
@@ -115,7 +117,7 @@ class PartnerDetail < ApplicationRecord
       "Considere o dia de hoje como sendo #{date_today}"
     else
       date_times = response.items.map { |event| event.start.date_time }
-      "Esses são os horários já reservados #{date_times.join(', ')}. Caso o cliente escolha um desses dias e horários, peça para escolher um outro horário. Considere o dia de hoje como sendo #{date_today}"
+      "Esses são os horários já reservados: #{date_times.join(', ')}. Caso o cliente escolha um desses dias e horários, peça para escolher um outro horário. Considere o dia de hoje como sendo #{date_today}"
     end
   end
 
