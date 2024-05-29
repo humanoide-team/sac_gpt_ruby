@@ -1,27 +1,31 @@
 class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
+  before_action :set_bot_configuration, only: %i[actual_configuration copy_from_prospect]
+
+  def actual_configuration
+    render json: BotConfigurationSerializer.new(@bot_config).serialized_json
+  end
 
   def copy_from_prospect
     prospect_card = ProspectCard.includes(:prospect_detail).find_by(id: params[:id])
-    if prospect_card.nil?
-      render json: { error: "Prospect card not found" }, status: :not_found
-      return
-    end
+    return render json: { error: 'Prospect card not found' }, status: :not_found if prospect_card.nil?
 
     if prospect_card.prospect_detail.nil?
-      render json: { error: "No details available for this prospect card." }, status: :not_found
-      return
+      return render json: { error: 'No details available for this prospect card.' }, status: :not_found
     end
 
-    bot_config = BotConfiguration.new(bot_config_params(prospect_card.prospect_detail))
-    bot_config.affiliate_id = prospect_card.affiliate_id
+    if @bot_config.nil?
+      @bot_config = BotConfiguration.new(bot_config_params(prospect_card.prospect_detail))
+      @bot_config.affiliate_id = prospect_card.affiliate_id
+    else
+      @bot_config.update(bot_config_params(prospect_card.prospect_detail))
+    end
 
-    if bot_config.save
-      render json: bot_config, status: :created
+    if @bot_config.save
+      render json: BotConfigurationSerializer.new(bot_config), status: :created
     else
       render json: { errors: bot_config.errors.full_messages }, status: :unprocessable_entity
     end
   end
-
 
   private
 
@@ -45,5 +49,9 @@ class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
       catalog_link: prospect_detail.catalog_link,
       token_count: 0
     }
+  end
+
+  def set_bot_configuration
+    @bot_config = @current_affiliate.bot_configuration
   end
 end
