@@ -88,7 +88,7 @@ Rails.application.routes.draw do
 
         # BOT CONFIGURATIONS
         post 'bot_configurations/set_prospect_card/:id', to: 'bot_configuration#copy_from_prospect'
-        post 'bot_configurations/actual_configuration/', to: 'bot_configuration#actual_configuration'
+        get 'bot_configurations/actual_configuration', to: 'bot_configuration#actual_configuration'
 
         resources :payment_transactions, only: %i[index]
 
