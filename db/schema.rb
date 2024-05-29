@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_21_235612) do
+ActiveRecord::Schema.define(version: 2024_05_29_211431) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -123,7 +123,9 @@ ActiveRecord::Schema.define(version: 2024_05_21_235612) do
     t.integer "token_count", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "prospect_card_id"
     t.index ["affiliate_id"], name: "index_bot_configurations_on_affiliate_id"
+    t.index ["prospect_card_id"], name: "index_bot_configurations_on_prospect_card_id"
   end
 
   create_table "conversation_threads", force: :cascade do |t|
@@ -514,6 +516,7 @@ ActiveRecord::Schema.define(version: 2024_05_21_235612) do
   add_foreign_key "affiliate_client_messages", "conversation_threads"
   add_foreign_key "affiliate_clients", "affiliates"
   add_foreign_key "bot_configurations", "affiliates"
+  add_foreign_key "bot_configurations", "prospect_cards"
   add_foreign_key "conversation_threads", "partner_assistents"
   add_foreign_key "conversation_threads", "partner_clients"
   add_foreign_key "conversation_threads", "partners"

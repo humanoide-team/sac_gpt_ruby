@@ -16,8 +16,10 @@ class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
     if @bot_config.nil?
       @bot_config = BotConfiguration.new(bot_config_params(prospect_card.prospect_detail))
       @bot_config.affiliate_id = prospect_card.affiliate_id
+      @bot_config.prospect_card_id = prospect_card.id
     else
       @bot_config.update(bot_config_params(prospect_card.prospect_detail))
+      @bot_config.prospect_card_id = prospect_card.id
     end
 
     if @bot_config.save

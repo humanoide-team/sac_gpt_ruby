@@ -93,7 +93,7 @@ Rails.application.routes.draw do
         resources :payment_transactions, only: %i[index]
 
         resources :revenues, only: %i[index]
-        
+
         resources :dashboard, only: %i[index]
 
         resources :affiliates, only: %i[index show create destroy update]
