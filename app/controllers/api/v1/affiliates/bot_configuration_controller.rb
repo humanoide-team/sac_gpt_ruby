@@ -23,9 +23,9 @@ class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
     end
 
     if @bot_config.save
-      render json: BotConfigurationSerializer.new(bot_config), status: :created
+      render json: BotConfigurationSerializer.new(@bot_config), status: :created
     else
-      render json: { errors: bot_config.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @bot_config.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
