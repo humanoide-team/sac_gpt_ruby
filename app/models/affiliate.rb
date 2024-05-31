@@ -68,4 +68,10 @@ class Affiliate < ApplicationRecord
     affiliate_id = id
     "#{host}cadastro/?affiliate_id=#{affiliate_id}"
   end
+
+  def list_transactions(status, start_at, limit)
+    galax_pay_ids = partners.map { |partner| partner.galax_pay_id }.compact.join(', ')
+
+    GalaxPayClient.get_transactions_by_client(galax_pay_ids, status, start_at, limit)
+  end
 end

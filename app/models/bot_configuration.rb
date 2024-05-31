@@ -1,5 +1,6 @@
 class BotConfiguration < ApplicationRecord
   belongs_to :affiliate
+  belongs_to :prospect_card
 
   def message_content
     "Você é #{name_attendant}, atendente da #{company_name} especializado em #{company_niche} na região de #{served_region}, utilize o tom de voz #{tone_voice.join(', ')}." +
