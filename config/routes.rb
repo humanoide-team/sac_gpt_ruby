@@ -73,6 +73,7 @@ Rails.application.routes.draw do
         post 'recover_password', to: 'authentication#send_recover_password_mail'
         patch 'recover_password/:id', to: 'authentication#recover_password'
         get 'affiliate_clients/lead_classification/:id', to: 'affiliate_clients#lead_classification'
+        get 'affiliate_clients_messages/last_client_messages', to: 'affiliate_client_messages#last_client_messages'
         get 'affiliate_clients_messages/list_by_client/:client_id', to: 'affiliate_client_messages#list_by_client'
         get 'affiliate_clients_messages', to: 'affiliate_client_messages#index'
 
