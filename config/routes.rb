@@ -72,6 +72,7 @@ Rails.application.routes.draw do
         get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
         post 'recover_password', to: 'authentication#send_recover_password_mail'
         patch 'recover_password/:id', to: 'authentication#recover_password'
+        get 'affiliate_clients/lead_classification/last_lead_classification', to: 'affiliate_clients#last_lead_classification'
         get 'affiliate_clients/lead_classification/:id', to: 'affiliate_clients#lead_classification'
         get 'affiliate_clients_messages/last_client_messages', to: 'affiliate_client_messages#last_client_messages'
         get 'affiliate_clients_messages/list_by_client/:client_id', to: 'affiliate_client_messages#list_by_client'

@@ -10,10 +10,7 @@ class Api::V1::Affiliates::AffiliateClientMessagesController < ApiAffiliateContr
   end
 
   def last_client_messages
-    last_client = @current_affiliate.affiliate_clients.sort_by do |ac|
-      last_message = ac.affiliate_client_messages.by_affiliate(@current_affiliate).last
-      last_message ? last_message.created_at : Time.at(0)
-    end.reverse.uniq.first
+    last_client = @current_affiliate.last_client
 
     return render json: { error: 'No client found' }, status: :not_found if last_client.nil?
 

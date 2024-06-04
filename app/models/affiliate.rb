@@ -74,4 +74,11 @@ class Affiliate < ApplicationRecord
 
     GalaxPayClient.get_transactions_by_client(galax_pay_ids, status, start_at, limit)
   end
+
+  def last_client
+    affiliate_clients.sort_by do |ac|
+      last_message = ac.affiliate_client_messages.by_affiliate(self).last
+      last_message ? last_message.created_at : Time.at(0)
+    end.reverse.uniq.first
+  end
 end

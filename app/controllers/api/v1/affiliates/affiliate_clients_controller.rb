@@ -33,13 +33,18 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
     end
   end
 
+  def last_lead_classification
+    @client = @current_affiliate.last_client
+    lead_classification
+  end
+
   def lead_classification
     @affiliate_client_lead = @client.affiliate_client_leads.by_affiliate(@current_affiliate).first
 
     unless @current_affiliate.active == true
       if @affiliate_client_lead.nil?
         @affiliate_client_lead = LeadClassification.new(affiliate: @current_affiliate,
-                                                      lead_classification: nil, conversation_summary: nil, lead_score: nil)
+                                                        lead_classification: nil, conversation_summary: nil, lead_score: nil)
       end
       return render json: AffiliateClientLeadSerializer.new(@affiliate_client_lead).serialized_json, status: :ok
     end
@@ -99,7 +104,6 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
     render json: {
       data: { body: response }
     }, status: :ok
-
   end
 
   private
@@ -109,25 +113,31 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
 
     client.affiliate_client_messages.by_affiliate(affiliate).each do |message|
       historico_conversa << { role: 'user', content: message.message }
-      historico_conversa << { role: 'system', content: message.automatic_response } if message.automatic_response.present?
+      if message.automatic_response.present?
+        historico_conversa << { role: 'system',
+                                content: message.automatic_response }
+      end
     end
 
     messages_length = 0
 
     if messages_length >= 9500
       historico_conversa = [{ role: 'system', content: affiliate.bot_configuration.message_content }]
-      historico_conversa << { role: 'system', content: "Resumo da conversa anterior: #{@affiliate_client_lead.conversation_summary}" }
+      historico_conversa << { role: 'system',
+                              content: "Resumo da conversa anterior: #{@affiliate_client_lead.conversation_summary}" }
 
-      client.affiliate_client_messages.by_affiliate(affiliate).where('created_at > ?', @affiliate_client_lead.updated_at).order(:created_at).each do |message|
+      client.affiliate_client_messages.by_affiliate(affiliate).where('created_at > ?',
+                                                                     @affiliate_client_lead.updated_at).order(:created_at).each do |message|
         historico_conversa << { role: 'user', content: message.message }
-        historico_conversa << { role: 'system', content: message.automatic_response } if message.automatic_response.present?
-
+        if message.automatic_response.present?
+          historico_conversa << { role: 'system',
+                                  content: message.automatic_response }
+        end
       end
     end
 
     historico_conversa
   end
-
 
   def gerar_resposta(pergunta, historico_conversa, model = 'gpt-3.5-turbo')
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
@@ -174,7 +184,8 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
     output = usage['completion_tokens']
     total = usage['total_tokens']
 
-    TokenUsage.create(affiliate_client: @client, model:, prompt_tokens: input, completion_tokens: output, total_tokens: total)
+    TokenUsage.create(affiliate_client: @client, model:, prompt_tokens: input, completion_tokens: output,
+                      total_tokens: total)
   end
 
   def set_client
