@@ -16,7 +16,7 @@ class OpenAiClient
         max_tokens: 500,
         n: 1,
         stop: nil,
-        temperature: 0.7
+        temperature: 0.5
       }
     )
   rescue StandardError => e
