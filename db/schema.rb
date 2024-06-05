@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_05_29_211431) do
+ActiveRecord::Schema.define(version: 2024_06_05_134633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,16 @@ ActiveRecord::Schema.define(version: 2024_05_29_211431) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "pix_code"
     t.index ["affiliate_id"], name: "index_affiliate_bank_details_on_affiliate_id"
+  end
+
+  create_table "affiliate_client_conversation_infos", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "affiliate_client_id", null: false
+    t.text "system_conversation_resume"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_client_id"], name: "index_affiliate_client_convo_infos_on_aff_client_id"
+    t.index ["affiliate_id"], name: "index_affiliate_client_convo_infos_on_affiliate_id"
   end
 
   create_table "affiliate_client_leads", force: :cascade do |t|
@@ -509,6 +519,8 @@ ActiveRecord::Schema.define(version: 2024_05_29_211431) do
   end
 
   add_foreign_key "affiliate_bank_details", "affiliates"
+  add_foreign_key "affiliate_client_conversation_infos", "affiliate_clients"
+  add_foreign_key "affiliate_client_conversation_infos", "affiliates"
   add_foreign_key "affiliate_client_leads", "affiliate_clients"
   add_foreign_key "affiliate_client_leads", "affiliates"
   add_foreign_key "affiliate_client_messages", "affiliate_clients"

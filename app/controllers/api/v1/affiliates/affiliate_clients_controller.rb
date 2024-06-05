@@ -147,8 +147,6 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
 
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage'], model).round
-        montly_history = @current_affiliate.current_mothly_history
-        montly_history.increase_token_count(token_cost)
         @affiliate_client_lead.increase_token_count(token_cost)
 
         response['choices'][0]['message']['content'].strip
@@ -164,7 +162,6 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
   def calculate_token(usage, model)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
-    create_token_usage(usage, model)
     case model
     when 'gpt-3.5-turbo'
       tokens_input = input * 0.01667
@@ -177,15 +174,6 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
     else
       input + output
     end
-  end
-
-  def create_token_usage(usage, model)
-    input = usage['prompt_tokens']
-    output = usage['completion_tokens']
-    total = usage['total_tokens']
-
-    TokenUsage.create(affiliate_client: @client, model:, prompt_tokens: input, completion_tokens: output,
-                      total_tokens: total)
   end
 
   def set_client

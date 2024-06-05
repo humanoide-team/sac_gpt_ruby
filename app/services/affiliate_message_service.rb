@@ -28,7 +28,7 @@ class AffiliateMessageService
     end
 
     if @client.affiliate_client_messages.by_affiliate(@affiliate).map(&:webhook_uuid).include?(params['body']['key']['id'])
-      render
+      return
     end
 
     affiliate_client_message = @client.affiliate_client_messages.create(affiliate: @affiliate, message: pergunta_usuario,
@@ -45,8 +45,8 @@ class AffiliateMessageService
       client.update(blocked: true)
       return
     end
-
     last_response = client.affiliate_client_messages.by_affiliate(affiliate).order(:created_at).last
+
     return if !last_response.nil? && last_response.created_at > affiliate_client_message.created_at
 
     affiliate_client_conversation_info = client.affiliate_client_conversation_infos.by_affiliate(affiliate).first
@@ -104,8 +104,6 @@ class AffiliateMessageService
       response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage'], model).round
-        montly_history = @affiliate.current_mothly_history
-        montly_history.increase_token_count(token_cost)
         @affiliate_client_lead.increase_token_count(token_cost)
         response['choices'][0]['message']['content'].strip
       else
@@ -150,7 +148,6 @@ class AffiliateMessageService
   def self.calculate_token(usage, model)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
-    create_token_usage(usage, model)
     case model
     when 'gpt-3.5-turbo'
       tokens_input = input * 0.01667
@@ -163,15 +160,6 @@ class AffiliateMessageService
     else
       input + output
     end
-  end
-
-  def create_token_usage(usage, model)
-    input = usage['prompt_tokens']
-    output = usage['completion_tokens']
-    total = usage['total_tokens']
-
-    TokenUsage.create(affiliate_client: @client, model:, prompt_tokens: input, completion_tokens: output,
-                      total_tokens: total)
   end
 
   def self.num_tokens_from_messages(messages, model = 'gpt-4-turbo-preview')
