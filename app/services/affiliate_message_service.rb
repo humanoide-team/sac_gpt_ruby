@@ -90,7 +90,7 @@ class AffiliateMessageService
       end
     end
 
-    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-turbo-preview').gsub("\n",
+    text_response = gerar_resposta(last_response.message, historico_conversa).gsub("\n",
                                                                                                           ' ').strip
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(@params['body']['key']['remoteJid'], text_response, affiliate.instance_key)
@@ -121,7 +121,7 @@ class AffiliateMessageService
     if @affiliate.bot_configuration.details_resume.nil? || @affiliate.bot_configuration.details_resume_date > @affiliate.bot_configuration.updated_at
       bot_configuration_prompt = [{ role: 'system', content: bot_configuration_prompt }]
 
-      resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', bot_configuration_prompt, 'gpt-3.5-turbo').gsub("\n",
+      resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', bot_configuration_prompt).gsub("\n",
                                                                                                                                                                                          ' ').strip
       @affiliate.bot_configuration.update(details_resume: resume, details_resume_date: DateTime.now)
     end
@@ -129,7 +129,7 @@ class AffiliateMessageService
   end
 
   def self.generate_system_conversation_resume(historico_conversa, affiliate_client_conversation_info, client, affiliate)
-    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa, 'gpt-3.5-turbo').gsub("\n",
+    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n",
                                                                                                                               ' ').strip
     if affiliate_client_conversation_info.nil?
       client.affiliate_client_conversation_infos.create(system_conversation_resume: resume, affiliate:)
@@ -152,7 +152,7 @@ class AffiliateMessageService
   end
 
   def self.num_tokens_from_messages(messages)
-    encoding = Tiktoken.encoding_for_model(model)
+    encoding = Tiktoken.encoding_for_model(ENV['OPENAI_MODEL'])
     num_tokens = 0
     messages.each do |message|
       num_tokens += 4
