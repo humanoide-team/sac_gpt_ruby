@@ -1,6 +1,7 @@
 require 'tiktoken_ruby'
 
 class PartnerMessageService
+  MODEL = ENV['OPENAI_MODEL'].freeze
 
   def self.process_message(params, partner)
     @partner = partner
@@ -113,7 +114,7 @@ class PartnerMessageService
       end
     end
 
-    text_response = gerar_resposta(last_response.message, historico_conversa, 'gpt-4-turbo-preview').gsub("\n",
+    text_response = gerar_resposta(last_response.message, historico_conversa).gsub("\n",
                                                                                                           ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
@@ -158,13 +159,13 @@ class PartnerMessageService
     end
   end
 
-  def self.gerar_resposta(pergunta, historico_conversa, model = 'gpt-3.5-turbo')
+  def self.gerar_resposta(pergunta, historico_conversa)
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
+      response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
       if response != 'Falha em gerar resposta'
-        token_cost = calculate_token(response['usage'], model).round
+        token_cost = calculate_token(response['usage']).round
         montly_history = @partner.current_mothly_history
         montly_history.increase_token_count(token_cost)
         @partner_client_lead.increase_token_count(token_cost)
@@ -184,7 +185,7 @@ class PartnerMessageService
     if @partner.partner_detail.details_resume.nil? || @partner.partner_detail.details_resume_date > @partner.partner_detail.updated_at
       partner_detail_prompt = [{ role: 'system', content: partner_detail_prompt }]
 
-      resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', partner_detail_prompt, 'gpt-3.5-turbo').gsub("\n",
+      resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', partner_detail_prompt).gsub("\n",
                                                                                                                                                                                          ' ').strip
       @partner.partner_detail.update(details_resume: resume, details_resume_date: DateTime.now)
     end
@@ -192,7 +193,7 @@ class PartnerMessageService
   end
 
   def self.generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
-    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa, 'gpt-3.5-turbo').gsub("\n",
+    resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n",
                                                                                                                               ' ').strip
     if partner_client_conversation_info.nil?
       client.partner_client_conversation_infos.create(system_conversation_resume: resume, partner:)
@@ -208,35 +209,24 @@ class PartnerMessageService
     end
   end
 
-  def self.calculate_token(usage, model)
+  def self.calculate_token(usage)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
-    create_token_usage(usage, model)
-    case model
-    when 'gpt-3.5-turbo'
-      tokens_input = input * 0.01667
-      tokens_output  = output * 0.050
-      tokens_input + tokens_output
-    when 'gpt-4-turbo-preview'
-      tokens_input = input * 0.333
-      tokens_output  = output * 0.666
-      tokens_input + tokens_output
-    else
-      input + output
-    end
+    create_token_usage(usage)
+    input + output
   end
 
-  def self.create_token_usage(usage, model)
+  def self.create_token_usage(usage)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
     total = usage['total_tokens']
 
-    TokenUsage.create(partner_client: @client, model:, prompt_tokens: input, completion_tokens: output,
+    TokenUsage.create(partner_client: @client, model: ENV['OPENAI_MODEL'], prompt_tokens: input, completion_tokens: output,
                       total_tokens: total)
   end
 
-  def self.num_tokens_from_messages(messages, model = 'gpt-4-turbo-preview')
-    encoding = Tiktoken.encoding_for_model(model)
+  def self.num_tokens_from_messages(messages)
+    encoding = Tiktoken.encoding_for_model(ENV['OPENAI_MODEL'])
     num_tokens = 0
     messages.each do |message|
       num_tokens += 4

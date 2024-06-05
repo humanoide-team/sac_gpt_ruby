@@ -58,7 +58,7 @@ class Api::V1::WebhooksAssistentController < ApiController
     last_response = client.partner_client_messages.by_partner(partner).order(:created_at).last
     return if !last_response.nil? && last_response.created_at > partner_client_message.created_at
 
-    text_response = gerar_resposta(last_response, 'gpt-4-turbo-preview').gsub("\n", ' ').strip
+    text_response = gerar_resposta(last_response).gsub("\n", ' ').strip
 
     text_response = identificar_agendamento(text_response)
 
@@ -67,7 +67,7 @@ class Api::V1::WebhooksAssistentController < ApiController
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
   end
 
-  def gerar_resposta(pcm, _model = 'gpt-3.5-turbo')
+  def gerar_resposta(pcm)
     return 'Desculpe, não entendi a sua pergunta.' unless pcm.message.is_a?(String) && !pcm.message.empty?
 
     begin
@@ -101,27 +101,16 @@ class Api::V1::WebhooksAssistentController < ApiController
   end
 
   def token_usage(usage)
-    token_cost = calculate_token(usage, 'gpt-4-turbo-preview').round
+    token_cost = calculate_token(usage).round
     montly_history = @partner.current_mothly_history
     montly_history.increase_token_count(token_cost)
     @partner_client_lead.increase_token_count(token_cost)
   end
 
-  def calculate_token(usage, model)
+  def calculate_token(usage)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
-    case model
-    when 'gpt-3.5-turbo'
-      tokens_input = input * 0.01667
-      tokens_output  = output * 0.050
-      tokens_input + tokens_output
-    when 'gpt-4-turbo-preview'
-      tokens_input = input * 0.333
-      tokens_output  = output * 0.666
-      tokens_input + tokens_output
-    else
-      input + output
-    end
+    input + output
   end
 
   def identificar_email(response)

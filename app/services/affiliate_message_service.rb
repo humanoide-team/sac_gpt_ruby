@@ -97,13 +97,13 @@ class AffiliateMessageService
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
   end
 
-  def self.gerar_resposta(pergunta, historico_conversa, model = 'gpt-3.5-turbo')
+  def self.gerar_resposta(pergunta, historico_conversa)
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      response = OpenAiClient.text_generation(pergunta, historico_conversa, model)
+      response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
       if response != 'Falha em gerar resposta'
-        token_cost = calculate_token(response['usage'], model).round
+        token_cost = calculate_token(response['usage']).round
         @affiliate_client_lead.increase_token_count(token_cost)
         response['choices'][0]['message']['content'].strip
       else
@@ -145,24 +145,13 @@ class AffiliateMessageService
     end
   end
 
-  def self.calculate_token(usage, model)
+  def self.calculate_token(usage)
     input = usage['prompt_tokens']
     output = usage['completion_tokens']
-    case model
-    when 'gpt-3.5-turbo'
-      tokens_input = input * 0.01667
-      tokens_output  = output * 0.050
-      tokens_input + tokens_output
-    when 'gpt-4-turbo-preview'
-      tokens_input = input * 0.333
-      tokens_output  = output * 0.666
-      tokens_input + tokens_output
-    else
-      input + output
-    end
+    input + output
   end
 
-  def self.num_tokens_from_messages(messages, model = 'gpt-4-turbo-preview')
+  def self.num_tokens_from_messages(messages)
     encoding = Tiktoken.encoding_for_model(model)
     num_tokens = 0
     messages.each do |message|
