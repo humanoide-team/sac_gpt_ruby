@@ -28,6 +28,8 @@ class PartnerMessageService
 
     pergunta_usuario = callback_text_message(params)
 
+    return if pergunta_usuario.empty?
+
     @partner_client_lead = @client.partner_client_leads.by_partner(@partner).first
 
     if @partner_client_lead.nil?
@@ -162,6 +164,10 @@ class PartnerMessageService
   def self.gerar_resposta(pergunta, historico_conversa)
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
+    if pergunta == 'MEDIA_MESSAGE'
+      return 'Atualmente, a versão do WhatsApp que estou utilizando não consegue processar arquivos de mídia como gifs, áudios ou imagens. Por favor, envie texto para que eu possa ajudar da melhor maneira possível. Se precisar de assistência adicional, estou à disposição para responder suas perguntas. Obrigado!'
+    end
+
     begin
       response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
       if response != 'Falha em gerar resposta'
@@ -244,15 +250,15 @@ class PartnerMessageService
       message = params['body']['message']
       if message['conversation']
         message['conversation']
-
       elsif message['extendedTextMessage']
         message['extendedTextMessage']['text']
-
+      elsif message['imageMessage'] || message['stickerMessage'] || message['reactionMessage'] || message['audioMessage'] || message['documentMessage'] || message['videoMessage']
+        'MEDIA_MESSAGE'
       else
-        ' '
+        ''
       end
     else
-      ' '
+      ''
     end
   end
 end

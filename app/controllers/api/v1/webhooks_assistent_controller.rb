@@ -31,10 +31,10 @@ class Api::V1::WebhooksAssistentController < ApiController
                            text = message['extendedTextMessage']['text']
                            text
                          else
-                           ' '
+                           ''
                          end
                        else
-                         ' '
+                         ''
                        end
 
     @partner_client_lead = @client.partner_client_leads.by_partner(@partner).first

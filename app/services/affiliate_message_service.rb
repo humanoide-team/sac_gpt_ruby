@@ -1,13 +1,10 @@
 require 'tiktoken_ruby'
 
 class AffiliateMessageService
-
   def self.process_message(params, affiliate)
     @affiliate = affiliate
     @params = params
-    if @affiliate.bot_configuration.nil? || !@affiliate.active
-      return
-    end
+    return if @affiliate.bot_configuration.nil? || !@affiliate.active
 
     @client = AffiliateClient.find_by(phone: params['body']['key']['remoteJid'], affiliate_id: @affiliate.id)
     if @client.nil?
@@ -21,6 +18,8 @@ class AffiliateMessageService
 
     pergunta_usuario = callback_text_message(params)
 
+    return if pergunta_usuario.empty?
+
     @partner_client_lead = @client.affiliate_client_leads.by_affiliate(@affiliate).first
 
     if @affiliate_client_lead.nil?
@@ -32,14 +31,14 @@ class AffiliateMessageService
     end
 
     affiliate_client_message = @client.affiliate_client_messages.create(affiliate: @affiliate, message: pergunta_usuario,
-                                                                    webhook_uuid: params['body']['key']['id'])
+                                                                        webhook_uuid: params['body']['key']['id'])
     Thread.new { aguardar_e_enviar_resposta(@affiliate, @client, affiliate_client_message) }
   end
 
   def self.aguardar_e_enviar_resposta(affiliate, client, affiliate_client_message, tempo_espera = 8)
     sleep(tempo_espera)
     lasts_messages = client.affiliate_client_messages.by_affiliate(affiliate).where(automatic_response: nil,
-                                                                              created_at: (DateTime.now - 1.minute)...DateTime.now).count
+                                                                                    created_at: (DateTime.now - 1.minute)...DateTime.now).count
 
     if lasts_messages >= 10
       client.update(blocked: true)
@@ -76,7 +75,7 @@ class AffiliateMessageService
                               content: "Resumo da conversa anterior: #{affiliate_client_conversation_info.system_conversation_resume}" }
 
       messages = client.affiliate_client_messages.by_affiliate(affiliate).where('created_at > ?',
-                                                                          affiliate_client_conversation_info.updated_at).order(:created_at)
+                                                                                affiliate_client_conversation_info.updated_at).order(:created_at)
 
       generate_message_history(messages, historico_conversa)
 
@@ -91,7 +90,7 @@ class AffiliateMessageService
     end
 
     text_response = gerar_resposta(last_response.message, historico_conversa).gsub("\n",
-                                                                                                          ' ').strip
+                                                                                   ' ').strip
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(@params['body']['key']['remoteJid'], text_response, affiliate.instance_key)
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
@@ -99,6 +98,10 @@ class AffiliateMessageService
 
   def self.gerar_resposta(pergunta, historico_conversa)
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
+
+    if pergunta == 'MEDIA_MESSAGE'
+      return 'Atualmente, a versão do WhatsApp que estou utilizando não consegue processar arquivos de mídia como gifs, áudios ou imagens. Por favor, envie texto para que eu possa ajudar da melhor maneira possível. Se precisar de assistência adicional, estou à disposição para responder suas perguntas. Obrigado!'
+    end
 
     begin
       response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
@@ -122,7 +125,7 @@ class AffiliateMessageService
       bot_configuration_prompt = [{ role: 'system', content: bot_configuration_prompt }]
 
       resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', bot_configuration_prompt).gsub("\n",
-                                                                                                                                                                                         ' ').strip
+                                                                                                                                                                           ' ').strip
       @affiliate.bot_configuration.update(details_resume: resume, details_resume_date: DateTime.now)
     end
     @affiliate.bot_configuration.details_resume
@@ -130,7 +133,7 @@ class AffiliateMessageService
 
   def self.generate_system_conversation_resume(historico_conversa, affiliate_client_conversation_info, client, affiliate)
     resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n",
-                                                                                                                              ' ').strip
+                                                                                                             ' ').strip
     if affiliate_client_conversation_info.nil?
       client.affiliate_client_conversation_infos.create(system_conversation_resume: resume, affiliate:)
     else
@@ -170,15 +173,15 @@ class AffiliateMessageService
       message = params['body']['message']
       if message['conversation']
         message['conversation']
-
       elsif message['extendedTextMessage']
         message['extendedTextMessage']['text']
-
+      elsif message['imageMessage'] || message['stickerMessage'] || message['reactionMessage'] || message['audioMessage'] || message['documentMessage'] || message['videoMessage']
+        'MEDIA_MESSAGE'
       else
-        ' '
+        ''
       end
     else
-      ' '
+      ''
     end
   end
 end
