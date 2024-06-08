@@ -9,4 +9,8 @@ class PartnerClientLead < ApplicationRecord
     self.token_count += tokens
     save
   end
+
+  def messages_count
+    partner_client.partner_client_messages.count
+  end
 end

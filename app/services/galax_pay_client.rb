@@ -29,12 +29,10 @@ class GalaxPayClient
     response = HTTParty.post("#{BASE_URL}/customers", body:, headers:)
 
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
-      puts 'Corpo da resposta:'
       JSON.parse(response.body)['Customer']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "#{response.body}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -55,15 +53,18 @@ class GalaxPayClient
       'Authorization': "Bearer #{token}",
       'Content-Type': 'application/json'
     }
-    response = HTTParty.post("#{BASE_URL}/cards/#{galax_pay_id}/galaxPayId", body:, headers:)
-    if response.code == 200
-      puts 'Requisição bem-sucedida!'
+    response = HTTParty.post("#{BASE_URL}/cards/#{galax_pay_id}/galaxPayId", body: body, headers: headers)
+
+    case response.code
+    when 200
       JSON.parse(response.body)['Card']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "#{response.body}"
+      puts "Resposta do corpo: #{response.body}"
+      nil
     end
   end
+
 
   def self.create_payment_plan(id, name, periodicity, quantity, additionalInfo, plan_price_payment, plan_price_value)
     # https://docs.galaxpay.com.br/plans/create
@@ -91,28 +92,33 @@ class GalaxPayClient
 
     response = HTTParty.post("#{BASE_URL}/plans", body:, headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Plan']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
-  def self.create_payment_subscription(id, planMyId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
+  def self.create_payment_subscription(id, planMyId, galaxPayId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
     # https://docs.galaxpay.com.br/subscriptions/create-with-plan
     data = {
       myId: "sac-gpt-payment-subscription-#{id}",
       planMyId:,
+      galaxPayId:,
       firstPayDayDate:,
       additionalInfo:,
       mainPaymentMethodId:,
       Customer: {
           myId: customer.galax_pay_my_id,
+          galaxPayId: customer.galax_pay_id,
           name: customer.name,
           document: customer.document,
-          email: [
+          emails: [
             customer.email
-          ]
+          ],
+          phones: [
+            customer.phone
+          ],
       },
       PaymentMethodCreditCard: {
         Card: {
@@ -130,10 +136,10 @@ class GalaxPayClient
     }
     response = HTTParty.post("#{BASE_URL}/subscriptions", body:, headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Subscription']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -158,10 +164,10 @@ class GalaxPayClient
     }
     response = HTTParty.put("#{BASE_URL}/subscriptions/#{subscription_galax_pay_id}/galaxPayId", body:, headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Subscription']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -176,10 +182,10 @@ class GalaxPayClient
     }
     response = HTTParty.delete("#{BASE_URL}/subscriptions/#{subscription_galax_pay_id}/galaxPayId", headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['type']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -194,27 +200,32 @@ class GalaxPayClient
     }
     response = HTTParty.delete("#{BASE_URL}/transactions/#{transaction_galax_pay_id}/galaxPayId", headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['type']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
-  def self.create_payment(id, payday, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
+  def self.create_payment(id, payday, payedOutsideGalaxPay, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
     # https://docs-celcash.celcoin.com.br/individual-charges/create/request
     data = {
       myId: "sac-gpt-payment-#{id}",
       value:,
+      additionalInfo:,
       payday:,
+      payedOutsideGalaxPay:,
       mainPaymentMethodId:,
       Customer: {
         myId: customer.galax_pay_my_id,
         name: customer.name,
         document: customer.document,
-        email: [
+        emails: [
           customer.email
-        ]
+        ],
+        phones: [
+          customer.phone
+        ],
       },
       PaymentMethodCreditCard: {
         Card: {
@@ -232,10 +243,10 @@ class GalaxPayClient
     }
     response = HTTParty.post("#{BASE_URL}/charges", body:, headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Charge']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -250,9 +261,9 @@ class GalaxPayClient
     }
     response = HTTParty.get("#{BASE_URL}/transactions?status=#{status}&customerGalaxPayIds=#{customerGalaxPayId}&startAt=#{startAt}&limit=#{limit}&order=createdAt.desc", headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Transactions']
     else
+      puts "Resposta do corpo: #{response.body}"
       puts "Falha na requisição. Código de status: #{response.code}"
     end
   end
@@ -268,10 +279,10 @@ class GalaxPayClient
     }
     response = HTTParty.get("#{BASE_URL}/transactions?status=#{status}&startAt=#{startAt}&limit=#{limit}&order=createdAt.desc", headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)['Transactions']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -286,10 +297,10 @@ class GalaxPayClient
     }
     response = HTTParty.get("#{BASE_URL}/company/balance/movements?initialDate=#{initialDate}&finalDate=#{finalDate}", headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -304,10 +315,10 @@ class GalaxPayClient
     }
     response = HTTParty.get("#{BASE_URL}/company/balance", headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
       JSON.parse(response.body)
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 
@@ -327,11 +338,10 @@ class GalaxPayClient
 
     response = HTTParty.post("#{BASE_URL}/token", body:, headers:)
     if response.code == 200
-      puts 'Requisição bem-sucedida!'
-      puts 'Corpo da resposta:'
       JSON.parse(response.body)['access_token']
     else
       puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
     end
   end
 end

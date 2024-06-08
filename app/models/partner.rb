@@ -11,9 +11,10 @@ class Partner < ApplicationRecord
   extend FriendlyId
   friendly_id :name_slug, use: :slugged
 
+  belongs_to :affiliate, optional: true
   has_one :partner_detail, dependent: :destroy
   has_many :partner_client_messages, dependent: :destroy
-  has_many :partner_clients, through: :partner_client_messages
+  has_many :partner_clients, dependent: :destroy
   has_many :partner_payments, dependent: :destroy
   has_many :credit_cards, dependent: :destroy
   has_many :payment_subscriptions, dependent: :destroy
@@ -25,7 +26,7 @@ class Partner < ApplicationRecord
   has_many :extra_tokens, dependent: :destroy
   has_many :schedules, dependent: :destroy
   has_one :schedule_setting, dependent: :destroy
-  has_one :thread_conversation, dependent: :destroy
+  has_one :conversation_thread_, dependent: :destroy
   has_one :partner_assistent, dependent: :destroy
 
   validates :name, :document, :contact_number, presence: true, on: :create
@@ -65,7 +66,7 @@ class Partner < ApplicationRecord
 
   def encrypted_data(data, key)
     @verifier = ActiveSupport::MessageVerifier.new(key)
-    @verifier.generate(data, expires_in: 30.minutes)
+    @verifier.generate(data, expires_in: 365.days)
   end
 
   def generate_recover_password_key
@@ -108,5 +109,34 @@ class Partner < ApplicationRecord
 
   def current_plan
     payment_subscriptions.where(status: :active).first&.payment_plan
+  end
+
+  def current_plan_canceled?
+    payment_subscriptions.where(status: :canceled).exists?
+  end
+
+  def send_connection_fail_mail
+    PartnerMailer._send_connection_fail_mail(self).deliver
+    notifications.create(
+      title: 'A sua conta precisa de sua atenção!',
+      description: 'Parece haver um problema com a sua conexao com o aplicatiovo do Whats App, precisamos que vc conecte novamente ao seu aparelho!',
+      notification_type: :connection_fail
+    )
+  end
+
+  def details_filled?
+    name.present? && email.present? && contact_number.present? && document.present?
+  end
+
+  def customer_status
+    if active? && current_plan.present?
+      'Cliente Ativo'
+    elsif current_plan.nil? && details_filled?
+      'Dados Preenchidos'
+    elsif current_plan_canceled?
+      'Cliente Inativo'
+    else
+      'Status Desconhecido'
+    end
   end
 end

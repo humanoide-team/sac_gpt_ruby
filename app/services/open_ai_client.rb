@@ -4,7 +4,7 @@ require 'base64'
 
 class OpenAiClient
   OPEN_AI_KEY = ENV['OPENAI_API_KEY'].freeze
-  BASE_URL = 'https://api.openai.com'
+  BASE_URL = 'https://api.openai.com'.freeze
 
   def self.text_generation(pergunta, historico_conversa, model)
     client = OpenAI::Client.new(access_token: OPEN_AI_KEY)

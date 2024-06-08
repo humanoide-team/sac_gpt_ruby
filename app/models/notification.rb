@@ -9,5 +9,6 @@ class Notification < ApplicationRecord
     cancellation_plan: 3,
     alert_exchange_card: 4,
     payment_confirmation: 5,
+    connection_fail: 6
   }
 end

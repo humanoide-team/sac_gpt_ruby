@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_03_26_222658) do
+ActiveRecord::Schema.define(version: 2024_06_05_134633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,115 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
     t.datetime "remember_created_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "affiliate_bank_details", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "responsible"
+    t.string "document_number"
+    t.string "bank_code"
+    t.string "agency"
+    t.string "account"
+    t.integer "account_type", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "pix_code"
+    t.index ["affiliate_id"], name: "index_affiliate_bank_details_on_affiliate_id"
+  end
+
+  create_table "affiliate_client_conversation_infos", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "affiliate_client_id", null: false
+    t.text "system_conversation_resume"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_client_id"], name: "index_affiliate_client_convo_infos_on_aff_client_id"
+    t.index ["affiliate_id"], name: "index_affiliate_client_convo_infos_on_affiliate_id"
+  end
+
+  create_table "affiliate_client_leads", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "affiliate_client_id", null: false
+    t.text "conversation_summary"
+    t.text "lead_classification"
+    t.integer "lead_score"
+    t.integer "token_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_client_id"], name: "index_affiliate_client_leads_on_affiliate_client_id"
+    t.index ["affiliate_id"], name: "index_affiliate_client_leads_on_affiliate_id"
+  end
+
+  create_table "affiliate_client_messages", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "affiliate_client_id", null: false
+    t.bigint "conversation_thread_id"
+    t.text "message"
+    t.text "automatic_response"
+    t.string "webhook_uuid"
+    t.string "open_ai_message_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_client_id"], name: "index_affiliate_client_messages_on_affiliate_client_id"
+    t.index ["affiliate_id"], name: "index_affiliate_client_messages_on_affiliate_id"
+    t.index ["conversation_thread_id"], name: "index_affiliate_client_messages_on_conversation_thread_id"
+  end
+
+  create_table "affiliate_clients", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "name"
+    t.string "phone"
+    t.string "email"
+    t.boolean "blocked", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_clients_on_affiliate_id"
+  end
+
+  create_table "affiliates", force: :cascade do |t|
+    t.string "name"
+    t.string "contact_number"
+    t.string "service_number"
+    t.string "email"
+    t.string "password"
+    t.string "document"
+    t.boolean "active", default: true
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "instance_key"
+    t.datetime "deleted_at"
+    t.string "slug"
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token", default: ""
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer "revenue_percentage", default: 10
+  end
+
+  create_table "bot_configurations", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "about"
+    t.string "service"
+    t.string "persona"
+    t.string "name_attendant"
+    t.string "company_name"
+    t.string "company_niche"
+    t.string "served_region"
+    t.string "company_services"
+    t.string "company_products"
+    t.string "company_contact"
+    t.string "company_objectives", default: [], array: true
+    t.string "marketing_channels"
+    t.string "key_differentials"
+    t.string "tone_voice", default: [], array: true
+    t.string "preferential_language"
+    t.string "catalog_link"
+    t.integer "token_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "prospect_card_id"
+    t.index ["affiliate_id"], name: "index_bot_configurations_on_affiliate_id"
+    t.index ["prospect_card_id"], name: "index_bot_configurations_on_prospect_card_id"
   end
 
   create_table "conversation_threads", force: :cascade do |t|
@@ -197,6 +306,10 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
     t.string "details_resume"
     t.datetime "details_resume_date"
     t.string "catalog_link"
+    t.string "twitter_x_link"
+    t.string "youtube_link"
+    t.string "facebook_link"
+    t.string "instagram_link"
     t.index ["partner_id"], name: "index_partner_details_on_partner_id"
   end
 
@@ -235,6 +348,11 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
     t.string "access_token"
     t.datetime "expires_at"
     t.string "refresh_token"
+    t.bigint "affiliate_id"
+    t.boolean "wpp_connected", default: true
+    t.datetime "last_callback_receive"
+    t.string "remote_jid"
+    t.index ["affiliate_id"], name: "index_partners_on_affiliate_id"
   end
 
   create_table "payment_plans", force: :cascade do |t|
@@ -302,6 +420,57 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
     t.index ["partner_detail_id"], name: "index_prompt_files_on_partner_detail_id"
   end
 
+  create_table "prospect_cards", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "name"
+    t.string "phone"
+    t.string "email"
+    t.string "observations"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "test_active"
+    t.string "company_name"
+    t.string "status", default: "0"
+    t.index ["affiliate_id"], name: "index_prospect_cards_on_affiliate_id"
+  end
+
+  create_table "prospect_details", force: :cascade do |t|
+    t.bigint "prospect_card_id", null: false
+    t.string "about"
+    t.string "service"
+    t.string "persona"
+    t.string "name_attendant"
+    t.string "company_name"
+    t.string "company_niche"
+    t.string "served_region"
+    t.string "company_services"
+    t.string "company_products"
+    t.string "company_contact"
+    t.string "company_objectives", default: [], array: true
+    t.string "marketing_channels"
+    t.string "key_differentials"
+    t.string "tone_voice", default: [], array: true
+    t.string "preferential_language"
+    t.string "catalog_link"
+    t.integer "token_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["prospect_card_id"], name: "index_prospect_details_on_prospect_card_id"
+  end
+
+  create_table "revenues", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.bigint "partner_id", null: false
+    t.integer "value", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "partner_transaction_type"
+    t.bigint "partner_transaction_id"
+    t.index ["affiliate_id"], name: "index_revenues_on_affiliate_id"
+    t.index ["partner_id"], name: "index_revenues_on_partner_id"
+    t.index ["partner_transaction_type", "partner_transaction_id"], name: "index_revenues_on_partner_transaction"
+  end
+
   create_table "schedule_settings", force: :cascade do |t|
     t.integer "duration_in_minutes"
     t.string "week_days"
@@ -349,6 +518,17 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "affiliate_bank_details", "affiliates"
+  add_foreign_key "affiliate_client_conversation_infos", "affiliate_clients"
+  add_foreign_key "affiliate_client_conversation_infos", "affiliates"
+  add_foreign_key "affiliate_client_leads", "affiliate_clients"
+  add_foreign_key "affiliate_client_leads", "affiliates"
+  add_foreign_key "affiliate_client_messages", "affiliate_clients"
+  add_foreign_key "affiliate_client_messages", "affiliates"
+  add_foreign_key "affiliate_client_messages", "conversation_threads"
+  add_foreign_key "affiliate_clients", "affiliates"
+  add_foreign_key "bot_configurations", "affiliates"
+  add_foreign_key "bot_configurations", "prospect_cards"
   add_foreign_key "conversation_threads", "partner_assistents"
   add_foreign_key "conversation_threads", "partner_clients"
   add_foreign_key "conversation_threads", "partners"
@@ -369,6 +549,7 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
   add_foreign_key "partner_details", "partners"
   add_foreign_key "partner_payments", "credit_cards"
   add_foreign_key "partner_payments", "partners"
+  add_foreign_key "partners", "affiliates"
   add_foreign_key "payment_subscriptions", "credit_cards"
   add_foreign_key "payment_subscriptions", "partners"
   add_foreign_key "payment_subscriptions", "payment_plans"
@@ -376,6 +557,10 @@ ActiveRecord::Schema.define(version: 2024_03_26_222658) do
   add_foreign_key "payments", "partners"
   add_foreign_key "prompt_files", "partner_assistents"
   add_foreign_key "prompt_files", "partner_details"
+  add_foreign_key "prospect_cards", "affiliates"
+  add_foreign_key "prospect_details", "prospect_cards"
+  add_foreign_key "revenues", "affiliates"
+  add_foreign_key "revenues", "partners"
   add_foreign_key "schedule_settings", "partners"
   add_foreign_key "schedules", "partner_clients"
   add_foreign_key "schedules", "partners"

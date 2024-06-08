@@ -4,6 +4,7 @@ class PaymentSubscription < ApplicationRecord
   belongs_to :partner
   belongs_to :credit_card
   belongs_to :payment_plan
+  has_many :revenues, as: :partner_transaction, dependent: :delete_all
 
   before_create :create_galax_pay_payment_subscription
 
@@ -111,5 +112,11 @@ class PaymentSubscription < ApplicationRecord
     payment_plan_id, subscriptions_count = top_plan_by_subs
     payment_plan = PaymentPlan.find(payment_plan_id)
     { payment_plan: payment_plan, subscriptions_count: subscriptions_count }
+  end
+
+  def create_affiliate_revenue
+    return if partner.affiliate.nil?
+
+    Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate, value: payment_plan.plan_price_value.to_i * (partner.affiliate.revenue_percentage / 100.0))
   end
 end

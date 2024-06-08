@@ -14,7 +14,9 @@ class PartnerDetail < ApplicationRecord
       "Estes são nossos canais de marketing, como #{marketing_channels}, e nosso contato #{company_contact}. Além disso, oferecemos mais informações em nosso [site do negócio]." +
       "Nosso grande diferencial é #{key_differentials}. E, a menos que instruído de outra forma, você responderá na língua #{preferential_language}." +
       'Identifique as necessidades específicas e os desafios do cliente e faça no máximo uma pergunta por mensagem e mantendo as respostas curtas, não ultrapassando 50 palavras e responda com a formatação apropriada para o WhatsApp.' +
-      "Após entender claramente as necessidades do cliente, proponha o #{company_objectives.join(', ')}. #{catalog_link.nil? ? '' : "Quando alguem solicitar o catálogo envie o link #{catalog_link}."} Responda 'Peço desculpas, mas não posso fornecer essa informação' quando não souber responder a informação exata."
+      "Após entender claramente as necessidades do cliente, proponha o #{company_objectives.join(', ')}. #{catalog_link.nil? ? '' : "Quando alguem solicitar o catálogo envie o link #{catalog_link}."}." + 
+      "Quando não souber responder uma informação que o cliente solicitou responda: 'Peço desculpas, mas não tenho acesso a essa informacao, no que mais poderia te ajudar ?'" +
+      "Quando não conseguir entender o que o cliente escreveu responda: 'Peço desculpas, mas não consegui entender, poderia repetir?'"
   end
 
   def observations
@@ -104,8 +106,10 @@ class PartnerDetail < ApplicationRecord
     client = get_google_calendar_client(partner)
     agenda = find_agenda(client)
 
-    if agenda.nil? || partner.schedule_setting.google_agenda_id.nil? || agenda.id != partner.schedule_setting.google_agenda_id
+    if agenda.nil?
       agenda = create_agenda(client)
+      partner.schedule_setting.update(google_agenda_id: agenda.id)
+    elsif partner.schedule_setting.google_agenda_id.nil? || agenda.id != partner.schedule_setting.google_agenda_id
       partner.schedule_setting.update(google_agenda_id: agenda.id)
     end
 
@@ -115,7 +119,7 @@ class PartnerDetail < ApplicationRecord
       "Considere o dia de hoje como sendo #{date_today}"
     else
       date_times = response.items.map { |event| event.start.date_time }
-      "Esses são os horários já reservados #{date_times.join(', ')}. Caso o cliente escolha um desses dias e horários, peça para escolher um outro horário. Considere o dia de hoje como sendo #{date_today}"
+      "Esses são os horários já reservados: #{date_times.join(', ')}. Caso o cliente escolha um desses dias e horários, peça para escolher um outro horário. Considere o dia de hoje como sendo #{date_today}"
     end
   end
 

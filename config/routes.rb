@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   post 'auth/google_oauth2/callback', to: 'sessions#create'
   get 'auth/failure', to: 'sessions#failure'
 
@@ -66,6 +65,44 @@ Rails.application.routes.draw do
 
         get 'partner_reports', to: 'partner_reports#index'
         get 'montly_usage_history', to: 'montly_usage_history#index'
+      end
+
+      namespace :affiliates do
+        post 'authenticate', to: 'authentication#authenticate'
+        get 'auth_whatsapp', to: 'authentication#auth_whatsapp'
+        post 'recover_password', to: 'authentication#send_recover_password_mail'
+        patch 'recover_password/:id', to: 'authentication#recover_password'
+        get 'affiliate_clients/lead_classification/last_lead_classification', to: 'affiliate_clients#last_lead_classification'
+        get 'affiliate_clients/lead_classification/:id', to: 'affiliate_clients#lead_classification'
+        get 'affiliate_clients_messages/last_client_messages', to: 'affiliate_client_messages#last_client_messages'
+        get 'affiliate_clients_messages/list_by_client/:client_id', to: 'affiliate_client_messages#list_by_client'
+        get 'affiliate_clients_messages', to: 'affiliate_client_messages#index'
+
+        resources :affiliate_clients, only: %i[index destroy]
+
+        # BANK DETAILS
+        get 'affiliate_bank_details/:id', to: 'affiliate_bank_details#show'
+        post 'affiliate_bank_details/:id', to: 'affiliate_bank_details#create'
+        put 'affiliate_bank_details/:id', to: 'affiliate_bank_details#update'
+
+        # PARTNERS
+        resources :partners, only: %i[index]
+
+        # BOT CONFIGURATIONS
+        post 'bot_configurations/set_prospect_card/:id', to: 'bot_configuration#copy_from_prospect'
+        get 'bot_configurations/actual_configuration', to: 'bot_configuration#actual_configuration'
+
+        resources :payment_transactions, only: %i[index]
+
+        resources :revenues, only: %i[index]
+
+        resources :dashboard, only: %i[index]
+
+        resources :affiliates, only: %i[index show create destroy update]
+        patch 'affiliates/recover_password', to: 'affiliates#recover_password'
+
+        resources :prospect_cards, only: %i[index show create destroy update]
+        resources :prospect_details, only: %i[show create destroy update]
       end
     end
   end
