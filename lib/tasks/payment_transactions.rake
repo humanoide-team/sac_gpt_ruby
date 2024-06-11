@@ -5,7 +5,6 @@ namespace :payment_transactions do
 
     DateTime.now.day
     payment_subscriptions.each do |ps|
-      byebug
 
       last_revenue = ps.revenues.order(:created_at).last
       if last_revenue.nil? || ((!last_revenue.nil? && last_revenue.create_at.month < DateTime.now.month) && ps.first_pay_day_date.day <= DateTime.now.day)
