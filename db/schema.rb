@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_05_134633) do
+ActiveRecord::Schema.define(version: 2024_06_11_214948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,6 +92,39 @@ ActiveRecord::Schema.define(version: 2024_06_05_134633) do
     t.index ["affiliate_id"], name: "index_affiliate_clients_on_affiliate_id"
   end
 
+  create_table "affiliate_credit_cards", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.string "brand"
+    t.string "holder_name"
+    t.string "number"
+    t.string "expires_at"
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
+    t.boolean "default"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_credit_cards_on_affiliate_id"
+  end
+
+  create_table "affiliate_payments", force: :cascade do |t|
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
+    t.string "galax_pay_plan_my_id"
+    t.integer "plan_galax_pay_id"
+    t.integer "main_payment_method_id"
+    t.string "payment_link"
+    t.integer "value"
+    t.string "additional_info"
+    t.integer "status"
+    t.date "payday"
+    t.bigint "affiliate_id", null: false
+    t.bigint "credit_card_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_payments_on_affiliate_id"
+    t.index ["credit_card_id"], name: "index_affiliate_payments_on_credit_card_id"
+  end
+
   create_table "affiliates", force: :cascade do |t|
     t.string "name"
     t.string "contact_number"
@@ -110,6 +143,8 @@ ActiveRecord::Schema.define(version: 2024_06_05_134633) do
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.integer "revenue_percentage", default: 10
+    t.integer "galax_pay_id"
+    t.string "galax_pay_my_id"
   end
 
   create_table "bot_configurations", force: :cascade do |t|
@@ -527,6 +562,9 @@ ActiveRecord::Schema.define(version: 2024_06_05_134633) do
   add_foreign_key "affiliate_client_messages", "affiliates"
   add_foreign_key "affiliate_client_messages", "conversation_threads"
   add_foreign_key "affiliate_clients", "affiliates"
+  add_foreign_key "affiliate_credit_cards", "affiliates"
+  add_foreign_key "affiliate_payments", "affiliates"
+  add_foreign_key "affiliate_payments", "credit_cards"
   add_foreign_key "bot_configurations", "affiliates"
   add_foreign_key "bot_configurations", "prospect_cards"
   add_foreign_key "conversation_threads", "partner_assistents"
