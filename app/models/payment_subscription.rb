@@ -30,7 +30,7 @@ class PaymentSubscription < ApplicationRecord
   def create_galax_pay_payment_subscription
     uuid = SecureRandom.uuid
 
-    galax_pay_payment_subscription = GalaxPayClient.create_payment_subscription(uuid, payment_plan.galax_pay_my_id, first_pay_day_date, additional_info,
+    galax_pay_payment_subscription = GalaxPayClient.create_payment_subscription(uuid, payment_plan.galax_pay_id, payment_plan.galax_pay_my_id, first_pay_day_date, additional_info,
                                                                                 main_payment_method_id, partner, credit_card.galax_pay_my_id)
 
     if galax_pay_payment_subscription.nil?
