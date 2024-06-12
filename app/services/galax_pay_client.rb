@@ -117,7 +117,7 @@ class GalaxPayClient
             customer.email
           ],
           phones: [
-            customer.phone
+            customer.contact_number
           ],
       },
       PaymentMethodCreditCard: {
