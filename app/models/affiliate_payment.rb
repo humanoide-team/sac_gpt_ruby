@@ -3,7 +3,6 @@ require 'securerandom'
 class AffiliatePayment < ApplicationRecord
   belongs_to :affiliate
   belongs_to :affiliate_credit_card
-  has_one :extra_token, dependent: :destroy
 
   before_create :create_galax_pay_payment
 
