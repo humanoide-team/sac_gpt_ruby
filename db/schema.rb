@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_11_214948) do
+ActiveRecord::Schema.define(version: 2024_06_14_014731) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -241,6 +241,7 @@ ActiveRecord::Schema.define(version: 2024_06_11_214948) do
     t.boolean "extra_token_half_exceed", default: false
     t.boolean "extra_token_almost_exceed", default: false
     t.boolean "exceed_extra_token_mail", default: false
+    t.integer "extra_token_count", default: 0
     t.index ["partner_id"], name: "index_montly_usage_histories_on_partner_id"
   end
 
