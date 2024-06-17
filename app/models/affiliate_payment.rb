@@ -6,9 +6,7 @@ class AffiliatePayment < ApplicationRecord
 
   before_create :create_galax_pay_payment
 
-  after_create :payment_confirmation_mail
-
-  accepts_nested_attributes_for :extra_token, reject_if: :all_blank
+  accepts_nested_attributes_for :affiliate_extra_token, reject_if: :all_blank
 
   enum main_payment_method_id: {
     creditcard: 0
