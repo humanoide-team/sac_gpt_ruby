@@ -30,7 +30,7 @@ class AffiliateCreditCard < ApplicationRecord
   def set_all_credit_card_default_false
     return unless default && default_changed?
 
-    affiliate.credit_cards.where(default: true).update(default: false)
+    affiliate.affiliate_credit_cards.where(default: true).update(default: false)
   end
 
   def mask_credit_card_number

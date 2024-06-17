@@ -12,7 +12,7 @@ class CreateAffiliatePayments < ActiveRecord::Migration[6.1]
       t.integer :status
       t.date :payday
       t.references :affiliate, null: false, foreign_key: true
-      t.references :credit_card, null: false, foreign_key: true
+      t.references :affiliate_credit_card, null: false, foreign_key: true
 
       t.timestamps
     end

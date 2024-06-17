@@ -11,9 +11,7 @@ class Api::V1::Affiliates::PaymentsController < ApiAffiliateController
   end
 
   def create
-    @payment = AffiliatePayment.new(payment_params.merge(affiliate: @current_affiliate,
-                                                extra_token_attributes: { token_quantity: payment_params[:token_quantity],
-                                                                          affiliate: @current_affiliate }).except(:token_quantity))
+    @payment = AffiliatePayment.new(payment_params.merge(affiliate: @current_affiliate,affiliate_extra_token_attributes: { token_quantity: payment_params[:token_quantity],affiliate: @current_affiliate }).except(:token_quantity))
 
     if @payment.save
       if @payment.status != 'active'

@@ -140,11 +140,11 @@ ActiveRecord::Schema.define(version: 2024_06_14_165207) do
     t.integer "status"
     t.date "payday"
     t.bigint "affiliate_id", null: false
-    t.bigint "credit_card_id", null: false
+    t.bigint "affiliate_credit_card_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_credit_card_id"], name: "index_affiliate_payments_on_affiliate_credit_card_id"
     t.index ["affiliate_id"], name: "index_affiliate_payments_on_affiliate_id"
-    t.index ["credit_card_id"], name: "index_affiliate_payments_on_credit_card_id"
   end
 
   create_table "affiliates", force: :cascade do |t|
@@ -589,8 +589,8 @@ ActiveRecord::Schema.define(version: 2024_06_14_165207) do
   add_foreign_key "affiliate_extra_tokens", "affiliate_payments"
   add_foreign_key "affiliate_extra_tokens", "affiliates"
   add_foreign_key "affiliate_montly_usage_histories", "affiliates"
+  add_foreign_key "affiliate_payments", "affiliate_credit_cards"
   add_foreign_key "affiliate_payments", "affiliates"
-  add_foreign_key "affiliate_payments", "credit_cards"
   add_foreign_key "bot_configurations", "affiliates"
   add_foreign_key "bot_configurations", "prospect_cards"
   add_foreign_key "conversation_threads", "partner_assistents"
