@@ -119,8 +119,6 @@ class Partner < ApplicationRecord
   def cancel_active_subscription
     @payment_subscription = payment_subscriptions.where(status: :active).first
 
-    @payment_subscription.cancel_galax_pay_payment_subscription
-
     self.update(active: false) if @payment_subscriptions.cancel_galax_pay_payment_subscription
   end
 
