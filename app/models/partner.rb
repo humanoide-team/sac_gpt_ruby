@@ -40,6 +40,7 @@ class Partner < ApplicationRecord
   before_create :create_galax_pay_client
 
   after_update :generate_instance_key, if: :service_number_is_updated?
+  before_destroy :cancel_active_subscription
 
   def send_welcome_mail
     PartnerMailer._send_welcome_partner(self).deliver
@@ -113,6 +114,14 @@ class Partner < ApplicationRecord
 
   def current_plan_canceled?
     payment_subscriptions.where(status: :canceled).exists?
+  end
+
+  def cancel_active_subscription
+    @payment_subscription = payment_subscriptions.where(status: :active).first
+
+    @payment_subscription.cancel_galax_pay_payment_subscription
+
+    self.update(active: false) if @payment_subscriptions.cancel_galax_pay_payment_subscription
   end
 
   def send_connection_fail_mail
