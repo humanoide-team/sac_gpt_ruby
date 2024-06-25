@@ -7,7 +7,9 @@ class CreditCard < ApplicationRecord
   before_create :set_all_credit_card_default_false
 
   after_create :change_subscription_payment_method
-  has_one :payment_subscription, dependent: :destroy
+  has_one :payment_subscription, dependent: :nullify
+
+  before_destroy :cancel_active_subscription
 
   attr_accessor :card_number, :card_holder_name, :card_cvv
 
@@ -55,8 +57,15 @@ class CreditCard < ApplicationRecord
     partner.credit_cards.where(default: true).update(default: false)
   end
 
+  def cancel_active_subscription
+    @payment_subscription = payment_subscriptions.where(status: :active).first
+
+    return unless !payment_subscriptions.nil? && payment_subscriptions.active
+
+    partner.update(active: false) if @payment_subscriptions.cancel_galax_pay_payment_subscription
+  end
+
   def mask_credit_card_number
     number.gsub(/.(?=....)/, '*')
   end
-
 end

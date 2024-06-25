@@ -39,6 +39,8 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
   end
 
   def lead_classification
+    return render json: { error: 'No client found' }, status: :not_found if @client.nil?
+
     @affiliate_client_lead = @client.affiliate_client_leads.by_affiliate(@current_affiliate).first
 
     unless @current_affiliate.active == true

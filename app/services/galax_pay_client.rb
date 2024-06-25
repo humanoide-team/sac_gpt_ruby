@@ -117,7 +117,7 @@ class GalaxPayClient
             customer.email
           ],
           phones: [
-            customer.phone
+            customer.contact_number
           ],
       },
       PaymentMethodCreditCard: {
@@ -207,14 +207,14 @@ class GalaxPayClient
     end
   end
 
-  def self.create_payment(id, payday, payedOutsideGalaxPay, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
+  def self.create_payment(id, payday, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
     # https://docs-celcash.celcoin.com.br/individual-charges/create/request
     data = {
       myId: "sac-gpt-payment-#{id}",
       value:,
       additionalInfo:,
       payday:,
-      payedOutsideGalaxPay:,
+      payedOutsideGalaxPay: false,
       mainPaymentMethodId:,
       Customer: {
         myId: customer.galax_pay_my_id,
@@ -224,7 +224,7 @@ class GalaxPayClient
           customer.email
         ],
         phones: [
-          customer.phone
+          customer.contact_number
         ],
       },
       PaymentMethodCreditCard: {

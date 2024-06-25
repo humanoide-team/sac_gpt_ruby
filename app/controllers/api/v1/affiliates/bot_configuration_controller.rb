@@ -2,6 +2,8 @@ class Api::V1::Affiliates::BotConfigurationController < ApiAffiliateController
   before_action :set_bot_configuration, only: %i[actual_configuration copy_from_prospect]
 
   def actual_configuration
+    return render json: { error: 'No Bot Configuration found' }, status: :not_found if @bot_config.nil?
+
     render json: BotConfigurationSerializer.new(@bot_config).serialized_json
   end
 
