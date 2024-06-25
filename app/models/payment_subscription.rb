@@ -2,7 +2,7 @@ require 'securerandom'
 
 class PaymentSubscription < ApplicationRecord
   belongs_to :partner
-  belongs_to :credit_card
+  belongs_to :credit_card, optional: true
   belongs_to :payment_plan
   has_many :revenues, as: :partner_transaction, dependent: :delete_all
 
@@ -30,6 +30,8 @@ class PaymentSubscription < ApplicationRecord
   def create_galax_pay_payment_subscription
     uuid = SecureRandom.uuid
 
+    return if payment_plan.name == 'Plano Gratuito'
+    
     galax_pay_payment_subscription = GalaxPayClient.create_payment_subscription(uuid, payment_plan.galax_pay_my_id, first_pay_day_date, additional_info,
                                                                                 main_payment_method_id, partner, credit_card.galax_pay_my_id)
 
@@ -66,6 +68,8 @@ class PaymentSubscription < ApplicationRecord
   end
 
   def subscription_confirmation_mail
+    return if payment_plan.name == 'Plano Gratuito'
+
     PaymentPlanMailer._send_subscription_confirmation_mail(self, partner, credit_card).deliver
     partner.notifications.create(
       title: 'Confirmação de Assinatura do Plano SacGPT',
@@ -78,6 +82,8 @@ class PaymentSubscription < ApplicationRecord
   end
 
   def cancellation_plan_mail
+    return if payment_plan.name == 'Plano Gratuito'
+
     PaymentPlanMailer._send_cancellation_plan_mail(self, partner).deliver
     partner.notifications.create(
       title: 'Confirmação de Cancelamento do Plano SacGPT',
@@ -111,12 +117,13 @@ class PaymentSubscription < ApplicationRecord
 
     payment_plan_id, subscriptions_count = top_plan_by_subs
     payment_plan = PaymentPlan.find(payment_plan_id)
-    { payment_plan: payment_plan, subscriptions_count: subscriptions_count }
+    { payment_plan:, subscriptions_count: }
   end
 
   def create_affiliate_revenue
     return if partner.affiliate.nil?
 
-    Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate, value: payment_plan.plan_price_value.to_i * (partner.affiliate.revenue_percentage / 100.0))
+    Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate,
+                   value: payment_plan.plan_price_value.to_i * (partner.affiliate.revenue_percentage / 100.0))
   end
 end

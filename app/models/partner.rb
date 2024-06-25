@@ -29,17 +29,21 @@ class Partner < ApplicationRecord
   has_one :conversation_thread_, dependent: :destroy
   has_one :partner_assistent, dependent: :destroy
 
-  validates :name, :document, :contact_number, presence: true, on: :create
+  validates :name, :email, presence: true, on: :create
   validates :password_confirmation, presence: true, on: :create
 
   accepts_nested_attributes_for :partner_detail, reject_if: :all_blank
 
   after_save :generate_instance_key, unless: :instance_key?
+
   after_create :send_welcome_mail
 
-  before_create :create_galax_pay_client
+  after_create :create_free_subscription
+
+  after_update :create_galax_pay_client, unless: :galax_pay_id?
 
   after_update :generate_instance_key, if: :service_number_is_updated?
+
   before_destroy :cancel_active_subscription
 
   def send_welcome_mail
@@ -80,6 +84,8 @@ class Partner < ApplicationRecord
   end
 
   def create_galax_pay_client
+    return unless profile_filled?
+
     uuid = SecureRandom.uuid
     galax_pay_client = GalaxPayClient.create_client(uuid, name, document, email, contact_number)
 
@@ -90,6 +96,15 @@ class Partner < ApplicationRecord
       self.galax_pay_id = galax_pay_client['galaxPayId'].to_i
       self.galax_pay_my_id = galax_pay_client['myId']
     end
+  end
+
+  def create_free_subscription
+    plan = PaymentPlan.find_by(name: 'Plano Gratuito')
+
+    return if plan.nil?
+
+    payment_subscriptions.build(first_pay_day_date: DateTime.now, additional_info: 'Plano Gratuito',
+                                payment_plan: plan, status: :active).save
   end
 
   def list_transactions(status, start_at, limit)
@@ -130,7 +145,7 @@ class Partner < ApplicationRecord
         PartnerMailer._send_almost_exceed_tokens_quota(self).deliver
         current_mothly_history.update(almost_exceed: true)
       end
-    elsif ((current_mothly_token/ plan_max_token.to_f) * 100) <= 50 && current_mothly_extra_token.zero?
+    elsif ((current_mothly_token / plan_max_token.to_f) * 100) <= 50 && current_mothly_extra_token.zero?
       unless current_mothly_history.half_exceed
         PartnerMailer._send_half_tokens_quota(self).deliver
         current_mothly_history.update(half_exceed: true)
@@ -196,7 +211,7 @@ class Partner < ApplicationRecord
 
     return unless !@payment_subscription.nil? && @payment_subscription.active
 
-    self.update(active: false) if @payment_subscriptions.cancel_galax_pay_payment_subscription
+    update(active: false) if @payment_subscriptions.cancel_galax_pay_payment_subscription
   end
 
   def send_connection_fail_mail
@@ -208,14 +223,35 @@ class Partner < ApplicationRecord
     )
   end
 
-  def details_filled?
+  def montly_tokens_consumed
+    tokens_plan = current_plan.max_token_count
+    return unless tokens_plan
+
+    current_extra_token = extra_tokens.sum(:token_quantity)
+    remaining_tokens = (current_mothly_history.token_count + current_extra_token)
+    ((current_extra_token + tokens_plan) - remaining_tokens)
+  end
+
+  def montly_remaining_tokens
+    (current_mothly_history.token_count + current_extra_token)
+  end
+
+  def profile_filled?
     name.present? && email.present? && contact_number.present? && document.present?
+  end
+
+  def partner_details_filled?
+    !partner_detail.nil? && partner_detail.details_filled?
+  end
+
+  def active_plan?
+    !current_subscription.nil?
   end
 
   def customer_status
     if active? && current_plan.present?
       'Cliente Ativo'
-    elsif current_plan.nil? && details_filled?
+    elsif current_plan.nil? && profile_filled?
       'Dados Preenchidos'
     elsif current_plan_canceled?
       'Cliente Inativo'
