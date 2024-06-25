@@ -102,8 +102,7 @@ class Api::V1::WebhooksAssistentController < ApiController
 
   def token_usage(usage)
     token_cost = calculate_token(usage).round
-    montly_history = @partner.current_mothly_history
-    montly_history.increase_token_count(token_cost)
+    @partner.calculate_usage(token_cost)
     @partner_client_lead.increase_token_count(token_cost)
   end
 

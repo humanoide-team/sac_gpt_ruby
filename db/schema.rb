@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_11_214948) do
+ActiveRecord::Schema.define(version: 2024_06_14_165207) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -106,6 +106,28 @@ ActiveRecord::Schema.define(version: 2024_06_11_214948) do
     t.index ["affiliate_id"], name: "index_affiliate_credit_cards_on_affiliate_id"
   end
 
+  create_table "affiliate_extra_tokens", force: :cascade do |t|
+    t.integer "token_quantity"
+    t.bigint "affiliate_id", null: false
+    t.bigint "affiliate_payment_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_extra_tokens_on_affiliate_id"
+    t.index ["affiliate_payment_id"], name: "index_affiliate_extra_tokens_on_affiliate_payment_id"
+  end
+
+  create_table "affiliate_montly_usage_histories", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.date "period"
+    t.integer "token_count", default: 0
+    t.integer "extra_token_count", default: 0
+    t.boolean "exceed_mail", default: false
+    t.boolean "exceed_extra_token_mail", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_montly_usage_histories_on_affiliate_id"
+  end
+
   create_table "affiliate_payments", force: :cascade do |t|
     t.integer "galax_pay_id"
     t.string "galax_pay_my_id"
@@ -118,11 +140,11 @@ ActiveRecord::Schema.define(version: 2024_06_11_214948) do
     t.integer "status"
     t.date "payday"
     t.bigint "affiliate_id", null: false
-    t.bigint "credit_card_id", null: false
+    t.bigint "affiliate_credit_card_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_credit_card_id"], name: "index_affiliate_payments_on_affiliate_credit_card_id"
     t.index ["affiliate_id"], name: "index_affiliate_payments_on_affiliate_id"
-    t.index ["credit_card_id"], name: "index_affiliate_payments_on_credit_card_id"
   end
 
   create_table "affiliates", force: :cascade do |t|
@@ -241,6 +263,7 @@ ActiveRecord::Schema.define(version: 2024_06_11_214948) do
     t.boolean "extra_token_half_exceed", default: false
     t.boolean "extra_token_almost_exceed", default: false
     t.boolean "exceed_extra_token_mail", default: false
+    t.integer "extra_token_count", default: 0
     t.index ["partner_id"], name: "index_montly_usage_histories_on_partner_id"
   end
 
@@ -563,8 +586,11 @@ ActiveRecord::Schema.define(version: 2024_06_11_214948) do
   add_foreign_key "affiliate_client_messages", "conversation_threads"
   add_foreign_key "affiliate_clients", "affiliates"
   add_foreign_key "affiliate_credit_cards", "affiliates"
+  add_foreign_key "affiliate_extra_tokens", "affiliate_payments"
+  add_foreign_key "affiliate_extra_tokens", "affiliates"
+  add_foreign_key "affiliate_montly_usage_histories", "affiliates"
+  add_foreign_key "affiliate_payments", "affiliate_credit_cards"
   add_foreign_key "affiliate_payments", "affiliates"
-  add_foreign_key "affiliate_payments", "credit_cards"
   add_foreign_key "bot_configurations", "affiliates"
   add_foreign_key "bot_configurations", "prospect_cards"
   add_foreign_key "conversation_threads", "partner_assistents"

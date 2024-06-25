@@ -65,7 +65,6 @@ class GalaxPayClient
     end
   end
 
-
   def self.create_payment_plan(id, name, periodicity, quantity, additionalInfo, plan_price_payment, plan_price_value)
     # https://docs.galaxpay.com.br/plans/create
     data = {
@@ -99,6 +98,24 @@ class GalaxPayClient
     end
   end
 
+  def self.list_payment_subscription(galax_pay_id)
+    # https://docs-celcash.celcoin.com.br/subscriptions/list
+
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.get("#{BASE_URL}/subscriptions?galaxPayIds=#{galax_pay_id}&startAt=0&limit=10&", headers:)
+    if response.code == 200
+      JSON.parse(response.body)['Subscriptions'].first
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
+    end
+  end
+
   def self.create_payment_subscription(id, planMyId, galaxPayId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
     # https://docs.galaxpay.com.br/subscriptions/create-with-plan
     data = {
@@ -117,7 +134,7 @@ class GalaxPayClient
             customer.email
           ],
           phones: [
-            customer.phone
+            customer.contact_number
           ],
       },
       PaymentMethodCreditCard: {
@@ -207,14 +224,31 @@ class GalaxPayClient
     end
   end
 
-  def self.create_payment(id, payday, payedOutsideGalaxPay, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
+  def self.list_payment(galax_pay_id)
+    # https://docs-celcash.celcoin.com.br/individual-charges/list
+    token = generate_authorization_token
+
+    headers = {
+      'Authorization': "Bearer #{token}",
+      'Content-Type': 'application/json'
+    }
+    response = HTTParty.get("#{BASE_URL}/charges?galaxPayIds=#{galax_pay_id}&startAt=0&limit=10&", headers:)
+    if response.code == 200
+      JSON.parse(response.body)['Charges'].first
+    else
+      puts "Falha na requisição. Código de status: #{response.code}"
+      puts "Resposta do corpo: #{response.body}"
+    end
+  end
+
+  def self.create_payment(id, payday, additionalInfo, mainPaymentMethodId, credit_card_my_id, value, customer)
     # https://docs-celcash.celcoin.com.br/individual-charges/create/request
     data = {
       myId: "sac-gpt-payment-#{id}",
       value:,
       additionalInfo:,
       payday:,
-      payedOutsideGalaxPay:,
+      payedOutsideGalaxPay: false,
       mainPaymentMethodId:,
       Customer: {
         myId: customer.galax_pay_my_id,
@@ -224,7 +258,7 @@ class GalaxPayClient
           customer.email
         ],
         phones: [
-          customer.phone
+          customer.contact_number
         ],
       },
       PaymentMethodCreditCard: {

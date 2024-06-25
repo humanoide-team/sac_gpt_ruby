@@ -154,10 +154,8 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
 
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage']).round
-        montly_history = @current_partner.current_mothly_history
-        montly_history.increase_token_count(token_cost)
+        @partner.calculate_usage(token_cost)
         @partner_client_lead.increase_token_count(token_cost)
-
         response['choices'][0]['message']['content'].strip
       else
         ''

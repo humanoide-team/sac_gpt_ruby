@@ -14,6 +14,8 @@ class PaymentSubscription < ApplicationRecord
 
   after_destroy :cancellation_plan_mail
 
+  after_save :create_affiliate_revenue
+
   enum main_payment_method_id: {
     creditcard: 0
   }
@@ -26,6 +28,22 @@ class PaymentSubscription < ApplicationRecord
     waitingPayment: 4,
     inactive: 5
   }
+
+  def update_galax_pay_payment_subscription_status
+    return if galax_pay_id.nil?
+
+    galax_pay_payment_subscription = GalaxPayClient.list_payment_subscription(galax_pay_id)
+
+    if galax_pay_payment_subscription.nil?
+      errors.add(:base, 'Erro ao listar Inscricao verifique os daddos')
+      throw :abort
+    else
+      return if galax_pay_payment_subscription['status'] == self.status
+
+      self.status = galax_pay_payment_subscription['status']
+      self.save
+    end
+  end
 
   def create_galax_pay_payment_subscription
     uuid = SecureRandom.uuid
@@ -116,6 +134,8 @@ class PaymentSubscription < ApplicationRecord
 
   def create_affiliate_revenue
     return if partner.affiliate.nil?
+
+    return unless status == 'active'
 
     Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate, value: payment_plan.plan_price_value.to_i * (partner.affiliate.revenue_percentage / 100.0))
   end
