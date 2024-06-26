@@ -6,15 +6,20 @@ class PartnerMessageService
   def self.process_message(params, partner)
     @partner = partner
     @params = params
-    if @partner.partner_detail.nil? || !@partner.active
+    return if @partner.partner_detail.nil? || !@partner.active
+
+    if params['type'] == 'connection'
+
+      if params['body']['connection'] == 'open' && @partner.wpp_connected == false
+        @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
+
+      elsif params['body']['connection'] == 'close' && @partner.wpp_connected == true
+        @partner.update(wpp_connected: false)
+      end
       return
     end
 
     @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
-
-    if @partner.remote_jid == params['body']['key']['remoteJid']
-      return
-    end
 
     @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'], partner_id: @partner.id)
     if @client.nil?
@@ -117,7 +122,7 @@ class PartnerMessageService
     end
 
     text_response = gerar_resposta(last_response.message, historico_conversa).gsub("\n",
-                                                                                                          ' ').strip
+                                                                                   ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(@params['body']['key']['remoteJid'], text_response, partner.instance_key)
@@ -192,7 +197,7 @@ class PartnerMessageService
       partner_detail_prompt = [{ role: 'system', content: partner_detail_prompt }]
 
       resume = gerar_resposta('Faca um resumo das suas instrucoes em no maximo 100 palavras como se vc estivesse instruindo outra pessoa.', partner_detail_prompt).gsub("\n",
-                                                                                                                                                                                         ' ').strip
+                                                                                                                                                                        ' ').strip
       @partner.partner_detail.update(details_resume: resume, details_resume_date: DateTime.now)
     end
     @partner.partner_detail.details_resume
@@ -200,7 +205,7 @@ class PartnerMessageService
 
   def self.generate_system_conversation_resume(historico_conversa, partner_client_conversation_info, client, partner)
     resume = gerar_resposta('Faca um resumo de toda essa conversa em um paragrafo', historico_conversa).gsub("\n",
-                                                                                                                              ' ').strip
+                                                                                                             ' ').strip
     if partner_client_conversation_info.nil?
       client.partner_client_conversation_infos.create(system_conversation_resume: resume, partner:)
     else

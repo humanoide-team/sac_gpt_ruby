@@ -6,6 +6,8 @@ class AffiliateMessageService
     @params = params
     return if @affiliate.bot_configuration.nil? || !@affiliate.active
 
+    return if params['type'] == 'connection'
+
     @client = AffiliateClient.find_by(phone: params['body']['key']['remoteJid'], affiliate_id: @affiliate.id)
     if @client.nil?
       @client = AffiliateClient.create(phone: params['body']['key']['remoteJid'],
