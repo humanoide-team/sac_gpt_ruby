@@ -1,6 +1,6 @@
 namespace :transactions_monitoring do
   desc 'Monitoração de Inscricoes'
-  task partner_transactions_monitoring: :environment do
+  task partner_subscription_monitoring: :environment do
     partners = Partner.all
 
     partners.each do |current_partner|
@@ -16,8 +16,14 @@ namespace :transactions_monitoring do
     partners = Partner.all
 
     partners.each do |current_partner|
-      payments = current_partner.payments.where(status: :waitingPayment)
+      current_subscription = current_partner.current_subscription || current_partner.payment_subscriptions.last
 
+      if !current_subscription.nil? && current_subscription.status == 'waitingPayment'
+        current_subscription&.update_galax_pay_payment_subscription_status
+        partners.update(active: true) if current_subscription.status == 'active'
+      end
+
+      payments = current_partner.payments.where(status: :waitingPayment)
       payments.each do |payment|
         payment.update_status_galax_pay_payment_status
       end

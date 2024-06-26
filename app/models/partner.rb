@@ -40,7 +40,7 @@ class Partner < ApplicationRecord
 
   after_create :create_free_subscription
 
-  after_update :create_galax_pay_client, unless: :galax_pay_id?
+  before_update :create_galax_pay_client, unless: :galax_pay_id?
 
   after_update :generate_instance_key, if: :service_number_is_updated?
 
@@ -103,8 +103,11 @@ class Partner < ApplicationRecord
 
     return if plan.nil?
 
-    payment_subscriptions.build(first_pay_day_date: DateTime.now, additional_info: 'Plano Gratuito',
-                                payment_plan: plan, status: :active).save
+    if payment_subscriptions.build(first_pay_day_date: DateTime.now, additional_info: 'Plano Gratuito',
+                                   payment_plan: plan, status: :active).save
+      self.active = true
+      self.wpp_connected = false
+    end
   end
 
   def list_transactions(status, start_at, limit)
@@ -187,7 +190,7 @@ class Partner < ApplicationRecord
       montly_usage_histories.create(period: montly_usage.period + 1.month,
                                     token_count: current_plan.max_token_count,
                                     extra_token_count: montly_usage.extra_token_count)
-    elsif !montly_usage.nil? && today > montly_usage.period && today < montly_usage.period + 1.month
+    elsif !montly_usage.nil? && today >= montly_usage.period && today < montly_usage.period + 1.month
       montly_usage
     end
   end
@@ -231,6 +234,7 @@ class Partner < ApplicationRecord
   end
 
   def montly_remaining_tokens
+    current_extra_token = extra_tokens.sum(:token_quantity)
     (current_mothly_history.token_count + current_extra_token)
   end
 
@@ -243,7 +247,7 @@ class Partner < ApplicationRecord
   end
 
   def active_plan?
-    !current_subscription.nil?
+    !current_subscription.nil? && !current_plan.nil? && current_plan.name != 'Plano Gratuito'
   end
 
   def customer_status

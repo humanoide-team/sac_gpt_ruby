@@ -144,7 +144,7 @@ class Affiliate < ApplicationRecord
       affiliate_montly_usage_histories.create(period: montly_usage.period + 1.month,
                                               token_count: max_token_count,
                                               extra_token_count: montly_usage.extra_token_count)
-    elsif !montly_usage.nil? && today > montly_usage.period && today < montly_usage.period + 1.month
+    elsif !montly_usage.nil? && today >= montly_usage.period && today < montly_usage.period + 1.month
       montly_usage
     end
   end

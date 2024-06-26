@@ -33,8 +33,9 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
       key = response['key']
       sleep(5)
       get_qrcode(key)
+      @current_partner.update(wpp_connected: true)
     else
-      error_message = response['message']
+      response['message']
     end
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_14_165207) do
+ActiveRecord::Schema.define(version: 2024_06_25_221758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -434,7 +434,7 @@ ActiveRecord::Schema.define(version: 2024_06_14_165207) do
     t.string "additional_info"
     t.integer "main_payment_method_id"
     t.bigint "partner_id", null: false
-    t.bigint "credit_card_id", null: false
+    t.bigint "credit_card_id"
     t.bigint "payment_plan_id", null: false
     t.integer "status"
     t.string "payment_link"

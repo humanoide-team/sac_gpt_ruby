@@ -10,7 +10,7 @@ class Api::V1::Partners::MontlyUsageHistoryController < ApiPartnerController
                     status: :unprocessable_entity
     end
 
-    montly_tokens_consumed = tokens_plan - token_count
+    montly_tokens_consumed = (extra_token_count + tokens_plan) - token_count
     average_spent_per_day = montly_tokens_consumed / day
     remaining_tokens = extra_token_count + token_count
     month_days = DateTime.now.end_of_month.day

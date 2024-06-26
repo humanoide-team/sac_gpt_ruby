@@ -30,7 +30,7 @@ class PaymentSubscription < ApplicationRecord
   }
 
   def update_galax_pay_payment_subscription_status
-    return if galax_pay_id.nil?
+    return if galax_pay_id.nil? || payment_plan.name == 'Plano Gratuito'
 
     galax_pay_payment_subscription = GalaxPayClient.list_payment_subscription(galax_pay_id)
 
@@ -38,10 +38,10 @@ class PaymentSubscription < ApplicationRecord
       errors.add(:base, 'Erro ao listar Inscricao verifique os daddos')
       throw :abort
     else
-      return if galax_pay_payment_subscription['status'] == self.status
+      return if galax_pay_payment_subscription['status'] == status
 
       self.status = galax_pay_payment_subscription['status']
-      self.save
+      save
     end
   end
 
@@ -49,8 +49,7 @@ class PaymentSubscription < ApplicationRecord
     uuid = SecureRandom.uuid
 
     return if payment_plan.name == 'Plano Gratuito'
-    
-    galax_pay_payment_subscription = GalaxPayClient.create_payment_subscription(uuid, payment_plan.galax_pay_my_id, first_pay_day_date, additional_info,
+    galax_pay_payment_subscription = GalaxPayClient.create_payment_subscription(uuid, payment_plan.galax_pay_my_id, payment_plan.galax_pay_id, first_pay_day_date, additional_info,
                                                                                 main_payment_method_id, partner, credit_card.galax_pay_my_id)
 
     if galax_pay_payment_subscription.nil?
@@ -75,14 +74,19 @@ class PaymentSubscription < ApplicationRecord
   end
 
   def cancel_galax_pay_payment_subscription
-    response = GalaxPayClient.cancel_payment_subscription(galax_pay_id)
+    if payment_plan.name == 'Plano Gratuito'
+      update_attribute(:status, 'canceled')
 
-    return unless response == true
+    else
+      response = GalaxPayClient.cancel_payment_subscription(galax_pay_id)
 
-    update_attribute(:status, 'canceled')
-    update_attribute(:credit_card_id, nil)
+      return unless response == true
 
-    cancellation_plan_mail
+      update_attribute(:status, 'canceled')
+      update_attribute(:credit_card_id, nil)
+
+      cancellation_plan_mail
+    end
   end
 
   def subscription_confirmation_mail
@@ -143,6 +147,7 @@ class PaymentSubscription < ApplicationRecord
 
     return unless status == 'active'
 
-    Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate, value: payment_plan.plan_price_value.to_i * (partner.affiliate.revenue_percentage / 100.0))
+    Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate,
+                   value: payment_plan.plan_price_value.to_i * (partner.affiliate.revenue_percentage / 100.0))
   end
 end
