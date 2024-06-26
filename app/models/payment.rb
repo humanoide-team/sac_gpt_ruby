@@ -10,7 +10,7 @@ class Payment < ApplicationRecord
 
   after_create :payment_confirmation_mail
 
-  after_create :create_affiliate_revenue
+  after_save :create_affiliate_revenue
 
   accepts_nested_attributes_for :extra_token, reject_if: :all_blank
 
@@ -26,6 +26,23 @@ class Payment < ApplicationRecord
     waitingPayment: 4,
     inactive: 5
   }
+
+  def update_status_galax_pay_payment_status
+    return if galax_pay_id.nil?
+
+    galax_pay_payment = GalaxPayClient.list_payment(galax_pay_id)
+
+    if galax_pay_payment.nil?
+      errors.add(:base, 'Erro ao listar pagamento, verifique os dados')
+      throw :abort
+    else
+      return if galax_pay_payment['status'] == self.status
+
+      self.status = galax_pay_payment['status']
+      self.save
+      extra_token.increase_extra_token_count
+    end
+  end
 
   def create_galax_pay_payment
     uuid = SecureRandom.uuid
@@ -60,6 +77,8 @@ class Payment < ApplicationRecord
 
   def create_affiliate_revenue
     return if partner.affiliate.nil?
+
+    return unless status == 'active'
 
     Revenue.create(partner_transaction: self, partner:, affiliate: partner.affiliate, value: value * (partner.affiliate.revenue_percentage / 100.0))
   end
