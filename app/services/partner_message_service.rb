@@ -15,6 +15,7 @@ class PartnerMessageService
 
       elsif params['body']['connection'] == 'close' && @partner.wpp_connected == true
         @partner.update(wpp_connected: false)
+        @partner.send_connection_fail_mail
       end
       return
     end
