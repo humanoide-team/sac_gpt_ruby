@@ -99,12 +99,12 @@ class GalaxPayClient
     end
   end
 
-  def self.create_payment_subscription(id, planMyId, galaxPayId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
+  def self.create_payment_subscription(id, planMyId, planGalaxPayId, firstPayDayDate, additionalInfo, mainPaymentMethodId, customer, credit_card_my_id)
     # https://docs.galaxpay.com.br/subscriptions/create-with-plan
     data = {
       myId: "sac-gpt-payment-subscription-#{id}",
       planMyId:,
-      galaxPayId:,
+      planGalaxPayId:,
       firstPayDayDate:,
       additionalInfo:,
       mainPaymentMethodId:,
