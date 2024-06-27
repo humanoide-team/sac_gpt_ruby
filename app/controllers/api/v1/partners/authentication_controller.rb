@@ -27,6 +27,7 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
   def auth_whatsapp
     token = ENV['NODE_API_WHATSAPP_TOKEN']
     key = @current_partner.instance_key
+    @current_partner.update(last_callback_receive: nil, wpp_connected: false)
 
     response = NodeApiClient.iniciar_instancia(token, key)
     if response['error'] == false
@@ -34,7 +35,7 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
       sleep(5)
       get_qrcode(key)
     else
-      error_message = response['message']
+     response['message']
     end
   end
 
