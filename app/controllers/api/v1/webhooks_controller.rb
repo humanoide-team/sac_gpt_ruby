@@ -2,16 +2,16 @@ require 'tiktoken_ruby'
 
 class Api::V1::WebhooksController < ApiController
   def whatsapp
+    response = 'Callback Recebido'
     @partner = Partner.find_by(instance_key: params['instanceKey'])
-
     @affiliate = Affiliate.find_by(instance_key: params['instanceKey'])
 
     if !@partner.nil?
       puts '********************RESPONDENDO****************************'
-      PartnerMessageService.process_message(params, @partner)
+      response = PartnerMessageService.process_message(params, @partner)
     elsif !@affiliate.nil?
       puts '********************RESPONDENDO****************************'
-      AffiliateMessageService.process_message(params, @affiliate)
+      response = AffiliateMessageService.process_message(params, @affiliate)
     else
       permitted_params = params.permit!
       puts permitted_params
@@ -19,6 +19,6 @@ class Api::V1::WebhooksController < ApiController
       puts '***************ENVIOU CALLBACK************************'
     end
 
-    render json: { status: 'OK', current_date: DateTime.now.to_s, params: }
+    render json: { error: response }, status: :ok
   end
 end
