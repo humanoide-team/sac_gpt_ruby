@@ -6,7 +6,7 @@ class PartnerMessageService
   def self.process_message(params, partner)
     @partner = partner
     @params = params
-    return render json: { error: 'Callback Recebido' }, status: :ok if @partner.partner_detail.nil? || !@partner.active
+    return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.active
 
     if params['type'] == 'connection'
 
@@ -17,7 +17,7 @@ class PartnerMessageService
         @partner.update(last_callback_receive: DateTime.now, wpp_connected: false)
         @partner.send_connection_fail_mail
       end
-      return render json: { error: 'Callback Recebido' }, status: :ok
+      return 'Callback Processado'
     end
 
     @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
@@ -28,13 +28,13 @@ class PartnerMessageService
                                      name: params['body']['pushName'], partner_id: @partner.id)
     end
 
-    return render json: { error: 'Callback Recebido' }, status: :ok if @client.blocked
+    return 'Callback Processado' if @client.blocked
 
     @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
 
     pergunta_usuario = callback_text_message(params)
 
-    return render json: { error: 'Callback Recebido' }, status: :ok if pergunta_usuario.empty?
+    return 'Callback Processado' if pergunta_usuario.empty?
 
     @partner_client_lead = @client.partner_client_leads.by_partner(@partner).first
 
@@ -43,7 +43,7 @@ class PartnerMessageService
     end
 
     if @client.partner_client_messages.by_partner(@partner).map(&:webhook_uuid).include?(params['body']['key']['id'])
-      return render json: { error: 'Callback Recebido' }, status: :ok
+      return 'Callback Processado'
     end
 
     partner_client_message = @client.partner_client_messages.create(partner: @partner, message: pergunta_usuario,
@@ -58,11 +58,11 @@ class PartnerMessageService
 
     if lasts_messages >= 10
       client.update(blocked: true)
-      return render json: { error: 'Callback Recebido' }, status: :ok
+      return 'Callback Processado'
     end
 
     last_response = client.partner_client_messages.by_partner(partner).order(:created_at).last
-    return render json: { error: 'Callback Recebido' }, status: :ok if !last_response.nil? && last_response.created_at > partner_client_message.created_at
+    return 'Callback Processado' if !last_response.nil? && last_response.created_at > partner_client_message.created_at
 
     partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
@@ -127,8 +127,9 @@ class PartnerMessageService
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(@params['body']['key']['remoteJid'], text_response, partner.instance_key)
-    puts "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
-    render json: { error: 'Callback Recebido' }, status: :ok
+    return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
+
+    'Callback Processado'
   end
 
   def self.identificar_email(response)

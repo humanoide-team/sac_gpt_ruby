@@ -4,9 +4,9 @@ class AffiliateMessageService
   def self.process_message(params, affiliate)
     @affiliate = affiliate
     @params = params
-    return if @affiliate.bot_configuration.nil? || !@affiliate.active
+    return 'Callback Processado' if @affiliate.bot_configuration.nil? || !@affiliate.active
 
-    return if params['type'] == 'connection'
+    return 'Callback Processado' if params['type'] == 'connection'
 
     @client = AffiliateClient.find_by(phone: params['body']['key']['remoteJid'], affiliate_id: @affiliate.id)
     if @client.nil?
@@ -14,13 +14,13 @@ class AffiliateMessageService
                                        name: params['body']['pushName'], affiliate_id: @affiliate.id)
     end
 
-    return if @client.blocked
+    return 'Callback Processado' if @client.blocked
 
     @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
 
     pergunta_usuario = callback_text_message(params)
 
-    return if pergunta_usuario.empty?
+    return 'Callback Processado' if pergunta_usuario.empty?
 
     @partner_client_lead = @client.affiliate_client_leads.by_affiliate(@affiliate).first
 
@@ -29,7 +29,7 @@ class AffiliateMessageService
     end
 
     if @client.affiliate_client_messages.by_affiliate(@affiliate).map(&:webhook_uuid).include?(params['body']['key']['id'])
-      return
+      return 'Callback Processado'
     end
 
     affiliate_client_message = @client.affiliate_client_messages.create(affiliate: @affiliate, message: pergunta_usuario,
@@ -44,7 +44,7 @@ class AffiliateMessageService
 
     if lasts_messages >= 10
       client.update(blocked: true)
-      return
+      return 'Callback Processado'
     end
     last_response = client.affiliate_client_messages.by_affiliate(affiliate).order(:created_at).last
 
@@ -96,6 +96,8 @@ class AffiliateMessageService
     last_response.update(automatic_response: text_response)
     response = NodeApiClient.enviar_mensagem(@params['body']['key']['remoteJid'], text_response, affiliate.instance_key)
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
+
+    'Callback Processado'
   end
 
   def self.gerar_resposta(pergunta, historico_conversa)
