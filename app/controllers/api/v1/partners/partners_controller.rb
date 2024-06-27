@@ -1,5 +1,5 @@
 class Api::V1::Partners::PartnersController < ApiPartnerController
-  before_action :set_partner, only: %i[show destroy update]
+  before_action :set_partner, only: %i[show destroy update wpp_connected]
   skip_before_action :authenticate_request, only: %i[create]
 
   def show
@@ -9,7 +9,6 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
   def create
     @partner = Partner.new(partner_params)
     @partner.affiliate_id = params[:affiliate_id] if params[:affiliate_id].present?
-
 
     if @partner.save
       options = {
@@ -54,6 +53,10 @@ class Api::V1::Partners::PartnersController < ApiPartnerController
     else
       render json: { error: 'Usuário não existe' }, status: 401
     end
+  end
+
+  def wpp_connected
+    render json: { wppConnected: @partner.wpp_connected }, status: 200
   end
 
   private
