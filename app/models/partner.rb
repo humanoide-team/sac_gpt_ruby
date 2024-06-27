@@ -103,10 +103,10 @@ class Partner < ApplicationRecord
 
     return if plan.nil?
 
-    if payment_subscriptions.build(first_pay_day_date: DateTime.now, additional_info: 'Plano Gratuito',
-                                   payment_plan: plan, status: :active).save
+    if payment_subscriptions.build(first_pay_day_date: DateTime.now, additional_info: 'Plano Gratuito', payment_plan: plan, status: :active).save
       self.active = true
       self.wpp_connected = false
+      self.save
     end
   end
 
@@ -225,6 +225,8 @@ class Partner < ApplicationRecord
   end
 
   def montly_tokens_consumed
+    return unless current_plan
+
     tokens_plan = current_plan.max_token_count
     return unless tokens_plan
 
@@ -234,6 +236,8 @@ class Partner < ApplicationRecord
   end
 
   def montly_remaining_tokens
+    return unless current_plan
+
     current_extra_token = extra_tokens.sum(:token_quantity)
     (current_mothly_history.token_count + current_extra_token)
   end
