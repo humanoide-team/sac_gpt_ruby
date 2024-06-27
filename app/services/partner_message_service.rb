@@ -12,10 +12,10 @@ class PartnerMessageService
 
     if params['type'] == 'connection'
 
-      if params['body']['connection'] == 'open' && @partner.last_callback_receive.nil? && !@partner.wpp_connected
+      if params['body']['connection'] == 'open'
         @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
 
-      elsif params['body']['connection'] == 'close' && @partner.wpp_connected
+      elsif params['body']['connection'] == 'close' && @partner.wpp_connected && !@partner.last_callback_receive.nil? && (@partner.last_callback_receive + 1.minute > DateTime.now)
         @partner.update(last_callback_receive: DateTime.now, wpp_connected: false)
         @partner.send_connection_fail_mail
       end
