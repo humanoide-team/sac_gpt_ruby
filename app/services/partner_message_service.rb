@@ -6,14 +6,14 @@ class PartnerMessageService
   def self.process_message(params, partner)
     @partner = partner
     @params = params
-    return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.active
+    return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.active || !@partner.wpp_connected
 
     if params['type'] == 'connection'
 
-      if params['body']['connection'] == 'open' && @partner.last_callback_receive.nil? && @partner.wpp_connected == false
+      if params['body']['connection'] == 'open' && @partner.last_callback_receive.nil? && !@partner.wpp_connected
         @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
 
-      elsif params['body']['connection'] == 'close' && @partner.wpp_connected == true
+      elsif params['body']['connection'] == 'close' && @partner.wpp_connected
         @partner.update(last_callback_receive: DateTime.now, wpp_connected: false)
         @partner.send_connection_fail_mail
       end
