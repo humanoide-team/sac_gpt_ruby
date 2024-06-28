@@ -6,7 +6,7 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
     partner_leads = @current_partner.partner_client_leads
     lead_count = partner_leads.count
     tokens_plan = @current_partner.current_plan&.max_token_count
-    montly_tokens_consumed = tokens_plan - token_count
+    montly_tokens_consumed = (tokens_plan + current_extra_token) - current_token_count
     montly_tokens_left = current_token_count + current_extra_token
     client_scores = partner_leads.order(lead_score: :desc).limit(10).map do |pl|
       {
