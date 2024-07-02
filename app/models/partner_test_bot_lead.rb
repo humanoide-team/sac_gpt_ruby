@@ -5,4 +5,8 @@ class PartnerTestBotLead < ApplicationRecord
     self.token_count += tokens
     save
   end
+
+  def messages_count
+    partner.partner_client_messages.count
+  end
 end
