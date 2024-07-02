@@ -6,7 +6,7 @@ class PartnerMessageService
   def self.process_message(params, partner)
     @partner = partner
     @params = params
-    return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.active
+    return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.partner_details_filled? || !@partner.active
 
     return 'Callback Processado' if params['type'] != 'connection' && !@partner.wpp_connected
 

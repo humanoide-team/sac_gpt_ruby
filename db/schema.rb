@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_25_221758) do
+ActiveRecord::Schema.define(version: 2024_07_02_005319) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -383,6 +383,27 @@ ActiveRecord::Schema.define(version: 2024_06_25_221758) do
     t.index ["partner_id"], name: "index_partner_payments_on_partner_id"
   end
 
+  create_table "partner_test_bot_leads", force: :cascade do |t|
+    t.bigint "partner_id", null: false
+    t.text "conversation_summary"
+    t.text "lead_classification"
+    t.integer "lead_score", default: 0
+    t.integer "token_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_partner_test_bot_leads_on_partner_id"
+  end
+
+  create_table "partner_test_bot_messages", force: :cascade do |t|
+    t.bigint "partner_id", null: false
+    t.text "message"
+    t.text "automatic_response"
+    t.boolean "read", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["partner_id"], name: "index_partner_test_bot_messages_on_partner_id"
+  end
+
   create_table "partners", force: :cascade do |t|
     t.string "name"
     t.string "service_number"
@@ -613,6 +634,8 @@ ActiveRecord::Schema.define(version: 2024_06_25_221758) do
   add_foreign_key "partner_details", "partners"
   add_foreign_key "partner_payments", "credit_cards"
   add_foreign_key "partner_payments", "partners"
+  add_foreign_key "partner_test_bot_leads", "partners"
+  add_foreign_key "partner_test_bot_messages", "partners"
   add_foreign_key "partners", "affiliates"
   add_foreign_key "payment_subscriptions", "credit_cards"
   add_foreign_key "payment_subscriptions", "partners"
