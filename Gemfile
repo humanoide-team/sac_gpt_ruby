@@ -61,25 +61,29 @@ group :test do
   gem 'webdrivers'
 end
 
+# Image upload
+gem 'active_storage_base64'
+gem 'aws-sdk-s3'
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
+gem 'active_model_serializers'
 gem 'cancancan'
 gem 'devise'
 gem 'fast_jsonapi'
 gem 'friendly_id', '~> 5.2.4'
+gem 'google-api-client', require: 'google/apis/calendar_v3'
 gem 'httparty'
 gem 'jwt'
+gem 'mailgun-ruby', '~>1.2.10'
+gem 'mistral-ai', '~> 1.1.2'
+gem 'omniauth-google-oauth2'
 gem 'paper_trail'
 gem 'paranoia', '~> 2.2'
+gem 'rack-cors'
+gem 'raygun4ruby'
 gem 'ruby-openai'
 gem 'simple_command'
-gem 'active_model_serializers'
-gem 'rack-cors'
 gem 'slim-rails'
-gem 'mailgun-ruby', '~>1.2.10'
-gem 'raygun4ruby'
-gem 'google-api-client', require: 'google/apis/calendar_v3'
-gem 'omniauth-google-oauth2'
 gem 'tiktoken_ruby'
-gem 'mistral-ai', '~> 1.1.2'

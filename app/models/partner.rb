@@ -11,8 +11,13 @@ class Partner < ApplicationRecord
   extend FriendlyId
   friendly_id :name_slug, use: :slugged
 
+  has_one_base64_attached :avatar
   belongs_to :affiliate, optional: true
   has_one :partner_detail, dependent: :destroy
+  has_one :schedule_setting, dependent: :destroy
+  has_one :conversation_thread_, dependent: :destroy
+  has_one :partner_assistent, dependent: :destroy
+  has_one :partner_test_bot_lead, dependent: :destroy
   has_many :partner_client_messages, dependent: :destroy
   has_many :partner_clients, dependent: :destroy
   has_many :partner_payments, dependent: :destroy
@@ -25,9 +30,7 @@ class Partner < ApplicationRecord
   has_many :montly_usage_histories, dependent: :destroy
   has_many :extra_tokens, dependent: :destroy
   has_many :schedules, dependent: :destroy
-  has_one :schedule_setting, dependent: :destroy
-  has_one :conversation_thread_, dependent: :destroy
-  has_one :partner_assistent, dependent: :destroy
+  has_many :partner_test_bot_messages, dependent: :destroy
 
   validates :name, :email, presence: true, on: :create
   validates :password_confirmation, presence: true, on: :create
@@ -116,6 +119,10 @@ class Partner < ApplicationRecord
 
   def service_number_is_updated?
     saved_change_to_service_number?
+  end
+
+  def bot_messages_history
+    partner_test_bot_messages.order(:created_at)
   end
 
   def calculate_usage(tokens)
