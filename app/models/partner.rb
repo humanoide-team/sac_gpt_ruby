@@ -11,6 +11,7 @@ class Partner < ApplicationRecord
   extend FriendlyId
   friendly_id :name_slug, use: :slugged
 
+  has_one_base64_attached :avatar
   belongs_to :affiliate, optional: true
   has_one :partner_detail, dependent: :destroy
   has_one :schedule_setting, dependent: :destroy
