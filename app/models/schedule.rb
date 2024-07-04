@@ -3,7 +3,7 @@ require 'google/api_client/client_secrets'
 
 class Schedule < ApplicationRecord
   belongs_to :partner
-  belongs_to :partner_client
+  belongs_to :partner_client, optional: true
   belongs_to :schedule_setting, optional: true
 
   before_create :create_event
@@ -77,7 +77,7 @@ class Schedule < ApplicationRecord
       ),
       attendees: [
         {
-          email: partner_client.email
+          email: partner_client.nil? ? partner.email : partner_client.email
         }
       ],
       reminders: {
@@ -110,6 +110,3 @@ class Schedule < ApplicationRecord
     )
   end
 end
-
-# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T19:00:31.172Z", date_time_end: "2023-10-30T20:00:31.172Z", partner_id: 40, partner_client_id: 130)
-# Schedule.create(summary: "teste", description: "teste teste", date_time_start: "2023-10-30T20:00:31.172Z", date_time_end: "2023-10-30T21:00:31.172Z", partner_id: 26, partner_client_id: 1)

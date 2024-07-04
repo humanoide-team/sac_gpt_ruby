@@ -36,6 +36,7 @@ class PartnerTestBotMessage < ApplicationRecord
     generate_message_history(messages, historico_conversa)
 
     text_response = gerar_resposta(message, historico_conversa)
+    text_response = identificar_agendamento(text_response)
 
     update(automatic_response: text_response)
   end
@@ -64,6 +65,39 @@ class PartnerTestBotMessage < ApplicationRecord
     messages.each do |pcm|
       historico_conversa << { role: 'user', content: pcm.message }
       historico_conversa << { role: 'assistant', content: pcm.automatic_response } if pcm.automatic_response
+    end
+  end
+
+  def identificar_email(response)
+    regex = /#E-mail informado: ([\w+\-.]+@[a-z\d\-.]+\.[a-z]+)#/
+    match_data = response.match(regex)
+
+    return response unless match_data
+
+    response
+  end
+
+  def identificar_agendamento(response)
+    response = identificar_email(response)
+
+    regex = %r{#Agendamento para o dia (\d{2}/\d{2}/\d{4}) às (\d{2}:\d{2})#}
+    match_data = response.match(regex)
+
+    return response unless match_data
+
+    if partner.schedule_setting.nil?
+      return 'Não foi possível marcar a reunião no momento, e necessario configurar o agendamento!'
+    end
+
+    data_hora_string = "#{match_data[1]} #{match_data[2]}"
+    data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
+    schedule = Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{partner.name}", date_time_start: data_hora + 3.hours,
+                               date_time_end: data_hora + partner.schedule_setting.duration_in_minutes.minutes + partner.schedule_setting.interval_minutes.minutes + 3.hours, partner_id: partner.id, partner_client_id: @client.id)
+
+    if schedule
+      response
+    else
+      'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
   end
 

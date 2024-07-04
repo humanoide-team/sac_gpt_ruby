@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_07_03_212345) do
+ActiveRecord::Schema.define(version: 2024_07_04_194217) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -599,7 +599,7 @@ ActiveRecord::Schema.define(version: 2024_07_03_212345) do
     t.datetime "date_time_end"
     t.string "event"
     t.bigint "partner_id", null: false
-    t.bigint "partner_client_id", null: false
+    t.integer "partner_client_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["partner_client_id"], name: "index_schedules_on_partner_client_id"
