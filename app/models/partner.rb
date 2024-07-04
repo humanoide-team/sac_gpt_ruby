@@ -180,7 +180,10 @@ class Partner < ApplicationRecord
   def current_mothly_history
     subscription = current_subscription
 
-    update_attribute(active: false) if subscription.nil? || current_plan.nil?
+    update_attribute(:active, false) if subscription.nil? || current_plan.nil?
+
+    return unless subscription && current_plan
+
     montly_usage = montly_usage_histories.last
     today = Date.today
     month_payment_day = Date.new(today.year, today.month, subscription.first_pay_day_date.day)
@@ -237,6 +240,8 @@ class Partner < ApplicationRecord
     tokens_plan = current_plan.max_token_count
     return unless tokens_plan
 
+    return unless current_mothly_history
+
     current_extra_token = extra_tokens.sum(:token_quantity)
     remaining_tokens = (current_mothly_history.token_count + current_extra_token)
     ((current_extra_token + tokens_plan) - remaining_tokens)
@@ -244,6 +249,8 @@ class Partner < ApplicationRecord
 
   def montly_remaining_tokens
     return unless current_plan
+
+    return unless current_mothly_history
 
     current_extra_token = extra_tokens.sum(:token_quantity)
     (current_mothly_history.token_count + current_extra_token)

@@ -1,13 +1,13 @@
 class Api::V1::Partners::PartnerReportsController < ApiPartnerController
   def index
     # Overview
-    current_extra_token = @current_partner.current_mothly_history.extra_token_count
-    current_token_count = @current_partner.current_mothly_history.token_count
-    partner_leads = @current_partner.partner_client_leads
-    lead_count = partner_leads.count
+    current_extra_token = @current_partner&.current_mothly_history&.extra_token_count
+    current_token_count = @current_partner&.current_mothly_history&.token_count
+    partner_leads = @current_partner&.partner_client_leads
+    lead_count = partner_leads&.count
     tokens_plan = @current_partner.current_plan&.max_token_count
-    montly_tokens_consumed = (tokens_plan + current_extra_token) - current_token_count
-    montly_tokens_left = current_token_count + current_extra_token
+    montly_tokens_consumed = (tokens_plan + current_extra_token) - current_token_count if tokens_plan && current_extra_token && current_token_count
+    montly_tokens_left = current_token_count + current_extra_token if current_token_count && current_extra_token
     client_scores = partner_leads.order(lead_score: :desc).limit(10).map do |pl|
       {
         client: PartnerClientSerializer.new(pl.partner_client),
@@ -46,8 +46,7 @@ class Api::V1::Partners::PartnerReportsController < ApiPartnerController
             montlyTokensConsumed: montly_tokens_consumed,
             monthlyTokensLeft: montly_tokens_left
           },
-          clientMessages: client_messages,
-          salesAnalysis: {}
+          clientMessages: client_messages
         }
       }
     }, status: :ok
