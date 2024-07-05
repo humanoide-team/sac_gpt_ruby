@@ -35,7 +35,7 @@ class PartnerDetail < ApplicationRecord
 
   def observations
     observation = ''
-    if !connected_with_google || !partner.schedule_setting.nil?
+    if connected_with_google || !partner.schedule_setting.nil?
       observation << "Ao receber uma solicitação de agendamento, inicie com: 'Por favor, informe seu e-mail para o envio do convite da reunião.', se o e-mail for fornecido, responda exatamente com: '#E-mail informado: EMAIL#. Obrigado!' substituindo a palavra EMAIL pelo email fornecido." +
                      "Caso o cliente se recuse a enviar ou pergunte a necessidade responda: 'Precisamos do seu e-mail para prosseguir com o agendamento!'." +
                      "Com o e-mail enviado pelo cliente, informe os horarios de atendimento: 'Atendemos de #{partner.schedule_setting.week_days}, das #{partner.schedule_setting.start_time} às #{partner.schedule_setting.end_time}, sessões de #{partner.schedule_setting.duration_in_minutes} min. Qual horário prefere?'." +
