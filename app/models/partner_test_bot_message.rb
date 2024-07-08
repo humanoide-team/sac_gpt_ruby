@@ -92,7 +92,7 @@ class PartnerTestBotMessage < ApplicationRecord
     data_hora_string = "#{match_data[1]} #{match_data[2]}"
     data_hora = DateTime.strptime(data_hora_string, '%d/%m/%Y %H:%M')
     schedule = Schedule.create(summary: 'Agendamento de reuniao!', description: "Agendamento para o dia #{match_data[1]} as #{match_data[2]} com o cliente #{partner.name}", date_time_start: data_hora + 3.hours,
-                               date_time_end: data_hora + partner.schedule_setting.duration_in_minutes.minutes + partner.schedule_setting.interval_minutes.minutes + 3.hours, partner_id: partner.id, partner_client_id: @client.id)
+                               date_time_end: data_hora + partner.schedule_setting.duration_in_minutes.minutes + partner.schedule_setting.interval_minutes.minutes + 3.hours, partner_id: partner.id)
 
     if schedule
       response
