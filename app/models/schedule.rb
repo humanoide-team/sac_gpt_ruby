@@ -77,7 +77,7 @@ class Schedule < ApplicationRecord
       ),
       attendees: [
         {
-          email: partner_client.nil? ? partner.email : partner_client.email
+          email: partner_client.nil? ? partner&.partner_test_bot_lead&.test_bot_mail : partner_client.email
         }
       ],
       reminders: {

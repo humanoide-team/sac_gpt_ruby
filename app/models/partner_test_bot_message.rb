@@ -74,7 +74,11 @@ class PartnerTestBotMessage < ApplicationRecord
 
     return response unless match_data
 
-    response
+    if @partner_test_bot_lead.update(test_bot_mail: match_data[1])
+      response
+    else
+      'Nao foi possivel identificar o seu email'
+    end
   end
 
   def identificar_agendamento(response)

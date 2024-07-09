@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_07_04_194217) do
+ActiveRecord::Schema.define(version: 2024_07_09_123800) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -419,6 +419,7 @@ ActiveRecord::Schema.define(version: 2024_07_04_194217) do
     t.integer "token_count", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "test_bot_mail"
     t.index ["partner_id"], name: "index_partner_test_bot_leads_on_partner_id"
   end
 
@@ -459,6 +460,7 @@ ActiveRecord::Schema.define(version: 2024_07_04_194217) do
     t.boolean "wpp_connected", default: true
     t.datetime "last_callback_receive"
     t.string "remote_jid"
+    t.string "company_name"
     t.index ["affiliate_id"], name: "index_partners_on_affiliate_id"
   end
 
