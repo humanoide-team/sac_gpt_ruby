@@ -8,6 +8,6 @@ class PartnerDetailSerializer
              :connected_with_google, :created_at, :updated_at
 
   attribute :connected_with_google do |o|
-    o.connected_with_google
+    o.partner.connected_with_google
   end
 end

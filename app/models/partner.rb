@@ -256,6 +256,10 @@ class Partner < ApplicationRecord
     (current_mothly_history.token_count + current_extra_token)
   end
 
+  def connected_with_google
+    access_token.present? && refresh_token.present?
+  end
+
   def profile_filled?
     name.present? && email.present? && contact_number.present? && document.present?
   end

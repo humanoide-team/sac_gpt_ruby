@@ -155,7 +155,7 @@ class PartnerMessageService
 
     return response unless match_data
 
-    if !@partner.partner_detail.connected_with_google || @partner.schedule_setting.nil?
+    if !@partner.connected_with_google || @partner.schedule_setting.nil?
       return 'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
 
