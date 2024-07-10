@@ -2,9 +2,13 @@ class PartnerSerializer
   include FastJsonapi::ObjectSerializer
   set_key_transform :camel_lower
 
-  attributes :name, :company_name, :email, :service_number, :contact_number, :document, :partner_detail_id, :active, :wpp_connected, :connected_with_google,
+  attributes :avatar, :name, :company_name, :email, :service_number, :contact_number, :document, :partner_detail_id, :active, :wpp_connected, :connected_with_google,
              :created_at, :updated_at
   attributes :auth_token, :expires_at, if: proc { |record| record.auth_token.present? }
+
+  attribute :avatar do |object|
+    object.avatar.attached? ? object.avatar&.service_url : nil
+  end
 
   attribute :currentPlan do |partner|
     partner.current_plan || 'Nenhum plano ativo'
