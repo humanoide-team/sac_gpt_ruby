@@ -18,9 +18,12 @@ class PaymentPlan < ApplicationRecord
   }
 
   def create_galax_pay_payment_plan
+    return if name == 'Plano Gratuito'
+
     uuid = SecureRandom.uuid
 
-    galax_pay_payment_plan = GalaxPayClient.create_payment_plan(uuid, name, periodicity, quantity, additional_info, plan_price_payment, plan_price_value )
+    galax_pay_payment_plan = GalaxPayClient.create_payment_plan(uuid, name, periodicity, quantity, additional_info,
+                                                                plan_price_payment, plan_price_value)
 
     if galax_pay_payment_plan.nil?
       errors.add(:base, 'Erro ao criar Plano de pagamento')

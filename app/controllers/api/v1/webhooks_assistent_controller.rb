@@ -102,8 +102,7 @@ class Api::V1::WebhooksAssistentController < ApiController
 
   def token_usage(usage)
     token_cost = calculate_token(usage).round
-    montly_history = @partner.current_mothly_history
-    montly_history.increase_token_count(token_cost)
+    @partner.calculate_usage(token_cost)
     @partner_client_lead.increase_token_count(token_cost)
   end
 
@@ -134,7 +133,7 @@ class Api::V1::WebhooksAssistentController < ApiController
 
     return response unless match_data
 
-    if !@partner.partner_detail.meeting_objective? || @partner.schedule_setting.nil?
+    if !@partner.connected_with_google || @partner.schedule_setting.nil?
       return 'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
 

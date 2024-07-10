@@ -111,6 +111,7 @@ class AffiliateMessageService
       response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage']).round
+        @affiliate.calculate_usage(token_cost)
         @affiliate_client_lead.increase_token_count(token_cost)
         response['choices'][0]['message']['content'].strip
       else

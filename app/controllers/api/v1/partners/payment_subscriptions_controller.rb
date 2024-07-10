@@ -25,12 +25,15 @@ class Api::V1::Partners::PaymentSubscriptionsController < ApiPartnerController
 
     @payment_subscription = PaymentSubscription.new(payment_subscription_params.merge(partner: @current_partner))
     if @payment_subscription.save
-      if @payment_subscription.status != 'active'
-        @current_partner.update(active: false)
-        render json: { message: 'Falha em criar inscricao verifique os dados' }, status: :unprocessable_entity
-      else
+      if @payment_subscription.status == 'active'
         @current_partner.update(active: true)
         render json: PaymentSubscriptionSerializer.new(@payment_subscription).serialized_json, status: :created
+      elsif @payment_subscription.status == 'waitingPayment'
+        @current_partner.update(active: false)
+        render json: { message: 'Aguardando Confirmação De Pagamento' }, status: :ok
+      else
+        @current_partner.update(active: false)
+        render json: { message: 'Falha em criar inscricao verifique os dados' }, status: :unprocessable_entity
       end
     else
       render json: ErrorSerializer.serialize(@payment_subscription.errors), status: :unprocessable_entity

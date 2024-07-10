@@ -16,11 +16,18 @@ class Api::V1::Affiliates::DashboardController < ApiAffiliateController
     all_propect = @current_affiliate.prospect_cards.count
     propect_success = @current_affiliate.prospect_cards.select { |pc| pc.partner_linked }.count
 
+    montly_usage = @current_affiliate.current_mothly_history
+
     token_count = @current_affiliate&.bot_configuration&.token_count || 0
     render json: {
       data: {
         id: @current_affiliate.id,
         type: 'dashboard',
+        montly_usage: {
+          remaining_token: montly_usage.token_count,
+          plan_tokens: @current_affiliate.max_token_count,
+          extra_tokens: montly_usage.extra_token_count
+        },
         testBot: {
           spentTokens: token_count,
           closed: closed_propect

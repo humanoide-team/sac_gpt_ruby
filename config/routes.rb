@@ -41,6 +41,18 @@ Rails.application.routes.draw do
 
         get 'partner_clients/lead_classification/:id', to: 'partner_clients#lead_classification'
 
+        post 'partner_test_bot/messages', to: 'partner_test_bot#create_bot_message'
+
+        get 'partner_test_bot/messages', to: 'partner_test_bot#test_bot_messages'
+
+        get 'partner_test_bot/last_message', to: 'partner_test_bot#last_test_bot_message'
+
+        delete 'partner_test_bot/destroy_all_messages', to: 'partner_test_bot#destroy_all_messages'
+
+        patch 'partner_test_bot/read_message/:id', to: 'partner_test_bot#read_message'
+
+        get 'partner_test_bot/test_bot_lead', to: 'partner_test_bot#test_bot_lead'
+
         resources :partner_clients, only: %i[index destroy]
 
         resources :credit_cards, only: %i[index show create destroy]
@@ -91,6 +103,10 @@ Rails.application.routes.draw do
         # BOT CONFIGURATIONS
         post 'bot_configurations/set_prospect_card/:id', to: 'bot_configuration#copy_from_prospect'
         get 'bot_configurations/actual_configuration', to: 'bot_configuration#actual_configuration'
+
+        resources :payments, only: %i[index show create]
+
+        resources :credit_cards, only: %i[index show create destroy]
 
         resources :payment_transactions, only: %i[index]
 

@@ -6,7 +6,7 @@ class PartnerMessageService
   def self.process_message(params, partner)
     @partner = partner
     @params = params
-    return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.active
+    return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.partner_details_filled? || !@partner.active
 
     return 'Callback Processado' if params['type'] != 'connection' && !@partner.wpp_connected
 
@@ -155,7 +155,7 @@ class PartnerMessageService
 
     return response unless match_data
 
-    if !@partner.partner_detail.meeting_objective? || @partner.schedule_setting.nil?
+    if !@partner.connected_with_google || @partner.schedule_setting.nil?
       return 'Não foi possível marcar a reunião no momento, nossa equipe entrará em contato direto'
     end
 
@@ -182,8 +182,7 @@ class PartnerMessageService
       response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage']).round
-        montly_history = @partner.current_mothly_history
-        montly_history.increase_token_count(token_cost)
+        @partner.calculate_usage(token_cost)
         @partner_client_lead.increase_token_count(token_cost)
         response['choices'][0]['message']['content'].strip
       else

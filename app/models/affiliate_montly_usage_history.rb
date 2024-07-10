@@ -1,5 +1,5 @@
-class MontlyUsageHistory < ApplicationRecord
-  belongs_to :partner
+class AffiliateMontlyUsageHistory < ApplicationRecord
+  belongs_to :affiliate
 
   def increase_token_count(tokens)
     self.token_count += tokens
