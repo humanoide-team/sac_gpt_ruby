@@ -4,23 +4,26 @@ namespace :transactions_monitoring do
     partners = Partner.all
 
     partners.each do |current_partner|
-      current_subscription = current_partner.payment_subscriptions.where(status: :active).first
-      next if current_subscription.nil?
-
-      current_subscription.update_galax_pay_payment_subscription_status
+      current_subscription = current_partner.current_subscription
+      if current_subscription.nil?
+        current_partner.create_free_subscription
+      else
+        current_subscription.update_galax_pay_payment_subscription_status
+        current_partner.create_free_subscription if current_partner.current_subscription.nil?
+      end
     end
   end
 
-  desc ' Parcerio Monitoração de transacoes'
+  desc 'Parcerio Monitoração de transacoes'
   task partner_transactions_monitoring: :environment do
     partners = Partner.all
 
     partners.each do |current_partner|
-      current_subscription = current_partner.current_subscription || current_partner.payment_subscriptions.last
+      current_subscription = current_partner.payment_subscriptions.where(status: :waitingPayment)
 
-      if !current_subscription.nil? && current_subscription.status == 'waitingPayment'
+      unless current_subscription.nil?
         current_subscription&.update_galax_pay_payment_subscription_status
-        partners.update(active: true) if current_subscription.status == 'active'
+        partners.update(active: true) unless current_partner.current_subscription.nil?
       end
 
       payments = current_partner.payments.where(status: :waitingPayment)
