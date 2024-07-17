@@ -44,6 +44,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
             name: pc.name,
             phone: pc.phone,
             lastMessage: pc.partner_client_messages.by_partner(@current_partner).last&.created_at,
+            lastMessageContent: pc.partner_client_messages.by_partner(@current_partner).last,
             leadScore: partner_client_lead&.lead_score,
             messagesCount: pc.partner_client_messages.by_partner(@current_partner).count,
             createdAt: pc.created_at,
