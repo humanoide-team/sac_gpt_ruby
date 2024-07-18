@@ -1,0 +1,37 @@
+version: '3'
+services:
+  waha-plus--mongodb:
+    # Check available Docker images:
+    # https://waha.devlike.pro/docs/how-to/engines/#docker-images
+    image: devlikeapro/waha-plus:latest
+    container_name: waha-plus--mongodb
+    ports:
+      - '3001:3000/tcp'
+    volumes:
+      - './.sessions:/app/.sessions'
+    environment:
+      # Environment variables from https://waha.devlike.pro/docs/how-to/config/
+      - WHATSAPP_RESTART_ALL_SESSIONS=True
+      - WHATSAPP_HOOK_URL=https://webhook.site/b6538f2e-1b4f-491d-b220-9129f41497ea
+      - WHATSAPP_HOOK_EVENTS=message,session.status
+      - WHATSAPP_API_KEY=humanoide-token-123
+      # - WHATSAPP_SWAGGER_USERNAME=admin
+      # - WHATSAPP_SWAGGER_PASSWORD=123
+      - WAHA_DASHBOARD_USERNAME=admin
+      - WAHA_DASHBOARD_PASSWORD=123
+      - WHATSAPP_API_HOSTNAME=localhost
+      - WHATSAPP_DEFAULT_ENGINE=NOWEB
+      - WHATSAPP_SESSIONS_MONGO_URL=mongodb://mongodb:27017
+    restart: always
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017/tcp'
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+volumes:
+  mongodb_data: {}

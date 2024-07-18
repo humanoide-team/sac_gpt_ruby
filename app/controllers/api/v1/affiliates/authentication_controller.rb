@@ -25,22 +25,21 @@ class Api::V1::Affiliates::AuthenticationController < ApiAffiliateController
   end
 
   def auth_whatsapp
-    token = ENV['NODE_API_WHATSAPP_TOKEN']
-    key = @current_affiliate.instance_key
+    instance_key = @current_affiliate.instance_key
+    @current_affiliate.update(last_callback_receive: nil, wpp_connected: false)
 
-    response = NodeApiClient.iniciar_instancia(token, key)
-    if response['error'] == false
-      key = response['key']
-      sleep(5)
-      get_qrcode(key)
+    response = WahaWppApiClient.start_session(instance_key)
+    if response
+      sleep(10)
+      get_qrcode(instance_key)
     else
-      error_message = response['message']
+      render json: { error: 'Erro ao iniciar sessão' }, status: :unprocessable_entity
     end
   end
 
-  def get_qrcode(key)
-    qr_code = NodeApiClient.obter_qr(key)
-    render json: qr_code
+  def get_qrcode(instance_key)
+    qr_code = WahaWppApiClient.obter_qr(instance_key)
+    send_data qr_code, type: 'image/png', disposition: 'inline'
   end
 
   def send_recover_password_mail

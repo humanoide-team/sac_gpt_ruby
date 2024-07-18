@@ -1,24 +1,24 @@
 require 'tiktoken_ruby'
 
 class AffiliateMessageService
-  def self.process_message(params, affiliate)
+  def self.process_message(payload, affiliate)
     @affiliate = affiliate
-    @params = params
+    @payload = payload
     return 'Callback Processado' if @affiliate.bot_configuration.nil? || !@affiliate.active
 
-    return 'Callback Processado' if params['type'] == 'connection'
+    @affiliate.update(last_callback_receive: DateTime.now, wpp_connected: true)
 
-    @client = AffiliateClient.find_by(phone: params['body']['key']['remoteJid'], affiliate_id: @affiliate.id)
+    @client = AffiliateClient.find_by(phone: payload['from'], affiliate_id: @affiliate.id)
     if @client.nil?
-      @client = AffiliateClient.create(phone: params['body']['key']['remoteJid'],
-                                       name: params['body']['pushName'], affiliate_id: @affiliate.id)
+      @client = AffiliateClient.create(phone: payload['from'],
+                                       name: payload['_data']['pushName'], affiliate_id: @affiliate.id)
     end
 
     return 'Callback Processado' if @client.blocked
 
-    @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
+    @client.update(name: payload['body']['pushName']) if payload['body']['pushName'] && @client.name.nil?
 
-    pergunta_usuario = callback_text_message(params)
+    pergunta_usuario = callback_text_message(payload)
 
     return 'Callback Processado' if pergunta_usuario.empty?
 
@@ -28,12 +28,12 @@ class AffiliateMessageService
       @affiliate_client_lead = @client.affiliate_client_leads.create(affiliate: @affiliate, token_count: 0)
     end
 
-    if @client.affiliate_client_messages.by_affiliate(@affiliate).map(&:webhook_uuid).include?(params['body']['key']['id'])
+    if @client.affiliate_client_messages.by_affiliate(@affiliate).map(&:webhook_uuid).include?(payload['id'])
       return 'Callback Processado'
     end
 
     affiliate_client_message = @client.affiliate_client_messages.create(affiliate: @affiliate, message: pergunta_usuario,
-                                                                        webhook_uuid: params['body']['key']['id'])
+                                                                        webhook_uuid: payload['id'])
     Thread.new { aguardar_e_enviar_resposta(@affiliate, @client, affiliate_client_message) }
   end
 
@@ -94,7 +94,7 @@ class AffiliateMessageService
     text_response = gerar_resposta(last_response.message, historico_conversa).gsub("\n",
                                                                                    ' ').strip
     last_response.update(automatic_response: text_response)
-    response = NodeApiClient.enviar_mensagem(@params['body']['key']['remoteJid'], text_response, affiliate.instance_key)
+    response = WahaWppApiClient.send_text(@payload['from'], text_response, affiliate.instance_key)
     return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
 
     'Callback Processado'
@@ -173,18 +173,11 @@ class AffiliateMessageService
     num_tokens
   end
 
-  def self.callback_text_message(params)
-    if params['body'] && params['body']['message']
-      message = params['body']['message']
-      if message['conversation']
-        message['conversation']
-      elsif message['extendedTextMessage']
-        message['extendedTextMessage']['text']
-      elsif message['imageMessage'] || message['stickerMessage'] || message['reactionMessage'] || message['audioMessage'] || message['documentMessage'] || message['videoMessage']
-        'MEDIA_MESSAGE'
-      else
-        ''
-      end
+  def self.callback_text_message(payload)
+    if payload['hasMedia'] == false
+      payload['body']
+    elsif payload['hasMedia'] == true
+      'MEDIA_MESSAGE'
     else
       ''
     end

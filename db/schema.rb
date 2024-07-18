@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_07_09_123800) do
+ActiveRecord::Schema.define(version: 2024_07_17_222427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -195,6 +195,8 @@ ActiveRecord::Schema.define(version: 2024_07_09_123800) do
     t.integer "revenue_percentage", default: 10
     t.integer "galax_pay_id"
     t.string "galax_pay_my_id"
+    t.boolean "wpp_connected", default: true
+    t.datetime "last_callback_receive"
   end
 
   create_table "bot_configurations", force: :cascade do |t|
@@ -447,10 +449,10 @@ ActiveRecord::Schema.define(version: 2024_07_09_123800) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "instance_key"
-    t.string "document"
-    t.string "contact_number"
     t.integer "galax_pay_id"
     t.string "galax_pay_my_id"
+    t.string "document"
+    t.string "contact_number"
     t.boolean "active", default: false
     t.string "calendar_token"
     t.string "access_token"

@@ -74,7 +74,7 @@ class Partner < ApplicationRecord
 
   def encrypted_data(data, key)
     @verifier = ActiveSupport::MessageVerifier.new(key)
-    @verifier.generate(data, expires_in: 365.days)
+    @verifier.generate(data, expires_in: 7.days)
   end
 
   def generate_recover_password_key
@@ -82,7 +82,8 @@ class Partner < ApplicationRecord
   end
 
   def generate_instance_key
-    token = encrypted_data(id.to_s, generate_key)
+    token = "#{name_slug[0]}-#{id}"
+
     update_attribute(:instance_key, token)
   end
 

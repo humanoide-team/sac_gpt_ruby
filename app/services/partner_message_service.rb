@@ -3,38 +3,22 @@ require 'tiktoken_ruby'
 class PartnerMessageService
   MODEL = ENV['OPENAI_MODEL'].freeze
 
-  def self.process_message(params, partner)
+  def self.process_message(payload, partner)
     @partner = partner
-    @params = params
+    @payload = payload
     return 'Callback Processado' if @partner.partner_detail.nil? || !@partner.partner_details_filled? || !@partner.active
-
-    return 'Callback Processado' if params['type'] != 'connection' && !@partner.wpp_connected
-
-    if params['type'] == 'connection'
-
-      if params['body']['connection'] == 'open'
-        @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
-
-      elsif params['body']['connection'] == 'close' && @partner.wpp_connected && !@partner.last_callback_receive.nil? && (@partner.last_callback_receive + 1.minute > DateTime.now)
-        @partner.update(last_callback_receive: DateTime.now, wpp_connected: false)
-        @partner.send_connection_fail_mail
-      end
-      return 'Callback Processado'
-    end
 
     @partner.update(last_callback_receive: DateTime.now, wpp_connected: true)
 
-    @client = PartnerClient.find_by(phone: params['body']['key']['remoteJid'], partner_id: @partner.id)
+    @client = PartnerClient.find_by(phone: payload['from'], partner_id: @partner.id)
     if @client.nil?
-      @client = PartnerClient.create(phone: params['body']['key']['remoteJid'],
-                                     name: params['body']['pushName'], partner_id: @partner.id)
+      @client = PartnerClient.create(phone: payload['from'],
+                                     name: payload['_data']['pushName'], partner_id: @partner.id)
     end
 
     return 'Callback Processado' if @client.blocked
 
-    @client.update(name: params['body']['pushName']) if params['body']['pushName'] && @client.name.nil?
-
-    pergunta_usuario = callback_text_message(params)
+    pergunta_usuario = callback_text_message(payload)
 
     return 'Callback Processado' if pergunta_usuario.empty?
 
@@ -44,12 +28,12 @@ class PartnerMessageService
       @partner_client_lead = @client.partner_client_leads.create(partner: @partner, token_count: 0)
     end
 
-    if @client.partner_client_messages.by_partner(@partner).map(&:webhook_uuid).include?(params['body']['key']['id'])
+    if @client.partner_client_messages.by_partner(@partner).map(&:webhook_uuid).include?(payload['id'])
       return 'Callback Processado'
     end
 
     partner_client_message = @client.partner_client_messages.create(partner: @partner, message: pergunta_usuario,
-                                                                    webhook_uuid: params['body']['key']['id'])
+                                                                    webhook_uuid: payload['id'])
     Thread.new { aguardar_e_enviar_resposta(@partner, @client, partner_client_message) }
   end
 
@@ -69,10 +53,6 @@ class PartnerMessageService
     partner_client_conversation_info = client.partner_client_conversation_infos.by_partner(partner).first
 
     partner_detail_prompt = @partner.partner_detail.message_content
-
-    # if client.partner_client_messages.by_partner(partner).size > 1
-    #   partner_detail_prompt = generate_prompt_resume(partner_detail_prompt)
-    # end
 
     historico_conversa = [{ role: 'system', content: partner_detail_prompt }]
 
@@ -128,8 +108,8 @@ class PartnerMessageService
                                                                                    ' ').strip
     text_response = identificar_agendamento(text_response)
     last_response.update(automatic_response: text_response)
-    response = NodeApiClient.enviar_mensagem(@params['body']['key']['remoteJid'], text_response, partner.instance_key)
-    return "Erro na API Node.js: #{response}" unless response['status'] == 'OK'
+    response = WahaWppApiClient.send_text(@payload['from'], text_response, partner.instance_key)
+    return "Erro na WPP da WAHA: #{response}" unless response['status'] == 'OK'
 
     'Callback Processado'
   end
@@ -254,18 +234,11 @@ class PartnerMessageService
     num_tokens
   end
 
-  def self.callback_text_message(params)
-    if params['body'] && params['body']['message']
-      message = params['body']['message']
-      if message['conversation']
-        message['conversation']
-      elsif message['extendedTextMessage']
-        message['extendedTextMessage']['text']
-      elsif message['imageMessage'] || message['stickerMessage'] || message['reactionMessage'] || message['audioMessage'] || message['documentMessage'] || message['videoMessage']
-        'MEDIA_MESSAGE'
-      else
-        ''
-      end
+  def self.callback_text_message(payload)
+    if payload['hasMedia'] == false
+      payload['body']
+    elsif payload['hasMedia'] == true
+      'MEDIA_MESSAGE'
     else
       ''
     end
