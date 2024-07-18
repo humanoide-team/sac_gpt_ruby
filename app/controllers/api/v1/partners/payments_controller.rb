@@ -17,7 +17,7 @@ class Api::V1::Partners::PaymentsController < ApiPartnerController
 
     if @payment.save
       if @payment.status == 'active' || @payment.status == 'closed'
-        @current_partner.update(active: true) if @current_partner.active != true
+        @current_partner.update(active: true)
         render json: PaymentSerializer.new(@payment).serialized_json, status: :created
       elsif @payment.status == 'waitingPayment'
         @current_partner.update(active: false)

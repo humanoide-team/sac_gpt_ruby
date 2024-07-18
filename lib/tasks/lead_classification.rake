@@ -15,6 +15,8 @@ namespace :lead_classification do
 
         last_message = client.partner_client_messages.by_partner(current_partner).last
 
+        next unless last_message
+
         historico_conversa = messages(current_partner, client)
 
         if @partner_client_lead.nil? && last_message.created_at < DateTime.now - 1.hour
