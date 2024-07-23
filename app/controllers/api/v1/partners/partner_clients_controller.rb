@@ -169,7 +169,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
+      response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL_LEAD'])
 
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage']).round
@@ -197,7 +197,7 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
     output = usage['completion_tokens']
     total = usage['total_tokens']
 
-    TokenUsage.create(partner_client: @client, model: ENV['OPENAI_MODEL'], prompt_tokens: input, completion_tokens: output, total_tokens: total)
+    TokenUsage.create(partner_client: @client, model: ENV['OPENAI_MODEL_LEAD'], prompt_tokens: input, completion_tokens: output, total_tokens: total)
   end
 
   def set_client
