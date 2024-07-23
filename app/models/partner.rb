@@ -142,7 +142,7 @@ class Partner < ApplicationRecord
 
     plan_max_token = current_subscription.max_token_count
 
-    if active && current_mothly_token.zero?
+    if active && current_mothly_token.zero? && current_mothly_extra_token.zero?
       update_attribute(:active, false)
       unless current_mothly_history.exceed_mail
         PartnerMailer._send_exceed_tokens_quota(self).deliver
@@ -163,7 +163,7 @@ class Partner < ApplicationRecord
         )
         current_mothly_history.update(almost_exceed: true)
       end
-    elsif ((current_mothly_token / plan_max_token.to_f) * 100) <= 50 && current_mothly_extra_token.zero?
+    elsif active && ((current_mothly_token / plan_max_token.to_f) * 100) <= 50 && current_mothly_extra_token.zero?
       unless current_mothly_history.half_exceed
         PartnerMailer._send_half_tokens_quota(self).deliver
         notifications.create(
