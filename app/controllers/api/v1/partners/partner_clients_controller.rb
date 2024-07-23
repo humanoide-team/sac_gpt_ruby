@@ -9,17 +9,30 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
       start_date = Date.new(year, month, 1)
       end_date = start_date.end_of_month
 
-      @clients = @current_partner.partner_clients
-                                 .where({ created_at: start_date..end_date })
-                                 .distinct
+      all_clients = @current_partner.partner_clients
+                                    .where(created_at: start_date..end_date)
+                                    .distinct
     else
-      @clients = @current_partner.partner_clients
+      all_clients = @current_partner.partner_clients
     end
 
-    @clients = @clients.sort_by do |pc|
-      last_message = pc.partner_client_messages.by_partner(@current_partner).last
-      last_message ? last_message.created_at : Time.at(0)
-    end.reverse.uniq
+    page = params[:page].to_i
+    per_page = params[:per_page].to_i
+    per_page = 10 if per_page <= 0
+    page = 1 if page <= 0
+
+    total_clients = all_clients.size
+    total_pages = (total_clients / per_page.to_f).ceil
+
+    @clients = all_clients
+               .sort_by do |pc|
+                 last_message = pc.partner_client_messages.by_partner(@current_partner).last
+                 last_message ? last_message.created_at : Time.at(0)
+               end
+               .reverse
+               .uniq
+               .drop((page - 1) * per_page)
+               .first(per_page)
 
     render json: {
       data: @clients.map do |pc|
@@ -31,13 +44,19 @@ class Api::V1::Partners::PartnerClientsController < ApiPartnerController
             name: pc.name,
             phone: pc.phone,
             lastMessage: pc.partner_client_messages.by_partner(@current_partner).last&.created_at,
+            lastMessageContent: pc.partner_client_messages.by_partner(@current_partner).last,
             leadScore: partner_client_lead&.lead_score,
             messagesCount: pc.partner_client_messages.by_partner(@current_partner).count,
             createdAt: pc.created_at,
             updatedAt: pc.updated_at
           }
         }
-      end
+      end,
+      meta: {
+        total_pages: total_pages,
+        current_page: page,
+        per_page: per_page
+      }
     }, status: :ok
   end
 
