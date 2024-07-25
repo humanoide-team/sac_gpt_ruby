@@ -33,6 +33,7 @@ class GalaxPayClient
     else
       puts "Falha na requisição. Código de status: #{response.code}"
       puts "Resposta do corpo: #{response.body}"
+      JSON.parse(response.body)
     end
   end
 
