@@ -11,9 +11,11 @@ class Affiliate < ApplicationRecord
   has_many :affiliate_montly_usage_histories, dependent: :destroy
   has_many :affiliate_payments, dependent: :destroy
   has_many :affiliate_extra_tokens, dependent: :destroy
+  has_many :affiliate_test_bot_messages, dependent: :destroy
 
   has_one :affiliate_bank_detail, dependent: :destroy
   has_one :bot_configuration, dependent: :destroy
+  has_one :affiliate_test_bot_lead, dependent: :destroy
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :timeoutable
@@ -156,5 +158,17 @@ class Affiliate < ApplicationRecord
 
   def cost_per_thousand_toukens
     97
+  end
+
+  def bot_messages_history
+    affiliate_test_bot_messages.order(:created_at)
+  end
+
+  def profile_filled?
+    name.present? && email.present? && contact_number.present? && document.present?
+  end
+
+  def bot_configuration_filled?
+    !bot_configuration.nil? && bot_configuration.details_filled?
   end
 end
