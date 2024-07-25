@@ -91,9 +91,8 @@ class Partner < ApplicationRecord
 
     uuid = SecureRandom.uuid
     galax_pay_client = GalaxPayClient.create_client(uuid, name, document, email, contact_number)
-
-    if galax_pay_client.nil?
-      errors.add(:base, 'Erro ao criar Client')
+    if galax_pay_client.nil? || galax_pay_client["error"].present?
+      errors.add(:base, galax_pay_client["error"])
       throw :abort
     else
       self.galax_pay_id = galax_pay_client['galaxPayId'].to_i
