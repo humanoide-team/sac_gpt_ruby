@@ -104,6 +104,14 @@ Rails.application.routes.draw do
         post 'bot_configurations/set_prospect_card/:id', to: 'bot_configuration#copy_from_prospect'
         get 'bot_configurations/actual_configuration', to: 'bot_configuration#actual_configuration'
 
+        # TESTE BOT
+        post 'affiliate_test_bot/messages', to: 'affiliate_test_bot#create_bot_message'
+        get 'affiliate_test_bot/messages', to: 'affiliate_test_bot#test_bot_messages'
+        get 'affiliate_test_bot/last_message', to: 'affiliate_test_bot#last_test_bot_message'
+        delete 'affiliate_test_bot/destroy_all_messages', to: 'affiliate_test_bot#destroy_all_messages'
+        patch 'affiliate_test_bot/read_message/:id', to: 'affiliate_test_bot#read_message'
+        get 'affiliate_test_bot/test_bot_lead', to: 'affiliate_test_bot#test_bot_lead'
+
         resources :payments, only: %i[index show create]
 
         resources :credit_cards, only: %i[index show create destroy]
