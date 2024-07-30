@@ -7,6 +7,6 @@ class PartnerTestBotLead < ApplicationRecord
   end
 
   def messages_count
-    partner.partner_client_messages.count
+    partner.partner_test_bot_messages.count
   end
 end

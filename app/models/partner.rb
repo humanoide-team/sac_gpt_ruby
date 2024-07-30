@@ -145,32 +145,62 @@ class Partner < ApplicationRecord
       update_attribute(:active, false)
       unless current_mothly_history.exceed_mail
         PartnerMailer._send_exceed_tokens_quota(self).deliver
+        notifications.create(
+          title: 'Aviso: Limite de tokens excedido - SacGpt!',
+          description: 'Você excedeu o limite de tokens disponíveis para este mês, por favor, atualize seu plano para continuar utilizando o serviço.',
+          notification_type: :extra_token
+        )
         current_mothly_history.update(exceed_mail: true)
       end
     elsif active && ((current_mothly_token / plan_max_token.to_f) * 100) <= 10 && current_mothly_extra_token.zero?
       unless current_mothly_history.almost_exceed
         PartnerMailer._send_almost_exceed_tokens_quota(self).deliver
+        notifications.create(
+          title: 'Aviso Urgente: 90% da Cota Atingida - SacGpt!',
+          description: 'Você atingiu 90% da cota de tokens disponíveis para este mês, por favor, atualize seu plano para continuar utilizando o serviço.',
+          notification_type: :extra_token
+        )
         current_mothly_history.update(almost_exceed: true)
       end
     elsif active && ((current_mothly_token / plan_max_token.to_f) * 100) <= 50 && current_mothly_extra_token.zero?
       unless current_mothly_history.half_exceed
         PartnerMailer._send_half_tokens_quota(self).deliver
+        notifications.create(
+          title: 'Aviso: 50% da Cota Atingida - SacGpt!',
+          description: 'Você atingiu 50% da cota de tokens disponíveis para este mês, por favor, atualize seu plano para continuar utilizando o serviço.',
+          notification_type: :extra_token
+        )
         current_mothly_history.update(half_exceed: true)
       end
     elsif active && total_mothly_token.zero?
       update_attribute(:active, false)
       unless current_mothly_history.exceed_extra_token_mail
         PartnerMailer._send_exceed_extra_tokens_quota(self).deliver
+        notifications.create(
+          title: 'Aviso: Limite de tokens extras excedido - SacGpt!',
+          description: 'Você excedeu o limite de tokens extras disponíveis para este mês, por favor, atualize seu plano para continuar utilizando o serviço.',
+          notification_type: :extra_token
+        )
         current_mothly_history.update(exceed_extra_token_mail: true)
       end
     elsif active && !current_mothly_extra_token.zero? && ((current_mothly_token / (plan_max_token + current_mothly_extra_token).to_f) * 100) <= 10
       unless current_mothly_history.extra_token_almost_exceed
         PartnerMailer._send_almost_exceed_extra_tokens_quota(self).deliver
+        notifications.create(
+          title: 'Aviso Urgente: 90% da cota extra atingida - SacGpt!',
+          description: 'Você atingiu 90% da cota extra de tokens disponíveis para este mês, por favor, atualize seu plano para continuar utilizando o serviço.',
+          notification_type: :extra_token
+        )
         current_mothly_history.update(extra_token_almost_exceed: true)
       end
     elsif active && !current_mothly_extra_token.zero? && ((current_mothly_token / (plan_max_token + current_mothly_extra_token).to_f) * 100) <= 50
       unless current_mothly_history.extra_token_half_exceed
         PartnerMailer._send_half_extra_tokens_quota(self).deliver
+        notifications.create(
+          title: 'Aviso: 50% da cota extra de tokens atingida - SacGpt!',
+          description: 'Você atingiu 50% da cota extra de tokens disponíveis para este mês, por favor, atualize seu plano para continuar utilizando o serviço.',
+          notification_type: :extra_token
+        )
         current_mothly_history.update(extra_token_half_exceed: true)
       end
     end
