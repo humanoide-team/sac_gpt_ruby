@@ -145,7 +145,7 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
     return 'Desculpe, não entendi a sua pergunta.' unless pergunta.is_a?(String) && !pergunta.empty?
 
     begin
-      response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL'])
+      response = OpenAiClient.text_generation(pergunta, historico_conversa, ENV['OPENAI_MODEL_LEAD'])
 
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage']).round

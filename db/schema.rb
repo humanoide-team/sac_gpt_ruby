@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_07_17_222427) do
+ActiveRecord::Schema.define(version: 2024_07_23_163618) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -175,6 +175,28 @@ ActiveRecord::Schema.define(version: 2024_07_17_222427) do
     t.index ["affiliate_id"], name: "index_affiliate_payments_on_affiliate_id"
   end
 
+  create_table "affiliate_test_bot_leads", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.text "conversation_summary"
+    t.text "lead_classification"
+    t.integer "lead_score", default: 0
+    t.integer "token_count", default: 0
+    t.string "test_bot_mail"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_test_bot_leads_on_affiliate_id"
+  end
+
+  create_table "affiliate_test_bot_messages", force: :cascade do |t|
+    t.bigint "affiliate_id", null: false
+    t.text "message"
+    t.text "automatic_response"
+    t.boolean "read", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["affiliate_id"], name: "index_affiliate_test_bot_messages_on_affiliate_id"
+  end
+
   create_table "affiliates", force: :cascade do |t|
     t.string "name"
     t.string "contact_number"
@@ -306,6 +328,7 @@ ActiveRecord::Schema.define(version: 2024_07_17_222427) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.text "metadata"
+    t.boolean "pop_up", default: false
     t.index ["partner_id"], name: "index_notifications_on_partner_id"
   end
 
@@ -646,6 +669,8 @@ ActiveRecord::Schema.define(version: 2024_07_17_222427) do
   add_foreign_key "affiliate_montly_usage_histories", "affiliates"
   add_foreign_key "affiliate_payments", "affiliate_credit_cards"
   add_foreign_key "affiliate_payments", "affiliates"
+  add_foreign_key "affiliate_test_bot_leads", "affiliates"
+  add_foreign_key "affiliate_test_bot_messages", "affiliates"
   add_foreign_key "bot_configurations", "affiliates"
   add_foreign_key "bot_configurations", "prospect_cards"
   add_foreign_key "conversation_threads", "partner_assistents"
