@@ -22,4 +22,9 @@ class AffiliateMailer < ApplicationMailer
     @affiliate = affiliate
     mail(to: @affiliate.email, subject: 'Aviso: Limite de tokens extras excedido - SacGpt!')
   end
+
+  def _send_connection_fail_mail(affiliate)
+    @affiliate = affiliate
+    mail(to: @affiliate.email, subject: 'A sua conta precisa de sua atenção!')
+  end
 end

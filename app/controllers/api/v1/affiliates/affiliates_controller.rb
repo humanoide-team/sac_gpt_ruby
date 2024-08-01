@@ -1,5 +1,5 @@
 class Api::V1::Affiliates::AffiliatesController < ApiAffiliateController
-  before_action :set_affiliate, only: %i[show destroy update]
+  before_action :set_affiliate, only: %i[show destroy update wpp_connected]
   skip_before_action :authenticate_request, only: %i[create index]
 
   def index
@@ -49,6 +49,10 @@ class Api::V1::Affiliates::AffiliatesController < ApiAffiliateController
     else
       render json: ErrorSerializer.serialize(@affiliate.errors), status: :unprocessable_entity
     end
+  end
+
+  def wpp_connected
+    render json: { wppConnected: @affiliate.wpp_connected }, status: 200
   end
 
   private

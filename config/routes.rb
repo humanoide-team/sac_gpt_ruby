@@ -122,6 +122,7 @@ Rails.application.routes.draw do
 
         resources :dashboard, only: %i[index]
 
+        get 'affiliates/wpp_connected', to: 'affiliates#wpp_connected'
         resources :affiliates, only: %i[index show create destroy update]
         patch 'affiliates/recover_password', to: 'affiliates#recover_password'
 
