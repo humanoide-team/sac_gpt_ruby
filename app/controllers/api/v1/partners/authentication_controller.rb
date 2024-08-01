@@ -1,4 +1,4 @@
-require 'node_api_client'
+require 'waha_wpp_api_client'
 
 class Api::V1::Partners::AuthenticationController < ApiPartnerController
   skip_before_action :authenticate_request, only: %i[authenticate send_recover_password_mail recover_password]
@@ -25,23 +25,21 @@ class Api::V1::Partners::AuthenticationController < ApiPartnerController
   end
 
   def auth_whatsapp
-    token = ENV['NODE_API_WHATSAPP_TOKEN']
-    key = @current_partner.instance_key
+    instance_key = @current_partner.instance_key
     @current_partner.update(last_callback_receive: nil, wpp_connected: false)
-
-    response = NodeApiClient.iniciar_instancia(token, key)
-    if response['error'] == false
-      key = response['key']
-      sleep(5)
-      get_qrcode(key)
+    sleep(2)
+    response = WahaWppApiClient.start_session(instance_key)
+    if response == 'SESSION STARTING'
+      sleep(2)
+      qr_code = WahaWppApiClient.obter_qr(instance_key)
+      send_data qr_code, type: 'image/png', disposition: 'inline'
+    elsif response == 'SESSION ALREADY STARTED'
+      sleep(2)
+      closed = WahaWppApiClient.close_session(instance_key)
+      auth_whatsapp if closed
     else
-     response['message']
+      render json: { error: 'Erro ao iniciar sessão' }, status: :unprocessable_entity
     end
-  end
-
-  def get_qrcode(key)
-    qr_code = NodeApiClient.obter_qr(key)
-    render json: qr_code
   end
 
   def send_recover_password_mail

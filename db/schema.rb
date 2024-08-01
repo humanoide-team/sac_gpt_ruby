@@ -217,6 +217,8 @@ ActiveRecord::Schema.define(version: 2024_07_23_163618) do
     t.integer "revenue_percentage", default: 10
     t.integer "galax_pay_id"
     t.string "galax_pay_my_id"
+    t.boolean "wpp_connected", default: true
+    t.datetime "last_callback_receive"
   end
 
   create_table "bot_configurations", force: :cascade do |t|
