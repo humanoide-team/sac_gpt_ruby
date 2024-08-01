@@ -153,11 +153,6 @@ class Affiliate < ApplicationRecord
 
   def send_connection_fail_mail
     AffiliateMailer._send_connection_fail_mail(self).deliver
-    notifications.create(
-      title: 'A sua conta precisa de sua atenção!',
-      description: 'Parece haver um problema com a sua conexao com o aplicatiovo do Whats App, precisamos que vc conecte novamente ao seu aparelho!',
-      notification_type: :connection_fail
-    )
   end
 
   def max_token_count
