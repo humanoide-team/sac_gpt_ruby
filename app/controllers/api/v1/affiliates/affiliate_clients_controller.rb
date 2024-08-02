@@ -149,8 +149,7 @@ class Api::V1::Affiliates::AffiliateClientsController < ApiAffiliateController
 
       if response != 'Falha em gerar resposta'
         token_cost = calculate_token(response['usage']).round
-        @partner.calculate_usage(token_cost)
-
+        @current_affiliate.calculate_usage(token_cost)
         response['choices'][0]['message']['content'].strip
       else
         ''
