@@ -20,15 +20,15 @@ class WahaWppApiClient
     response = HTTParty.post(url, headers:, body:)
 
     if response.code == 201
-      puts "Resposta do corpo: #{JSON.parse(response.body)}"
+      puts "Resposta do corpo: #{response.message}"
       'SESSION STARTING'
     elsif response.code == 422 && JSON.parse(response.body)['message'].include?('is already started')
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "Resposta do corpo: #{JSON.parse(response.body)}"
+      puts "Resposta do corpo: #{response.message}"
       'SESSION ALREADY STARTED'
     else
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "Resposta do corpo: #{JSON.parse(response.body)}"
+      puts "Resposta do corpo: #{response.message}"
     end
   end
 
@@ -47,7 +47,7 @@ class WahaWppApiClient
       'SESSION CLOSED'
     else
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "Resposta do corpo: #{JSON.parse(response.body)}"
+      puts "Resposta do corpo: #{response.message}"
     end
   end
 
@@ -66,7 +66,7 @@ class WahaWppApiClient
       response.body
     else
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "Resposta do corpo: #{JSON.parse(response.body)}"
+      puts "Resposta do corpo: #{response.message}"
     end
   end
 
@@ -81,7 +81,7 @@ class WahaWppApiClient
       response.body
     else
       puts "Falha na requisição. Código de status: #{response.code}"
-      puts "Resposta do corpo: #{JSON.parse(response.body)}"
+      puts "Resposta do corpo: #{response.message}"
     end
   end
 
